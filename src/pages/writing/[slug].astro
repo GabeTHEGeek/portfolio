@@ -27,8 +27,54 @@ const schema = {
     {article.data.coverImage && <Image class="article-hero-image" src={article.data.coverImage} alt="" width={1600} widths={[800, 1200, 1600]} sizes="92vw" />}
   </header>
   <div class="article-shell wrap">
-    <aside class="toc"><p class="eyebrow">In this article</p><nav aria-label="Table of contents">{headings.filter(({ depth }) => depth === 2 || depth === 3).map((heading) => <a class:list={[`depth-${heading.depth}`]} href={`#${heading.slug}`}>{heading.text}</a>)}</nav></aside>
+    <aside class="toc"><p class="eyebrow">In this article</p><nav aria-label="Table of contents">{headings.filter(({ depth }) => depth === 2 || depth === 3).map((heading, index) => <a class:list={[`depth-${heading.depth}`]} href={`#${heading.slug}`}><span class="toc-number">{String(index + 1).padStart(2, '0')}</span><span>{heading.text}</span></a>)}</nav></aside>
     <article class="article-prose"><Content /><footer class="article-end"><h2>Keep exploring</h2><p>More product thinking and hands-on AI work from Gabriel Pendleton.</p><div class="article-actions"><a class="command-button primary" href="/writing/"><span class="command-button__content"><b>AR</b> ALL WRITING</span></a><a class="command-button" href="/projects/"><span class="command-button__content"><b>SYS</b> VIEW PROJECTS</span></a></div></footer></article>
   </div>
   {related.length > 0 && <section class="related band"><div class="wrap"><div class="section-head"><div><p class="eyebrow">Related</p><h2>Continue reading.</h2></div></div><div class="related-grid">{related.map((item) => <a href={`/writing/${item.data.slug}/`}><span>{item.data.category} · {item.data.readTime}</span><h3>{item.data.title}</h3><p>{item.data.description}</p></a>)}</div></div></section>}
 </BaseLayout>
+
+<script>
+  const sectionLinks = Array.from(document.querySelectorAll<HTMLAnchorElement>('.toc nav a'));
+  sectionLinks.forEach((link) => {
+    document.getElementById(decodeURIComponent(link.hash.slice(1)))?.setAttribute('tabindex', '-1');
+  });
+  const syncSection = () => {
+    sectionLinks.forEach((link) => {
+      if (link.hash === window.location.hash) link.setAttribute('aria-current', 'location');
+      else link.removeAttribute('aria-current');
+    });
+  };
+  window.addEventListener('hashchange', syncSection);
+  syncSection();
+</script>
+
+<style is:global>
+  .article-prose { counter-reset: article-section; }
+  .article-prose :is(h2, h3)[id] {
+    counter-increment: article-section;
+    scroll-margin-top: 150px;
+    padding: 18px 20px;
+    border-top: 1px solid var(--line);
+    border-left: 3px solid var(--cyan);
+    background: var(--panel);
+  }
+  .article-prose :is(h2, h3)[id]::before {
+    content: 'SECTION ' counter(article-section, decimal-leading-zero);
+    display: block;
+    margin-bottom: 10px;
+    color: var(--cyan);
+    font: 12px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace;
+    letter-spacing: .12em;
+  }
+  .article-prose :is(h2, h3)[id]:target {
+    border-left-color: var(--signal);
+    background: color-mix(in srgb, var(--signal) 12%, var(--panel));
+    outline: 1px solid var(--signal);
+    outline-offset: 0;
+  }
+  .article-prose :is(h2, h3)[id]:target::before { color: var(--signal); }
+  .toc nav a { display: flex; gap: 10px; }
+  .toc-number { flex-shrink: 0; color: var(--cyan); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+  .toc nav a[aria-current='location'] { color: var(--signal); border-left-color: var(--signal); background: color-mix(in srgb, var(--signal) 8%, var(--panel)); }
+  .toc nav a[aria-current='location'] .toc-number { color: var(--signal); }
+</style>
