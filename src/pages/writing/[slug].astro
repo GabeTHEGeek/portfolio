@@ -73,7 +73,12 @@ const schema = {
     outline-offset: 0;
   }
   .article-prose :is(h2, h3)[id]:target::before { color: var(--signal); }
-  .toc nav a { display: flex; gap: 10px; }
+  .article-shell .toc nav a {
+    display: grid;
+    grid-template-columns: max-content minmax(0, 1fr);
+    column-gap: 14px;
+    align-items: baseline;
+  }
   .toc-number { flex-shrink: 0; color: var(--cyan); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
   .toc nav a[aria-current='location'] { color: var(--signal); border-left-color: var(--signal); background: color-mix(in srgb, var(--signal) 8%, var(--panel)); }
   .toc nav a[aria-current='location'] .toc-number { color: var(--signal); }
