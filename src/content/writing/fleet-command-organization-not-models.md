@@ -2,7 +2,7 @@
 title: "Fleet Command Should Own the Organization, Not the Models"
 slug: "fleet-command-organization-not-models"
 description: "Why Fleet Command should separate agent roles from model providers—and own the state, permissions, evidence, and routing that make an AI organization work."
-coverImage: "../../assets/article-fleet-command.png"
+coverImage: "../../assets/article-fleet-command-organization.png"
 category: "AI Agents"
 tags: ["AI Product", "Agents", "Model Routing", "Building in Public"]
 publishDate: 2026-09-03
@@ -269,4 +269,3 @@ It may be an organizational layer coordinating many different forms of intellige
 **Fleet Command should own the organization.**
 
 **The models should be replaceable.**
-
