@@ -36,7 +36,7 @@ const schema = { '@context': 'https://schema.org', '@type': 'Person', name: 'Gab
 
   <section id="systems" class="interface-section systems-section">
     <div class="wrap">
-      <div class="interface-heading"><div><p class="hud-label">SYSTEMS BUILT // 04 RECORDS</p><h2>Operational intelligence,<br /><span>made tangible.</span></h2></div><p>Products and experiments treated as working systems: explicit roles, visible state, clear interfaces, and human authority.</p></div>
+      <div class="interface-heading"><div><p class="hud-label">SYSTEMS BUILT // 04 RECORDS</p><h2>Operational intelligence,<br /><span>made tangible.</span></h2></div><blockquote class="innovation-quote"><p>“I've loved the stars too fondly to be fearful of the night.”</p><cite>— Galileo</cite></blockquote></div>
       <div class="fleet-intro"><div><span>FEATURED SYSTEM // FC-AIOS</span><h3>Fleet Command</h3><p>A multi-agent operating system for coordinating specialized agents around shared state, permissions, evidence, escalation, and progressive autonomy.</p></div><div class="system-status"><i></i><span>DEPLOYMENT</span><strong>BUILDING</strong></div></div>
       <AgentArchitecture />
       <div class="system-registry">{systems.map((project, index) => <SystemEntry {project} {index} open={index === 0} />)}</div>
@@ -45,7 +45,7 @@ const schema = { '@context': 'https://schema.org', '@type': 'Person', name: 'Gab
 
   <section id="history" class="interface-section history-section">
     <div class="wrap">
-      <div class="interface-heading"><div><p class="hud-label">SYSTEM HISTORY // PRODUCT RECORD</p><h2>Platforms, communities,<br /><span>and products shipped.</span></h2></div><p>An interactive record of product work across creator platforms, livestreaming, marketplaces, identity, podcast infrastructure, and automotive software.</p></div>
+      <div class="interface-heading"><div><p class="hud-label">SYSTEM HISTORY // PRODUCT RECORD</p><h2>Platforms, communities,<br /><span>and products shipped.</span></h2></div><blockquote class="innovation-quote"><p>“If at first the idea is not absurd, then there is no hope for it.”</p><cite>— Albert Einstein</cite></blockquote></div>
       <SystemTimeline projects={productWork} />
     </div>
   </section>
