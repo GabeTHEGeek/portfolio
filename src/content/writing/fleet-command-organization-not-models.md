@@ -1,7 +1,7 @@
 ---
-title: "Fleet Command Should Own the Organization, Not the Models"
+title: "I’m starting to think the agent and the model should be two different things"
 slug: "fleet-command-organization-not-models"
-description: "Why Fleet Command should separate agent roles from model providers—and own the state, permissions, evidence, and routing that make an AI organization work."
+description: "An experiment with multi-agent systems changed how I think about roles, models, cost, and what should stay constant when the intelligence underneath an agent changes."
 coverImage: "../../assets/article-fleet-command-organization.png"
 category: "AI Agents"
 tags: ["AI Product", "Agents", "Model Routing", "Building in Public"]
@@ -10,262 +10,250 @@ readTime: "6 min read"
 author: "Gabriel Pendleton"
 ---
 
-A lot of AI products are being designed around the wrong abstraction.
+I’ve been experimenting with a multi-agent system lately and ran into an architecture question that I originally thought was pretty simple.
 
-They start with the model.
+If I have an engineering agent, what model is it?
 
-Claude does this. Gemini does that. DeepSeek is cheaper for this workload. OpenAI is better for that one.
+Claude?
 
-That makes sense when you are building a single assistant.
+Gemini?
 
-It starts to break when you are building an organization.
+OpenAI?
 
-That is the direction I have been exploring with Fleet Command.
+At first I just picked a model and moved on.
 
-Fleet Command is a multi-agent operating system. Different agents occupy different roles across sales, product, engineering, and marketing. The important part is not that every agent has a name or a personality. The important part is that they have responsibilities, permissions, shared state, dependencies, and work that has to move between them.
+That works.
 
-At first, it is easy to tie each agent directly to a model.
+But the more I built around it, the more I started to think I was combining two things that probably should be separate.
 
-Vader is Claude.
+The agent is responsible for a job.
 
-Tarkin is Claude.
+The model is one of the things it can use to get that job done.
 
-Boba Fett is Claude.
+That sounds like a small distinction, but I think it changes quite a bit about how these systems might eventually work.
 
-Sidious is Claude.
+## The experiment
 
-That works for a prototype.
+The system I’ve been building has a few different agents with specific responsibilities.
 
-It is probably the wrong architecture for the long term.
+There is one that coordinates work, one focused on sales, another on product, and another on engineering.
 
-## The agent and the model are not the same thing
+I gave them names because it made the system easier for me to reason about, but the names really aren’t important.
 
-The more I build this, the more I think an agent should represent a **role**, not a specific model.
+What matters is that each one has a responsibility.
 
-Vader is the engineering agent because of what Vader is responsible for.
+The engineering agent should understand the engineering work it owns, what it has permission to do, what other work it depends on, what has already happened, and what it is expected to return.
 
-It should not matter whether Vader uses Claude, Gemini, DeepSeek, OpenAI, or a local model to complete a particular step.
-
-The model is compute.
-
-The agent is organizational responsibility.
-
-That distinction matters.
-
-A senior engineer does not become a different employee because they switch from one IDE to another.
-
-In the same way, an AI engineering agent should not become a different agent just because the underlying model changes.
-
-That leads to a cleaner architecture:
+Originally I was thinking about that agent almost like this:
 
 ```text
-Fleet Command
-    |
-    +-- Sidious
-    +-- Boba Fett
-    +-- Tarkin
-    +-- Vader
-    |
-    +-- State
-    +-- Memory
-    +-- Permissions
-    +-- Artifacts
-    |
-    +-- Execution Layer
-          |
-          +-- Claude
-          +-- Gemini
-          +-- DeepSeek
-          +-- OpenAI
-          +-- Grok
-          +-- Local models
-          +-- OpenCode
+Engineering Agent = Claude
 ```
 
-Fleet Command owns the organization.
+But that started feeling wrong.
 
-The execution layer provides the labor.
+Claude might be the best model for one part of the job today.
 
-## Why this matters for cost
+That does not mean Claude should define what the agent is.
 
-One of the easiest mistakes in agent systems is to use an expensive frontier model for everything.
+If I swap Claude for another model tomorrow, I haven't suddenly created a new engineering role.
 
-That means you end up paying frontier-model prices for work that does not require frontier-model reasoning.
+I just changed what intelligence that role is using to complete the work.
 
-A strong model may be useful for:
+I think that distinction becomes more important the more persistent these agents become.
 
-- breaking down a complex objective
-- resolving ambiguity
-- making a product decision
-- handling an exception
-- changing the plan when something fails
+## Roles may be more durable than models
 
-But a lot of execution work is simpler:
+Models are changing incredibly fast.
 
-- extracting structured data
-- formatting output
-- clicking through a workflow
-- applying a known transformation
-- classifying a document
-- running a repetitive code change
+A model I prefer this month might not be the model I prefer six months from now.
 
-Those tasks may be handled by smaller models, local models, or deterministic code.
+Some models are better at reasoning. Others are cheaper. Some are faster. Some can run locally. Some have better tool support.
 
-So the cost advantage of a multi-agent system is not simply that it has multiple agents.
+There probably isn't going to be one model that makes sense for every piece of work.
 
-It comes from being able to assign the **cheapest capable intelligence to each step**.
+So I’ve started thinking about the system more like this:
 
-That is a much more interesting optimization problem.
+```text
+Organization
 
-## OpenCode fits into this as infrastructure
+    Product
+    Engineering
+    Sales
+    Operations
 
-This is also why something like OpenCode is interesting to me.
+        ↓
 
-I would not move Fleet Command into OpenCode.
+Execution
 
-I would use OpenCode as one possible execution backend.
+    Claude
+    Gemini
+    OpenAI
+    Local models
+    Deterministic code
+```
 
-For example, Tarkin might produce an approved engineering specification.
+The top part should probably remain relatively stable.
 
-Fleet Command then sends that work to Vader.
+The bottom part can change constantly.
 
-Vader could invoke OpenCode.
+That feels closer to how I already think about software teams.
 
-OpenCode could use Claude for a hard architectural decision, a cheaper model for straightforward code changes, and another model or deterministic process for verification.
+An engineer does not become a different engineer because they switch IDEs, languages, or tools.
 
-The results would come back into Fleet Command.
+The responsibility is more durable than the tool being used.
 
-Fleet Command would still own the project state, permissions, evidence, artifacts, and what happens next.
+Maybe agents eventually work the same way.
+
+## It also changes how I think about cost
+
+This came up pretty quickly while I was experimenting.
+
+Using the most capable model for every step is easy.
+
+It is also probably wasteful.
+
+Some work actually requires a strong model.
+
+Understanding an ambiguous objective, making a difficult decision, changing a plan after something unexpected happens, or reasoning through a complex technical problem might justify the cost.
+
+But a lot of work inside an agent workflow is much less interesting.
+
+Extract this data.
+
+Change this format.
+
+Run this check.
+
+Classify these records.
+
+Apply this known transformation.
+
+Those things may not need the same level of intelligence.
+
+I started wondering whether the better system is one that asks:
+
+What is the cheapest thing that can reliably complete this part of the work?
+
+Sometimes that answer might even be normal code.
+
+Then maybe a small model.
+
+Then something more capable if the earlier attempt fails.
 
 Something like:
 
 ```text
-Tarkin
-   |
-   | approved specification
-   v
-Fleet Command
-   |
-   v
-Vader
-   |
-   v
-OpenCode
-   |
-   +-- Claude for reasoning
-   +-- cheaper model for execution
-   +-- tests / verification
-   |
-   v
-Fleet Command
-   |
-   +-- update state
-   +-- store artifacts
-   +-- escalate if needed
+Task
+
+Can code do it?
+    ↓ no
+
+Can a cheaper model do it?
+    ↓ no / failed
+
+Use a stronger model
+    ↓
+
+Verify the result
 ```
 
-That feels much more durable than making the entire product dependent on one model provider.
+I’m still experimenting with this, so I don't know how far the idea goes.
 
-## Model routing becomes part of the operating system
+But I like the idea that the role owns the outcome while the system can change the intelligence underneath it.
 
-Once you separate the role from the model, another possibility opens up.
+## Engineering made this easier to see
 
-The system can choose models dynamically.
+Engineering is where this clicked for me because there are already tools that make the separation easier to imagine.
 
-Not:
+Something like OpenCode can act as an execution environment.
 
-> Vader uses Claude.
+An engineering agent could receive an approved piece of work and use OpenCode to complete it.
 
-But:
+Maybe one model handles the difficult reasoning.
 
-> This Vader task requires this level of intelligence.
+Maybe another handles straightforward implementation.
 
-A future routing decision might consider:
+Tests or deterministic tooling verify the result.
 
-- complexity
-- expected cost
-- latency
-- privacy requirements
-- context size
-- reliability
-- tool support
-- whether the task can run locally
-- whether a previous model already failed
+Then the outcome goes back into the larger system.
 
-A cheap model could attempt the task first.
+The important part for me is that OpenCode does not need to become the organization.
 
-If it succeeds and passes verification, the system moves on.
+Neither does Claude.
 
-If it fails, Fleet Command escalates to a more capable model.
+Neither does any other model provider.
 
-That could look like:
+They are pieces of the execution environment.
+
+The system above them still needs to understand what the work is, who owns it, what happened, and what should happen next.
+
+## Then I started thinking beyond engineering
+
+Once I saw it there, I started noticing the same thing in other roles.
+
+A sales agent probably does not need its best reasoning model to research every company.
+
+Maybe cheap models collect information.
+
+Rules eliminate obvious bad fits.
+
+A stronger model gets involved when there is actually a difficult decision to make.
+
+A product agent might use one model to organize customer research and something stronger when there is real ambiguity around scope or strategy.
+
+Different work probably requires different levels of intelligence.
+
+That seems obvious when I write it out.
+
+But most of the agent systems I initially built were still basically:
 
 ```text
-Task
- |
- v
-Can deterministic code do it?
- |
- +-- yes -> execute
- |
- no
- |
- v
-Can a cheap model reliably do it?
- |
- +-- yes -> execute + verify
- |
- no / failed
- |
- v
-Use frontier model
- |
- v
-Verify
+Agent → Model
 ```
 
-That architecture starts to look less like a chatbot and more like compute scheduling.
+Now I think it might be closer to:
 
-And that is probably where autonomous organizations eventually need to go.
+```text
+Agent → Work → Appropriate intelligence
+```
 
-## The same idea applies beyond engineering
+That is a different abstraction.
 
-Vader is just the easiest example.
+## I’m not sure “model routing” is the interesting part
 
-Boba Fett might use one model to research hundreds of companies cheaply, deterministic rules to score them, and a stronger model only when deciding how to approach a high-value account.
+You could describe all of this as model routing, and technically that is part of it.
 
-Tarkin might use a smaller model to organize research, then a stronger one when defining product scope.
+But I think the more interesting question is what remains constant while all of those models change.
 
-Sidious may use the most capable model more frequently because orchestration, reprioritization, and exception handling require more reasoning.
+If these agents become persistent and actually start doing meaningful work, something still has to know:
 
-The organization remains stable.
+who owns the work,
 
-The intelligence underneath it can change.
+what has already happened,
 
-## The operating layer is the product
+what the objective is,
 
-This is becoming one of the core ideas behind Fleet Command for me.
+what the agent is allowed to do,
 
-The long-term value is not owning the best model.
+what evidence was produced,
 
-That layer is going to keep changing.
+whether the result was good enough,
 
-The durable layer may be the system that understands:
+and what should happen next.
 
-- who is responsible for what
-- what work is currently happening
-- what evidence exists
-- what permissions an agent has
-- what model should perform the next step
-- when something should escalate
-- when work is complete
+That part feels more durable to me than whichever model happens to be best this month.
 
-That is the operating system.
+And it has made me wonder whether we are sometimes thinking about agent architecture from the wrong direction.
 
-And if AI agents eventually become persistent workers inside organizations, the winning architecture may not be one model powering everything.
+We start with intelligence and build outward.
 
-It may be an organizational layer coordinating many different forms of intelligence underneath it.
+Maybe we should start with the organization and plug intelligence into it.
 
-**Fleet Command should own the organization.**
+I don't know yet.
 
-**The models should be replaceable.**
+That is part of what I’m trying to figure out with this experiment.
+
+But I’m becoming less interested in which model an agent *is* and much more interested in what the agent is responsible for, what it knows, what authority it has, and whether the system can swap the intelligence underneath it without changing the organization itself.
+
+If that turns out to be right, models may end up looking a lot more like infrastructure than identity.
