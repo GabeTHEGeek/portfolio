@@ -1,0 +1,13 @@
+---
+import type { CollectionEntry } from 'astro:content';
+type Props = { projects: CollectionEntry<'projects'>[] };
+const { projects } = Astro.props;
+---
+
+<div class="history-console hud-panel">
+  <div class="history-rail" aria-hidden="true"><i></i></div>
+  {projects.map((project, index) => <article class="history-event" tabindex="0">
+    <span class="history-index">{String(index + 1).padStart(2, '0')}</span>
+    <div><p>{project.data.company}{project.data.role && ` // ${project.data.role}`}</p><h3>{project.data.title}</h3><div class="history-detail"><span>{project.data.publishDate.getFullYear()}</span><p>{project.data.description}</p><a href={`/projects/${project.data.slug}/`}>OPEN RECORD →</a></div></div>
+  </article>)}
+</div>

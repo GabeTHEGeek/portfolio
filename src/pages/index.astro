@@ -1,0 +1,105 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import AugmentedProfile from '../components/AugmentedProfile.astro';
+import AgentArchitecture from '../components/AgentArchitecture.astro';
+import SystemEntry from '../components/SystemEntry.astro';
+import SystemTimeline from '../components/SystemTimeline.astro';
+import CredentialMatrix from '../components/CredentialMatrix.astro';
+import SectionTelemetry from '../components/SectionTelemetry.astro';
+import ArticleCard from '../components/ArticleCard.astro';
+import HowIWork from '../components/HowIWork.astro';
+import socialPreview from '../assets/social-preview.png';
+import { githubUrl, linkedinUrl } from '../data/site';
+
+const allProjects = await getCollection('projects');
+const systems = allProjects.filter(({ data }) => data.kind === 'ai').sort((a, b) => a.data.order - b.data.order);
+const productWork = allProjects.filter(({ data }) => data.kind === 'product').sort((a, b) => a.data.order - b.data.order);
+const certifications = await getCollection('certifications');
+const articles = (await getCollection('writing')).sort((a, b) => b.data.publishDate.valueOf() - a.data.publishDate.valueOf()).slice(0, 3);
+const schema = { '@context': 'https://schema.org', '@type': 'Person', name: 'Gabriel Pendleton', jobTitle: 'Senior Product Leader', url: Astro.site, sameAs: [linkedinUrl, githubUrl], knowsAbout: ['AI products', 'Product leadership', 'Product strategy', 'Technical platforms'] };
+---
+
+<BaseLayout title="Gabriel Pendleton" description="Senior Product Leader building AI-native products, platforms, and autonomous systems." image={socialPreview} {schema} bodyClass="command-interface">
+  <SectionTelemetry />
+  <header id="top" class="command-hero wrap">
+    <div class="boot-sequence" aria-hidden="true"><span>GP.OS / PORTFOLIO INTERFACE</span><span>SESSION 2026</span><span class="boot-ready"><i></i> READY</span></div>
+    <div class="hero-command-copy">
+      <p class="hud-label">OPERATOR // PRODUCT + AI</p>
+      <h1>Gabriel<br /><span>Pendleton</span></h1>
+      <p class="command-statement" aria-label="Senior Product Leader building AI-native products, platforms, and autonomous systems."><span class="typed-command" aria-hidden="true">Senior Product Leader building AI-native products, platforms, and autonomous systems.</span><i aria-hidden="true"></i></p>
+      <div class="command-actions"><a class="command-button primary" href="/projects/"><span class="command-button__content"><b>01</b> VIEW PROJECTS</span></a><a class="command-button" href={githubUrl} target="_blank" rel="noreferrer"><span class="command-button__content"><b>GH</b> GITHUB ↗</span></a><a class="command-button" href={linkedinUrl} target="_blank" rel="noreferrer"><span class="command-button__content"><b>IN</b> LINKEDIN ↗</span></a></div>
+    </div>
+    <AugmentedProfile />
+    <div class="hero-telemetry" aria-label="Areas of expertise"><button type="button"><span><b>01</b>0→1 PRODUCT</span><small>Ambiguous problem → working product.</small></button><button type="button"><span><b>02</b>AI-NATIVE</span><small>Agents, local models, and orchestration.</small></button><button type="button"><span><b>03</b>PLATFORMS</span><small>APIs, data, integrations, and operating systems.</small></button><button type="button"><span><b>04</b>WORKFLOWS</span><small>Discovery, adoption, automation, and iteration.</small></button></div>
+  </header>
+
+  <section id="systems" class="interface-section systems-section">
+    <div class="wrap">
+      <div class="interface-heading"><div><p class="hud-label">SYSTEMS BUILT // 04 RECORDS</p><h2>Operational intelligence,<br /><span>made tangible.</span></h2></div><p>Products and experiments treated as working systems: explicit roles, visible state, clear interfaces, and human authority.</p></div>
+      <div class="fleet-intro"><div><span>FEATURED SYSTEM // FC-AIOS</span><h3>Fleet Command</h3><p>A multi-agent operating system for coordinating specialized agents around shared state, permissions, evidence, escalation, and progressive autonomy.</p></div><div class="system-status"><i></i><span>DEPLOYMENT</span><strong>BUILDING</strong></div></div>
+      <AgentArchitecture />
+      <div class="system-registry">{systems.map((project, index) => <SystemEntry {project} {index} open={index === 0} />)}</div>
+    </div>
+  </section>
+
+  <section id="history" class="interface-section history-section">
+    <div class="wrap">
+      <div class="interface-heading"><div><p class="hud-label">SYSTEM HISTORY // PRODUCT RECORD</p><h2>Platforms, communities,<br /><span>and products shipped.</span></h2></div><p>An interactive record of product work across creator platforms, livestreaming, marketplaces, identity, podcast infrastructure, and automotive software.</p></div>
+      <SystemTimeline projects={productWork} />
+    </div>
+  </section>
+
+  <section id="writing" class="interface-section archive-section">
+    <div class="wrap">
+      <div class="interface-heading"><div><p class="hud-label">INTELLIGENCE ARCHIVE // LATEST 03</p><h2>Field notes from<br /><span>building.</span></h2></div><blockquote class="innovation-quote"><p>“If I have 1,000 ideas and only one turns out to be good, I am satisfied.”</p><cite>— Alfred Nobel</cite></blockquote></div>
+      <div class="article-grid archive-grid">{articles.map((article) => <ArticleCard {article} />)}</div>
+      <a class="archive-link" href="/writing/">ACCESS FULL ARCHIVE →</a>
+    </div>
+  </section>
+
+  <section id="credentials" class="interface-section credential-section">
+    <div class="wrap">
+      <div class="interface-heading"><div><p class="hud-label">CREDENTIALS // VALIDATED</p><h2>Product leadership<br /><span>credentials.</span></h2></div><blockquote class="innovation-quote"><p>“One of the great challenges in life is knowing enough to think you’re right but not enough to know you’re wrong.”</p><cite>— Neil deGrasse Tyson</cite></blockquote></div>
+      <CredentialMatrix {certifications} />
+    </div>
+  </section>
+
+  <HowIWork />
+
+  <section class="command-cta wrap"><span class="hud-label">NEXT OPERATION</span><h2>Build the next intelligent system.</h2><p>Open to senior product leadership roles where AI is becoming part of the product surface, operating model, or both.</p><div class="command-actions"><a class="command-button primary" href="mailto:hello@gabrielpendleton.me"><span class="command-button__content">CONTACT ME</span></a><a class="command-button" href={linkedinUrl} target="_blank" rel="noreferrer"><span class="command-button__content">LINKEDIN ↗</span></a></div></section>
+
+<script>
+  const typed = document.querySelector<HTMLElement>('.typed-command');
+  const phrases = [
+    'Senior Product Leader building AI-native products, platforms, and autonomous systems.',
+    'Product strategist turning ambiguous AI opportunities into working systems.',
+    'Hands-on builder connecting product vision, technical architecture, and human workflows.'
+  ];
+  if (typed) {
+    let phrase = 0;
+    let character = 0;
+    let deleting = false;
+    typed.textContent = '';
+    const type = () => {
+      const current = phrases[phrase];
+      typed.textContent = current.slice(0, character);
+      if (deleting) {
+        character--;
+        if (character < 0) { deleting = false; phrase = (phrase + 1) % phrases.length; character = 0; setTimeout(type, 450); return; }
+      } else {
+        character++;
+        if (character > phrases[phrase].length) {
+          character = phrases[phrase].length;
+          typed.textContent = phrases[phrase];
+          deleting = true;
+          setTimeout(type, 1800);
+          return;
+        }
+      }
+      setTimeout(type, deleting ? 24 : 42);
+    };
+    setTimeout(type, 240);
+  }
+</script>
+</BaseLayout>

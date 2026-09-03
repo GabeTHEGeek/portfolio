@@ -1,0 +1,39 @@
+---
+const links = [
+  { href: '/#systems', label: 'AI Products' },
+  { href: '/projects/', label: 'Projects' },
+  { href: '/writing/', label: 'Writing' },
+  { href: '/about/', label: 'About' }
+];
+const currentPath = Astro.url.pathname;
+---
+
+<header class="site-header wrap">
+  <div class="brand-group"><a class="brand" href="/" aria-label="Gabriel Pendleton, home">Gabriel Pendleton <span>· Product + AI</span></a><a class="hire-status" href="mailto:hello@gabrielpendleton.me" aria-label="Email Gabriel about an opportunity"><i aria-hidden="true"></i> Available for hire</a></div>
+  <nav aria-label="Primary navigation">
+    <ul>
+      {links.map(({ href, label }) => (
+        <li><a href={href} aria-current={(href === '/#systems' ? currentPath === '/' : currentPath.startsWith(href)) ? 'page' : undefined}>{label}</a></li>
+      ))}
+    </ul>
+  </nav>
+  <div class="nav-actions">
+    <button class="theme-toggle" type="button" aria-label="Switch to light theme" aria-pressed="false"><span class="theme-icon" aria-hidden="true">◐</span></button>
+  </div>
+</header>
+
+<script>
+  const toggle = document.querySelector<HTMLButtonElement>('.theme-toggle');
+  const syncToggle = () => {
+    const isLight = document.documentElement.dataset.theme === 'light';
+    toggle?.setAttribute('aria-pressed', String(isLight));
+    toggle?.setAttribute('aria-label', `Switch to ${isLight ? 'dark' : 'light'} theme`);
+  };
+  toggle?.addEventListener('click', () => {
+    const next = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light';
+    document.documentElement.dataset.theme = next;
+    try { localStorage.setItem('command-theme', next); } catch {}
+    syncToggle();
+  });
+  syncToggle();
+</script>

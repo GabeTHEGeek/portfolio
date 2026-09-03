@@ -1,0 +1,7 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+const schema = { '@context': 'https://schema.org', '@type': 'Person', name: 'Gabriel Pendleton', jobTitle: 'Senior Product Leader', url: Astro.site };
+---
+<BaseLayout title="About" description="About Gabriel Pendleton, a Senior Product Leader building AI-native products, platforms, and workflows." {schema}>
+  <article class="page-hero wrap narrow"><p class="eyebrow cyan">About</p><h1>I like building where the system is <span>still unclear.</span></h1><p class="lede">I’m Gabriel Pendleton, a Senior Product Leader focused on building AI-native products, platforms, and workflows.</p><p>I enjoy problems that are still messy: new products, new workflows, new technical capabilities, and products that require judgment across UX, engineering, data, and business constraints.</p><div class="command-actions about-actions"><a class="command-button about-projects" href="/projects/"><span class="command-button__content">EXPLORE PROJECTS</span></a><a class="command-button about-writing" href="/writing/"><span class="command-button__content">READ THE WRITING</span></a></div></article>
+</BaseLayout>

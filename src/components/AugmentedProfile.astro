@@ -1,0 +1,18 @@
+---
+import { Image } from 'astro:assets';
+import headshot from '../assets/gabriel-pendleton-cyborg-v2.png';
+---
+
+<aside class="augmented-profile hud-panel" aria-label="Gabriel Pendleton profile interface">
+  <div class="hud-corners" aria-hidden="true"></div>
+  <div class="profile-readout">
+    <span>IDENT // GP-01</span><strong>HUMAN AGENT // V1</strong>
+  </div>
+  <div class="portrait-orbit" aria-hidden="true"><i></i><i></i><i></i></div>
+  <div class="augmented-photo"><Image src={headshot} alt="Gabriel Pendleton" width={650} widths={[400, 650]} sizes="(max-width: 900px) 82vw, 36vw" loading="eager" fetchpriority="high" /></div>
+  <span class="data-marker marker-one">2× FOUNDER</span>
+  <span class="data-marker marker-two">AI SYSTEMS</span>
+  <span class="data-marker marker-three">PRODUCT LEAD</span>
+  <div class="scan-line" aria-hidden="true"></div>
+  <div class="profile-status"><i aria-hidden="true"></i><span>STATUS</span><strong>AVAILABLE</strong></div>
+</aside>

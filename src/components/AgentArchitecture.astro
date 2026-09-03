@@ -1,0 +1,60 @@
+---
+const agents = [
+  { id: 'sidious', name: 'Sidious', role: 'Orchestration', detail: 'Coordinates agent work, shared state, permissions, escalation, and system-level priorities.' },
+  { id: 'boba', name: 'Boba Fett', role: 'Sales', detail: 'Handles sales-oriented research and workflow execution within explicit operating boundaries.' },
+  { id: 'leia', name: 'Leia', role: 'Growth & Comms', detail: 'Connects product narratives, growth loops, and communication workflows across the organization.' },
+  { id: 'tarkin', name: 'Tarkin', role: 'Product', detail: 'Turns product context into structured decisions, artifacts, and coordinated product work.' },
+  { id: 'vader', name: 'Vader', role: 'Engineering', detail: 'Supports technical planning and execution while preserving evidence and human visibility.' }
+];
+---
+
+<section class="agent-console hud-panel" aria-labelledby="agent-console-title" data-agents={JSON.stringify(agents)}>
+  <div class="console-topline"><span>FC-AIOS // ORGANIZATION MAP</span><span class="live-signal"><i></i> SYSTEM ONLINE</span></div>
+  <div class="agent-stage">
+    <svg class="agent-links" viewBox="0 0 760 420" preserveAspectRatio="none" aria-hidden="true">
+      <defs><marker id="peer-arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" /></marker></defs>
+      <path d="M380 105 L115 302"/><path d="M380 105 L292 302"/><path d="M380 105 L468 302"/><path d="M380 105 L645 302"/>
+      <path class="peer-link" d="M132 326 L275 326" marker-start="url(#peer-arrow)" marker-end="url(#peer-arrow)"/><path class="peer-link" d="M485 326 L628 326" marker-start="url(#peer-arrow)" marker-end="url(#peer-arrow)"/>
+      <circle cx="380" cy="105" r="5"/><circle cx="115" cy="302" r="4"/><circle cx="292" cy="302" r="4"/><circle cx="468" cy="302" r="4"/><circle cx="645" cy="302" r="4"/>
+    </svg>
+    {agents.map((agent, index) => <button class={`agent-node node-${index + 1}`} type="button" data-agent={agent.id} aria-pressed={index === 0 ? 'true' : 'false'}>
+      <span class="node-index">0{index + 1}</span><strong>{agent.name}</strong><small>{agent.role}</small>
+    </button>)}
+  </div>
+  <div class="agent-detail" aria-live="polite">
+    <span id="agent-console-title">SELECTED NODE // <b data-detail-index>01</b></span>
+    <h3 data-detail-name>{agents[0].name}</h3>
+    <p class="agent-role" data-detail-role>{agents[0].role}</p>
+    <p data-detail-copy>{agents[0].detail}</p>
+  </div>
+  <noscript><p class="system-fallback">Sidious coordinates the system. Boba Fett supports sales, Tarkin supports product, Vader supports engineering, and Leia supports growth and communications.</p></noscript>
+</section>
+
+<script>
+  const consoleElement = document.querySelector('.agent-console');
+  if (consoleElement) {
+    const agents = JSON.parse(consoleElement.getAttribute('data-agents') ?? '[]');
+    const nodes = consoleElement.querySelectorAll('.agent-node');
+    const selectAgent = (id: string) => {
+      const index = agents.findIndex((agent: { id: string }) => agent.id === id);
+      const agent = agents[index];
+      if (!agent) return;
+      nodes.forEach((node) => node.setAttribute('aria-pressed', String((node as HTMLElement).dataset.agent === id)));
+      const indexElement = consoleElement.querySelector<HTMLElement>('[data-detail-index]');
+      const nameElement = consoleElement.querySelector<HTMLElement>('[data-detail-name]');
+      const roleElement = consoleElement.querySelector<HTMLElement>('[data-detail-role]');
+      const copyElement = consoleElement.querySelector<HTMLElement>('[data-detail-copy]');
+      if (indexElement) indexElement.textContent = String(index + 1).padStart(2, '0');
+      if (nameElement) nameElement.textContent = agent.name;
+      if (roleElement) roleElement.textContent = agent.role;
+      if (copyElement) copyElement.textContent = agent.detail;
+    };
+    nodes.forEach((node) => {
+      const id = (node as HTMLElement).dataset.agent;
+      if (id) {
+        node.addEventListener('click', () => selectAgent(id));
+        node.addEventListener('focus', () => selectAgent(id));
+      }
+    });
+  }
+</script>

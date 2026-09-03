@@ -1,0 +1,14 @@
+---
+const principles = [
+  ['COMPLEX SYSTEMS', 'I’m comfortable in messy product domains.', 'I’ve worked on platforms with APIs, personalization, marketplaces, identity, creator tooling, integrations, and multi-step workflows where the product has to hide complexity without hiding important decisions.'],
+  ['CUSTOMER DISCOVERY', 'I build from the problem outward.', 'As a PM and founder, I talk directly with customers, partners, sales teams, and operators, then turn ambiguous feedback into clear product direction.'],
+  ['AI AS A WORKFLOW', 'I’m already thinking about human + AI operations.', 'Fleet Command explores how AI workers operate inside explicit permissions, share state, escalate decisions, and earn greater autonomy through evidence.'],
+  ['TECHNICAL PRODUCT', 'I can go below the interface.', 'APIs, schemas, integrations, telemetry, evaluation, and system constraints are part of how I reason about product decisions.'],
+  ['STARTUP OPERATING MODE', 'I’m used to speed and ambiguity.', 'I’ve built inside early-stage companies and as a founder, where priorities shift, customer learning is constant, and judgment matters more than perfect information.'],
+  ['PRODUCT LEADERSHIP', 'I raise the level around me.', 'I’ve led cross-functional teams, directly managed designers, owned 0→1 products, and worked across engineering, design, data, GTM, and leadership.']
+];
+---
+<section id="how-i-work" class="interface-section how-work-section"><div class="wrap">
+  <div class="interface-heading"><div><p class="hud-label">HOW I WORK // OPERATING MODEL</p><h2>The steps to<br /><span>innovation is strong.</span></h2></div><blockquote class="innovation-quote"><p>“He that will not apply new remedies must expect new evils; for time is the greatest innovator.”</p><cite>— Francis Bacon, <em>Of Innovations</em></cite></blockquote></div>
+  <div class="work-principles">{principles.map(([label, title, copy], index) => <article class="hud-panel"><span>{String(index + 1).padStart(2, '0')} // {label}</span><h3>{title}</h3><p>{copy}</p></article>)}</div>
+</div></section>

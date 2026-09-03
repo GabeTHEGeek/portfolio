@@ -1,0 +1,21 @@
+---
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+type Props = { project: CollectionEntry<'projects'>; index: number; open?: boolean };
+const { project, index, open = false } = Astro.props;
+const code = `SYS-${String(index + 1).padStart(2, '0')}`;
+---
+
+<details class="system-entry hud-panel" open={open}>
+  <summary>
+    <span class="system-code">{code}</span>
+    <span class="system-heading"><small>{project.data.status.replace('-', ' ').toUpperCase()} // {project.data.kind.toUpperCase()}</small><strong>{project.data.title}</strong></span>
+    <span class="system-toggle" aria-hidden="true">EXPAND +</span>
+  </summary>
+  <div class="system-entry-body">
+    <a class="system-visual" href={`/projects/${project.data.slug}/`} aria-label={`Open ${project.data.title} case study`}>
+      {project.data.heroImage ? <Image src={project.data.heroImage} alt="" width={1400} widths={[700, 1000, 1400]} sizes="(max-width: 900px) 92vw, 56vw" /> : <div class="visual-grid" aria-hidden="true"><i></i><i></i><i></i><span>{code}</span></div>}
+    </a>
+    <div class="system-copy"><p>{project.data.description}</p><ul class="tags">{project.data.tags.map((tag) => <li>{tag}</li>)}</ul><div class="system-actions"><a href={`/projects/${project.data.slug}/`}>CASE STUDY →</a>{project.data.liveUrl && <a href={project.data.liveUrl} target="_blank" rel="noreferrer">LIVE SYSTEM ↗</a>}{project.data.githubUrl && <a href={project.data.githubUrl} target="_blank" rel="noreferrer">SOURCE ↗</a>}</div></div>
+  </div>
+</details>

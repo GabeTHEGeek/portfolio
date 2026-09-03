@@ -1,0 +1,34 @@
+---
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import { Image } from 'astro:assets';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+export async function getStaticPaths() {
+  const projects = await getCollection('projects');
+  return projects.map((project) => ({ params: { slug: project.data.slug }, props: { project } }));
+}
+type Props = { project: CollectionEntry<'projects'> };
+const { project } = Astro.props;
+const { Content } = await render(project);
+const schema = {
+  '@context': 'https://schema.org', '@type': 'CreativeWork',
+  name: project.data.title, description: project.data.description,
+  url: new URL(`/projects/${project.data.slug}/`, Astro.site).href,
+  datePublished: project.data.publishDate.toISOString(), author: { '@type': 'Person', name: 'Gabriel Pendleton', url: Astro.site }
+};
+---
+<BaseLayout title={project.data.title} description={project.data.description} image={project.data.heroImage} {schema} bodyClass="case-study">
+  <header class="case-hero wrap">
+    <p class="crumbs"><a href="/projects/">Projects</a><span>/</span><span>{project.data.company ?? project.data.title}</span></p>
+    <p class="eyebrow cyan">{project.data.company ?? project.data.kind} · {project.data.status.replace('-', ' ')}</p>
+    <h1>{project.data.title}</h1><p class="lede">{project.data.description}</p>
+    <ul class="tags" aria-label="Project tags">{project.data.tags.map((tag) => <li>{tag}</li>)}</ul>
+    {(project.data.liveUrl || project.data.githubUrl) && <div class="command-actions project-actions">{project.data.liveUrl && <a class="command-button primary" href={project.data.liveUrl} target="_blank" rel="noreferrer"><span class="command-button__content"><b>LIVE</b> VIEW PRODUCT ↗</span></a>}{project.data.githubUrl && <a class="command-button" href={project.data.githubUrl} target="_blank" rel="noreferrer"><span class="command-button__content"><b>GH</b> VIEW SOURCE ↗</span></a>}</div>}
+  </header>
+  <div class="wrap case-visual">
+    {project.data.heroImage ? <Image src={project.data.heroImage} alt={`${project.data.title} product screenshot`} width={1600} widths={[800, 1200, 1600]} sizes="92vw" /> : <div class="product-display"><span>{project.data.company ?? 'Product case study'}</span><strong>{project.data.title}</strong></div>}
+  </div>
+  <article class="case-content prose"><Content /></article>
+  {project.data.screenshots.length > 0 && <section class="screenshots wrap" aria-labelledby="screenshots-heading"><p class="eyebrow">Product gallery</p><h2 id="screenshots-heading">Screenshots</h2><div class="gallery">{project.data.screenshots.map((src, index) => <Image {src} alt={`${project.data.title} product screenshot ${index + 1}`} width={1600} widths={[800, 1200, 1600]} sizes="92vw" />)}</div></section>}
+  <nav class="case-next wrap" aria-label="Project navigation"><a href="/projects/">← All projects</a><a href="/writing/">Read the writing →</a></nav>
+</BaseLayout>

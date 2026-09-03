@@ -1,0 +1,10 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import CredentialMatrix from '../components/CredentialMatrix.astro';
+const certifications = (await getCollection('certifications')).sort((a, b) => (b.data.year ?? 0) - (a.data.year ?? 0));
+---
+<BaseLayout title="Certifications" description="Professional certifications held by Gabriel Pendleton.">
+  <header class="page-hero wrap"><p class="eyebrow cyan">Continued learning</p><h1>Certifications and <span>professional development.</span></h1><p class="lede">Selected product leadership credentials.</p></header>
+  <section class="wrap section-block"><CredentialMatrix {certifications} /></section>
+</BaseLayout>

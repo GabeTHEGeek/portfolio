@@ -1,0 +1,41 @@
+---
+const audioUrl = 'https://t4.bcbits.com/stream/234c0e64cc042062b9267ac97120414e/mp3-128/2671632170?p=0&ts=1788513303&t=f64db272e3c76721e957c98628987b2bcb2b1c5f&token=1788513303_96802d7a25c92a0235f8d6af8902f3487283ec60';
+---
+
+<aside class="soundtrack-player hud-panel" aria-label="Optional site soundtrack">
+  <a class="soundtrack-art" href="https://benprunty.bandcamp.com/album/ftl" target="_blank" rel="noreferrer" aria-label="FTL soundtrack by Ben Prunty on Bandcamp"><img src="https://f4.bcbits.com/img/a460013667_1x1_700.avif" alt="FTL Original Soundtrack cover" width="64" height="64" loading="lazy" /></a>
+  <div><span>OPTIONAL AUDIO</span><strong>FTL — Ben Prunty</strong><small>Soundtrack credit ↗</small></div>
+  <button type="button" aria-pressed="false" aria-label="Play optional FTL soundtrack"><i aria-hidden="true">▶</i><span>PLAY THIS</span></button>
+  <audio preload="none" loop src={audioUrl}></audio>
+</aside>
+
+<script>
+  const player = document.querySelector<HTMLElement>('.soundtrack-player');
+  const button = player?.querySelector<HTMLButtonElement>('button');
+  const audio = player?.querySelector<HTMLAudioElement>('audio');
+  const label = button?.querySelector<HTMLElement>('span');
+  const icon = button?.querySelector<HTMLElement>('i');
+  button?.addEventListener('click', async () => {
+    if (!audio) return;
+    if (audio.paused) {
+      try {
+        await audio.play();
+        button.setAttribute('aria-pressed', 'true');
+        button.setAttribute('aria-label', 'Pause optional FTL soundtrack');
+        player?.classList.add('is-playing');
+        if (label) label.textContent = 'PAUSE';
+        if (icon) icon.textContent = 'Ⅱ';
+      } catch {
+        button.setAttribute('aria-label', 'Optional soundtrack is unavailable');
+        if (label) label.textContent = 'AUDIO UNAVAILABLE';
+      }
+    } else {
+      audio.pause();
+      button.setAttribute('aria-pressed', 'false');
+      button.setAttribute('aria-label', 'Play optional FTL soundtrack');
+      player?.classList.remove('is-playing');
+      if (label) label.textContent = 'PLAY THIS';
+      if (icon) icon.textContent = '▶';
+    }
+  });
+</script>

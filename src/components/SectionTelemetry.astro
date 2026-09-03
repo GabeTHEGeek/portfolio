@@ -1,0 +1,24 @@
+<aside class="section-telemetry" aria-label="Page sections">
+  <span class="telemetry-label">NAV // 01</span>
+  <nav><a href="#top" class="active"><i></i><span>BOOT</span></a><a href="#systems"><i></i><span>SYSTEMS</span></a><a href="#history"><i></i><span>HISTORY</span></a><a href="#writing"><i></i><span>ARCHIVE</span></a><a href="#credentials"><i></i><span>CREDENTIALS</span></a><a href="#how-i-work"><i></i><span>METHOD</span></a></nav>
+</aside>
+
+<script>
+  const telemetry = document.querySelector('.section-telemetry');
+  const links = telemetry?.querySelectorAll('a') ?? [];
+  const sections = [...links].map((link) => {
+    const href = link.getAttribute('href');
+    return href ? document.querySelector<HTMLElement>(href) : null;
+  }).filter((section): section is HTMLElement => section !== null);
+  if (telemetry && sections.length) {
+    const update = () => {
+      let active = 0;
+      sections.forEach((section, index) => { if (section.getBoundingClientRect().top < innerHeight * .48) active = index; });
+      links.forEach((link, index) => link.classList.toggle('active', index === active));
+      const label = telemetry.querySelector<HTMLElement>('.telemetry-label');
+      if (label) label.textContent = `NAV // ${String(active + 1).padStart(2, '0')}`;
+    };
+    addEventListener('scroll', update, { passive: true });
+    update();
+  }
+</script>

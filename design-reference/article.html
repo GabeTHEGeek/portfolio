@@ -1,0 +1,439 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Building Fleet Command: from AI assistants to an operating system — Gabriel Pendleton</title>
+<meta name="description" content="A sample long-form article layout for Gabriel Pendleton's product and AI writing.">
+<style>
+:root{
+  --bg:#0b0d10;
+  --panel:#12151a;
+  --panel2:#171b21;
+  --text:#f5f7f9;
+  --muted:#9da5af;
+  --line:#252b32;
+  --lime:#c9ff57;
+  --cyan:#62e8ff;
+  --violet:#8b5cf6;
+  --orange:#ff9b57;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  background:
+    radial-gradient(circle at 84% 0%,rgba(139,92,246,.12),transparent 28%),
+    radial-gradient(circle at 8% 15%,rgba(98,232,255,.055),transparent 24%),
+    var(--bg);
+  color:var(--text);
+  font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  line-height:1.6;
+}
+a{color:inherit;text-decoration:none}
+.wrap{width:min(1180px,92vw);margin:auto}
+nav{
+  position:sticky;top:0;z-index:30;
+  background:rgba(11,13,16,.92);
+  border-bottom:1px solid var(--line);
+  backdrop-filter:blur(14px);
+}
+.nav{
+  min-height:72px;display:flex;align-items:center;justify-content:space-between;gap:20px
+}
+.brand{font-weight:950;letter-spacing:-.04em}
+.brand small{color:var(--muted);font-weight:700}
+.links{display:flex;gap:22px;font-size:13px;color:#cdd2d7}
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;
+  padding:11px 15px;border:1px solid var(--line);border-radius:999px;
+  background:#fff;color:#111;font-weight:900;font-size:13px
+}
+.hero{
+  padding:84px 0 42px;
+  border-bottom:1px solid var(--line)
+}
+.crumbs{
+  display:flex;gap:8px;flex-wrap:wrap;
+  color:#87909a;font-size:12px;margin-bottom:22px
+}
+.kicker{
+  font-size:11px;font-weight:900;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--cyan)
+}
+h1{
+  margin:16px 0 20px;
+  max-width:980px;
+  font-size:clamp(52px,7vw,88px);
+  line-height:.93;
+  letter-spacing:-.07em
+}
+.deck{
+  max-width:820px;
+  color:var(--muted);
+  font-size:21px;
+  line-height:1.65
+}
+.meta{
+  margin-top:28px;
+  display:flex;gap:12px;flex-wrap:wrap;align-items:center;
+  font-size:12px;color:#929aa4
+}
+.author{
+  display:flex;align-items:center;gap:11px
+}
+.avatar{
+  width:38px;height:38px;border-radius:50%;
+  display:grid;place-items:center;
+  border:1px solid #303741;background:#1d2229;font-weight:950
+}
+.heroVisual{
+  margin-top:42px;
+  min-height:440px;
+  border:1px solid var(--line);
+  border-radius:24px;
+  position:relative;
+  overflow:hidden;
+  background:
+    radial-gradient(circle at 72% 22%,rgba(139,92,246,.4),transparent 22%),
+    radial-gradient(circle at 20% 78%,rgba(98,232,255,.18),transparent 25%),
+    linear-gradient(135deg,#11141a,#171b23)
+}
+.browser{
+  position:absolute;left:7%;right:7%;top:12%;bottom:12%;
+  border:1px solid #303742;border-radius:18px;
+  background:#0d1014;box-shadow:0 30px 80px rgba(0,0,0,.4);
+  overflow:hidden
+}
+.browserTop{
+  height:40px;border-bottom:1px solid #252b33;
+  display:flex;align-items:center;padding:0 14px;gap:7px
+}
+.dot{width:8px;height:8px;border-radius:50%;background:#434a54}
+.browserBody{padding:28px}
+.browserBody .miniLabel{
+  font-size:10px;letter-spacing:.11em;text-transform:uppercase;color:var(--cyan)
+}
+.browserBody h3{
+  margin:12px 0 10px;font-size:34px;letter-spacing:-.05em;max-width:680px
+}
+.flow{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:30px
+}
+.flow div{
+  border:1px solid #2a3038;border-radius:12px;padding:18px 10px;
+  background:#14181e;font-size:11px;color:#b8c0c8;text-align:center
+}
+
+.contentWrap{
+  width:min(1180px,92vw);margin:auto;
+  display:grid;grid-template-columns:260px minmax(0,720px);gap:64px;
+  padding:62px 0 90px
+}
+.toc{
+  position:sticky;top:100px;align-self:start
+}
+.toc .label{
+  font-size:11px;font-weight:900;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--lime);margin-bottom:14px
+}
+.toc a{
+  display:block;color:#8e97a1;font-size:13px;
+  padding:7px 0;border-left:1px solid transparent;padding-left:12px
+}
+.toc a:hover{color:#fff;border-left-color:var(--lime)}
+
+article{
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:19px;
+  color:#d9dde1
+}
+article h2,article h3{
+  font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  color:#fff;
+  letter-spacing:-.05em;
+  line-height:1.05
+}
+article h2{
+  margin:54px 0 18px;font-size:36px
+}
+article h3{
+  margin:36px 0 14px;font-size:26px
+}
+article p{margin:0 0 24px}
+article strong{color:#fff}
+article a{
+  color:#fff;text-decoration:underline;text-decoration-color:var(--lime);
+  text-underline-offset:3px
+}
+.lede{
+  font-size:23px;
+  line-height:1.6;
+  color:#eef1f4
+}
+.callout{
+  margin:34px 0;
+  padding:24px 26px;
+  border:1px solid var(--line);
+  border-left:3px solid var(--lime);
+  border-radius:14px;
+  background:#11151a;
+  font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  color:#e8ebee
+}
+.callout strong{display:block;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--lime);margin-bottom:8px}
+.quote{
+  margin:42px 0;
+  padding:0 0 0 24px;
+  border-left:3px solid var(--violet);
+  font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-size:29px;
+  line-height:1.3;
+  letter-spacing:-.03em;
+  color:#fff
+}
+.figure{
+  margin:38px 0;
+  border:1px solid var(--line);
+  border-radius:18px;
+  overflow:hidden;
+  background:#11151a
+}
+.figureVisual{
+  min-height:300px;
+  display:grid;place-items:center;
+  background:
+    radial-gradient(circle at 20% 25%,rgba(98,232,255,.15),transparent 25%),
+    radial-gradient(circle at 78% 75%,rgba(139,92,246,.18),transparent 25%),
+    #0f1216;
+  font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  color:#8e97a1
+}
+.figure figcaption{
+  padding:13px 16px;border-top:1px solid var(--line);
+  color:#818995;font-size:12px;
+  font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif
+}
+.steps{
+  margin:30px 0;
+  display:grid;gap:12px;
+  font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif
+}
+.step{
+  display:grid;grid-template-columns:34px 1fr;gap:14px;
+  padding:16px;border:1px solid var(--line);
+  border-radius:14px;background:#11151a
+}
+.stepNum{
+  width:34px;height:34px;border-radius:50%;display:grid;place-items:center;
+  background:var(--lime);color:#111;font-weight:950;font-size:13px
+}
+.step h4{margin:0 0 5px;color:#fff;font-size:16px}
+.step p{margin:0;color:#969faa;font-size:14px;line-height:1.5}
+
+.endnote{
+  margin-top:60px;padding-top:28px;border-top:1px solid var(--line);
+  font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif
+}
+.endnote h3{font-size:24px;margin:0 0 10px}
+.endnote p{color:var(--muted);font-size:15px}
+.endActions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+.smallBtn{
+  display:inline-flex;padding:10px 13px;border-radius:10px;border:1px solid var(--line);
+  background:#15191f;font-weight:900;font-size:12px
+}
+.smallBtn.primary{background:var(--lime);color:#111;border-color:var(--lime)}
+
+.related{
+  padding:76px 0;border-top:1px solid var(--line)
+}
+.sectionHead{
+  display:flex;justify-content:space-between;align-items:end;gap:30px;margin-bottom:24px
+}
+.eyebrow{
+  font-size:11px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--lime)
+}
+.sectionHead h2{
+  margin:8px 0 0;font-size:48px;letter-spacing:-.06em;line-height:.96
+}
+.grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:16px
+}
+.card{
+  border:1px solid var(--line);border-radius:18px;padding:22px;background:#12151a
+}
+.card .meta{margin:0 0 11px}
+.card h3{margin:0 0 8px;font-size:23px;letter-spacing:-.04em}
+.card p{margin:0;color:var(--muted);font-size:14px}
+
+footer{
+  border-top:1px solid var(--line);padding:28px 0;
+  color:#7f8791;font-size:13px
+}
+.footer{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+.footer strong{color:#fff}
+
+@media(max-width:940px){
+  .links{display:none}
+  .contentWrap{grid-template-columns:1fr}
+  .toc{position:static;border-bottom:1px solid var(--line);padding-bottom:20px}
+  .grid{grid-template-columns:1fr}
+}
+@media(max-width:620px){
+  h1{font-size:50px}
+  .btn{display:none}
+  .heroVisual{min-height:320px}
+  .flow{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+<nav>
+  <div class="wrap nav">
+    <a class="brand" href="#">Gabriel Pendleton <small>· Writing</small></a>
+    <div class="links">
+      <a href="#">Portfolio</a>
+      <a href="#">Writing</a>
+      <a href="#">Projects</a>
+      <a href="#">About</a>
+    </div>
+    <a class="btn" href="#">Back to Blog ↗</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="crumbs"><span>Writing</span><span>→</span><span>AI Agents</span></div>
+    <div class="kicker">AI Agents · Product Systems</div>
+    <h1>Building Fleet Command: from AI assistants to an operating system.</h1>
+    <p class="deck">Why I stopped thinking about AI as a collection of assistants and started designing an operating layer for specialized agents, permissions, state, evidence, and autonomy.</p>
+    <div class="meta">
+      <div class="author"><div class="avatar">GP</div><div><strong>Gabriel Pendleton</strong><br><span>Senior Product Leader</span></div></div>
+      <span>Sep 2026</span><span>·</span><span>8 min read</span>
+    </div>
+
+    <div class="heroVisual">
+      <div class="browser">
+        <div class="browserTop"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+        <div class="browserBody">
+          <div class="miniLabel">Fleet Command AIOS</div>
+          <h3>An operating layer for specialized AI workers.</h3>
+          <div class="flow">
+            <div>Sales Agent</div><div>Product Agent</div><div>Engineering Agent</div><div>Marketing Agent</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="contentWrap">
+  <aside class="toc">
+    <div class="label">In this article</div>
+    <a href="#assistants">Assistants were the wrong frame</a>
+    <a href="#organization">The organization became the product</a>
+    <a href="#architecture">What the system needed</a>
+    <a href="#autonomy">Designing for autonomy</a>
+    <a href="#learning">What I learned</a>
+  </aside>
+
+  <article>
+    <p class="lede">The first version of the idea was simple: give different AI agents different jobs. One handles sales. One handles product. One handles engineering. At first that sounds like a multi-agent demo. The interesting problem starts when those agents have to coordinate.</p>
+
+    <p>Once the agents were doing different kinds of work, I ran into the same questions that show up inside real organizations. Who owns what? What information is shared? What requires approval? What happens when one agent finishes a task another agent depends on? What evidence has to exist before something can move forward?</p>
+
+    <div class="callout">
+      <strong>Core idea</strong>
+      The harder problem is not giving every agent more intelligence. It is designing the operating layer that lets specialized agents work together without creating chaos.
+    </div>
+
+    <h2 id="assistants">Assistants were the wrong frame.</h2>
+
+    <p>Most AI products are still framed as assistants. The user asks for something. The model responds. The interaction is useful, but the human remains the center of every action.</p>
+
+    <p>That model breaks down once AI starts occupying persistent roles. A sales agent that finds prospects, scores them, drafts outreach, and tracks responses is not simply answering a prompt. It is participating in a workflow with state, dependencies, permissions, and outcomes.</p>
+
+    <blockquote class="quote">Your next hire might not be human. The product question is how that hire fits into the organization.</blockquote>
+
+    <p>That framing pushed Fleet Command away from “four agents in a UI” and toward something closer to an operating system.</p>
+
+    <h2 id="organization">The organization became the product.</h2>
+
+    <p>The individual agents are important, but they are not the most interesting part of the system. The coordination layer is.</p>
+
+    <p>In Fleet Command, Sidious acts as the chief of staff. It holds the broader plan, routes work, tracks state, and surfaces decisions. Specialist agents then operate inside narrower responsibilities.</p>
+
+    <figure class="figure">
+      <div class="figureVisual">Architecture diagram / product screenshot goes here</div>
+      <figcaption>Example placeholder for a real Fleet Command screenshot or architecture diagram.</figcaption>
+    </figure>
+
+    <p>This created a much more useful design question: <strong>What does an AI organization need in order to operate reliably?</strong></p>
+
+    <h2 id="architecture">What the system needed.</h2>
+
+    <p>I ended up thinking about the product around a few shared layers rather than around individual chat experiences.</p>
+
+    <div class="steps">
+      <div class="step"><div class="stepNum">1</div><div><h4>State</h4><p>Every agent needs to understand what is happening now, what has already happened, and what work is waiting.</p></div></div>
+      <div class="step"><div class="stepNum">2</div><div><h4>Memory</h4><p>The organization needs durable knowledge that survives a single conversation or agent run.</p></div></div>
+      <div class="step"><div class="stepNum">3</div><div><h4>Permissions</h4><p>Different agents should have different boundaries around what they can read, change, send, approve, or publish.</p></div></div>
+      <div class="step"><div class="stepNum">4</div><div><h4>Evidence</h4><p>Important actions should depend on verifiable inputs instead of model confidence alone.</p></div></div>
+      <div class="step"><div class="stepNum">5</div><div><h4>Artifacts</h4><p>The work itself needs to persist as specs, outreach, builds, reports, and other outputs that agents can pass between one another.</p></div></div>
+    </div>
+
+    <p>That is also where deterministic gates became useful. For example: no verified finding means no outreach. No approved scope means no build. No evidence means no client claim.</p>
+
+    <h2 id="autonomy">Designing for autonomy.</h2>
+
+    <p>I do not think the end state is a human approving every individual AI action. If AI systems become reliable enough, organizations should be able to delegate larger areas of responsibility to them.</p>
+
+    <p>But autonomy is not a binary switch. The system needs a way to expand permissions as reliability increases.</p>
+
+    <div class="callout">
+      <strong>Product principle</strong>
+      Human oversight is useful as a control mechanism today. It should not become a permanent assumption about what these systems can eventually do.
+    </div>
+
+    <p>That led to progressive autonomy levels, explicit permissions, logs, escalation, and rollback. The point is not to force a human into every loop. The point is to make the system understandable enough that responsibility can safely move away from the human when the evidence supports it.</p>
+
+    <h2 id="learning">What I learned building it.</h2>
+
+    <p>The biggest lesson is that the future of agentic software may look less like a better chatbot and more like organizational infrastructure.</p>
+
+    <p>As soon as agents persist, specialize, share context, and take actions, product design starts overlapping with operating-model design. The questions become about responsibility, coordination, permissions, escalation, and trust.</p>
+
+    <p>That is the part of the space I find most interesting.</p>
+
+    <div class="endnote">
+      <h3>Fleet Command is still evolving.</h3>
+      <p>I’m using it as a working product experiment around multi-agent coordination, progressive autonomy, and what it means to design software for an AI workforce instead of a single AI assistant.</p>
+      <div class="endActions">
+        <a class="smallBtn primary" href="https://sidious-fleet-command.netlify.app/" target="_blank">View Fleet Command ↗</a>
+        <a class="smallBtn" href="#">Back to Writing</a>
+      </div>
+    </div>
+  </article>
+</main>
+
+<section class="related">
+  <div class="wrap">
+    <div class="sectionHead">
+      <div><div class="eyebrow">Related</div><h2>Keep reading.</h2></div>
+    </div>
+    <div class="grid">
+      <article class="card"><div class="meta"><span>Local AI</span><span>5 min</span></div><h3>Why I built Speakit as a local-first AI product.</h3><p>Privacy, latency, cost, and the product tradeoffs behind on-device transcription.</p></article>
+      <article class="card"><div class="meta"><span>Product Leadership</span><span>6 min</span></div><h3>AI-native product management is more than adding a chatbot.</h3><p>How AI changes workflows, responsibility, and product surfaces.</p></article>
+      <article class="card"><div class="meta"><span>Building</span><span>4 min</span></div><h3>What I’m learning from building one or two products every week.</h3><p>How compressed build cycles change product judgment and scope.</p></article>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap footer">
+    <div><strong>Gabriel Pendleton</strong> · Writing</div>
+    <div>AI · Product · Platforms · Building</div>
+  </div>
+</footer>
+</body>
+</html>

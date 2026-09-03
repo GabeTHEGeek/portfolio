@@ -1,0 +1,17 @@
+---
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+type Props = { article: CollectionEntry<'writing'> };
+const { article } = Astro.props;
+---
+
+<article class="card">
+  <a class="card-visual article-visual" href={`/writing/${article.data.slug}/`} aria-label={`Read ${article.data.title}`}>
+    {article.data.coverImage ? <Image src={article.data.coverImage} alt="" width={1000} widths={[600, 1000]} sizes="(max-width: 720px) 100vw, 33vw" /> : <span>{article.data.category}</span>}
+  </a>
+  <div class="card-body">
+    <p class="eyebrow">{article.data.category} · {article.data.readTime}</p>
+    <h2><a href={`/writing/${article.data.slug}/`}>{article.data.title}</a></h2>
+    <p>{article.data.description}</p>
+  </div>
+</article>
