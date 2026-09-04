@@ -11,3 +11,52 @@ const { projects } = Astro.props;
     <div><p>{project.data.company}{project.data.role && ` // ${project.data.role}`}</p><h3>{project.data.title}</h3><div class="history-detail"><span>{project.data.publishDate.getFullYear()}</span><p>{project.data.description}</p><a href={`/projects/${project.data.slug}/`}>OPEN RECORD →</a></div></div>
   </article>)}
 </div>
+
+<script>
+  document.querySelectorAll<HTMLElement>('.history-console').forEach((timeline) => {
+    const rows = Array.from(timeline.querySelectorAll<HTMLElement>('.history-event'));
+    const rail = timeline.querySelector<HTMLElement>('.history-rail');
+    const highlight = rail?.querySelector<HTMLElement>('i');
+    if (!rail || !highlight || !rows.length) return;
+    let hovered: HTMLElement | null = null;
+    let pending = false;
+    const update = () => {
+      pending = false;
+      const readingLine = window.innerHeight * 0.45;
+      const focused = rows.find((row) => row.contains(document.activeElement));
+      const active = focused || hovered || rows.reduce((closest, row) => {
+        const distance = (item: HTMLElement) => {
+          const rect = item.getBoundingClientRect();
+          return Math.abs(rect.top + rect.height / 2 - readingLine);
+        };
+        return distance(row) < distance(closest) ? row : closest;
+      });
+      const bounds = active.getBoundingClientRect();
+      const railBounds = rail.getBoundingClientRect();
+      const top = Math.max(0, Math.min(railBounds.height, bounds.top - railBounds.top));
+      const bottom = Math.max(top, Math.min(railBounds.height, bounds.bottom - railBounds.top));
+      highlight.style.top = `${top}px`;
+      highlight.style.height = `${bottom - top}px`;
+      rows.forEach((row) => row.classList.toggle('history-current', row === active));
+    };
+    const schedule = () => {
+      if (!pending) { pending = true; requestAnimationFrame(update); }
+    };
+    window.addEventListener('scroll', () => { hovered = null; schedule(); }, { passive: true });
+    window.addEventListener('resize', schedule);
+    rows.forEach((row) => {
+      row.addEventListener('pointerenter', () => { hovered = row; schedule(); });
+      row.addEventListener('pointerleave', () => { hovered = null; schedule(); });
+      row.addEventListener('focusin', schedule);
+      row.addEventListener('focusout', schedule);
+    });
+    const observer = new ResizeObserver(schedule);
+    rows.forEach((row) => observer.observe(row));
+    schedule();
+  });
+</script>
+
+<style is:global>
+  .history-console .history-rail i { animation: none; }
+  .history-event.history-current::before { background: var(--cyan); box-shadow: 0 0 10px var(--cyan); }
+</style>
