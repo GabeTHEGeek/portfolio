@@ -2,7 +2,7 @@
 title: "I Thought Building the AI Agent Was the Hard Part. Training It to Do the Job Was Harder."
 slug: "training-an-ai-agent-to-do-the-job"
 description: "What building an AI sales agent taught me about judgment, deterministic safeguards, evidence, and knowing when to stop training and let the agent work."
-coverImage: "../../assets/article-fleet-command.png"
+coverImage: "../../assets/article-agent-training-hero.jpeg"
 category: "AI Agents"
 order: 2
 tags: ["AI Product", "Agents", "Building in Public", "Evaluation"]
@@ -149,6 +149,8 @@ Ambiguous judgment gets escalated.
 
 The expensive intelligence is reserved for decisions where it can actually change the outcome.
 
+![Boba’s sales workflow connects inputs, tools, and outcomes through a deterministic layer. Routine work uses low-cost models, ambiguous decisions escalate, and completed steps are evaluated separately from prospect quality.](../../assets/article-agent-training-architecture.png)
+
 ## Then the agent learned to game my rules
 
 This was one of my favorite failures.
@@ -222,6 +224,8 @@ Again, this starts to look suspiciously like how we design human organizations.
 You do not make one employee hold the entire company in their head.
 
 You divide responsibility and maintain shared state.
+
+![One agent holding 40 companies in context is compared with an orchestrator assigning small batches to focused research, analysis, and outreach workers connected by shared state.](../../assets/article-agent-training-workers.png)
 
 ## The most expensive bugs weren’t technical
 
@@ -322,6 +326,8 @@ Its permissions change.
 Its software changes.
 
 The model is only one component of that learning system.
+
+![A continuous-improvement cycle connects work, real-world outcomes, evaluation, system improvements, and the next run. Feedback can change rules, memory, model routing, task decomposition, and tools.](../../assets/article-agent-training-flywheel.png)
 
 ## Eventually, you have to stop training
 
