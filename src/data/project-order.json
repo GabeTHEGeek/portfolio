@@ -1,14 +1,34 @@
 {
   "entries": [
-    { "entry": "fleet-command" },
-    { "entry": "speakit" },
-    { "entry": "maester" },
-    { "entry": "brand-companions" },
-    { "entry": "twitch" },
-    { "entry": "sizzl" },
-    { "entry": "warrantypilot" },
-    { "entry": "audiostaq" },
-    { "entry": "blockchains" },
-    { "entry": "dealeron" }
+    {
+      "entry": "speakit"
+    },
+    {
+      "entry": "fleet-command"
+    },
+    {
+      "entry": "maester"
+    },
+    {
+      "entry": "brand-companions"
+    },
+    {
+      "entry": "twitch"
+    },
+    {
+      "entry": "sizzl"
+    },
+    {
+      "entry": "warrantypilot"
+    },
+    {
+      "entry": "audiostaq"
+    },
+    {
+      "entry": "blockchains"
+    },
+    {
+      "entry": "dealeron"
+    }
   ]
 }
