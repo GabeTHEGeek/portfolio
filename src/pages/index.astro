@@ -1,5 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
+import { sortContent } from '../utils/content-order';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import AugmentedProfile from '../components/AugmentedProfile.astro';
 import AgentArchitecture from '../components/AgentArchitecture.astro';
@@ -12,11 +13,11 @@ import HowIWork from '../components/HowIWork.astro';
 import socialPreview from '../assets/social-preview.png';
 import { githubUrl, linkedinUrl } from '../data/site';
 
-const allProjects = await getCollection('projects');
-const systems = allProjects.filter(({ data }) => data.kind === 'ai').sort((a, b) => a.data.order - b.data.order);
-const productWork = allProjects.filter(({ data }) => data.kind === 'product').sort((a, b) => a.data.order - b.data.order);
+const allProjects = sortContent(await getCollection('projects'), 'projects');
+const systems = allProjects.filter(({ data }) => data.kind === 'ai');
+const productWork = allProjects.filter(({ data }) => data.kind === 'product');
 const certifications = await getCollection('certifications');
-const articles = (await getCollection('writing')).sort((a, b) => a.data.order - b.data.order || b.data.publishDate.valueOf() - a.data.publishDate.valueOf()).slice(0, 3);
+const articles = sortContent(await getCollection('writing'), 'writing').slice(0, 3);
 const schema = { '@context': 'https://schema.org', '@type': 'Person', name: 'Gabriel Pendleton', jobTitle: 'Senior Product Leader', url: Astro.site, sameAs: [linkedinUrl, githubUrl], knowsAbout: ['AI products', 'Product leadership', 'Product strategy', 'Technical platforms'] };
 ---
 

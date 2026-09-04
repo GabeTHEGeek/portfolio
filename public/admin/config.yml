@@ -42,7 +42,7 @@ collections:
       - { label: Kind, name: kind, widget: select, options: [ai, product], default: product }
       - { label: Company, name: company, widget: string, required: false }
       - { label: Role, name: role, widget: string, required: false }
-      - { label: Display order, name: order, widget: number, value_type: int, default: 99, hint: 'Lower numbers appear first.' }
+      - { name: order, widget: hidden, default: 99 }
       - { label: Publish date, name: publishDate, widget: datetime, format: 'YYYY-MM-DD', date_format: 'YYYY-MM-DD', time_format: false }
       - { label: Body, name: body, widget: markdown }
 
@@ -65,6 +65,39 @@ collections:
       - { label: Tags, name: tags, widget: list, required: false, default: [] }
       - { label: Publish date, name: publishDate, widget: datetime, format: 'YYYY-MM-DD', date_format: 'YYYY-MM-DD', time_format: false }
       - { label: Reading time, name: readTime, widget: string, hint: 'For example: 8 min read' }
-      - { label: Display order, name: order, widget: number, value_type: int, default: 99, hint: 'Lower numbers appear first. Current lead articles use 1 and 2.' }
+      - { name: order, widget: hidden, default: 99 }
       - { label: Author, name: author, widget: string, default: Gabriel Pendleton }
       - { label: Body, name: body, widget: markdown }
+
+  - name: display_order
+    label: Display Order
+    editor: { preview: false }
+    files:
+      - name: project_order
+        label: Projects — drag to reorder
+        file: src/data/project-order.json
+        format: json
+        fields:
+          - name: entries
+            label: Projects
+            label_singular: Project
+            widget: list
+            collapsed: true
+            summary: '{{fields.entry}}'
+            hint: 'Drag rows into order, then Publish. Add newly published projects here to position them. Homepage AI and product groups remain separate.'
+            fields:
+              - { label: Project, name: entry, widget: relation, collection: projects, search_fields: [title, slug], display_fields: [title], value_field: slug }
+      - name: writing_order
+        label: Writing — drag to reorder
+        file: src/data/writing-order.json
+        format: json
+        fields:
+          - name: entries
+            label: Articles
+            label_singular: Article
+            widget: list
+            collapsed: true
+            summary: '{{fields.entry}}'
+            hint: 'Drag rows into order, then Publish. The first three appear on the homepage. Add newly published articles here to position them.'
+            fields:
+              - { label: Article, name: entry, widget: relation, collection: writing, search_fields: [title, slug], display_fields: [title], value_field: slug }

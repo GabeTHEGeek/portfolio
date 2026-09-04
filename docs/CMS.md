@@ -32,14 +32,37 @@ References:
 
 Choose Projects → New Projects. Fill in title, a unique hyphenated URL slug,
 description, status, kind, and publish date. Add optional company/role, links,
-hero image, screenshots, tags, and the Markdown body. Lower display-order values
-appear first; featured controls the existing featured treatment. Publish when ready.
+hero image, screenshots, tags, and the Markdown body. Featured controls the existing
+featured treatment. Publish when ready, then position it under Display Order.
 
 ## Publish an article
 
 Choose Writing → New Writing. Fill in title, unique slug, description, category,
 publish date, reading time, author, and body. Select/upload a cover image and add
-inline images with the Markdown editor. Set display order if needed, then Publish.
+inline images with the Markdown editor. Publish, then position it under Display Order.
+
+## Drag-and-drop ordering
+
+Open **Display Order** in the CMS sidebar, then **Projects — drag to reorder** or
+**Writing — drag to reorder**. Drag the collapsed rows into the desired order and
+click **Publish**. Decap's list editor also provides move controls. No order numbers
+need to be entered. The ordering screen is separate from the normal content list.
+
+For a newly published entry, use **Add Project** or **Add Article**, search for its
+title, select it, then drag its row into place. Entries not listed here still appear
+after the explicitly ordered entries. Removing a row does not delete the content.
+Add each entry only once; if duplicated, its first position wins.
+
+Projects controls the project directory and order within each homepage group;
+the homepage still separates AI systems from product history. Writing controls
+the writing directory and the homepage's first three articles. Related articles
+continue to be ranked by relevance.
+
+Ordering is saved in src/data/project-order.json and src/data/writing-order.json,
+using references to existing slugs; content is not duplicated or migrated.
+Existing frontmatter order numbers are preserved and hidden in the editor, and
+remain fallback values for unlisted entries. Publishing an order triggers the
+normal Netlify deployment. No additional authentication setup is required.
 
 Publish commits to main and triggers Netlify. Wait for the deployment to succeed
 before checking the public URL. A future publish date is metadata, not scheduling:
@@ -81,4 +104,3 @@ Run the normal production build after pulling CMS commits. Decap is pinned to
 The login/upload/publish round trip requires the manual OAuth setup above and
 must be tested with your GitHub account. Verify a project image and article inline
 image upload, publish, and inspect the successful Netlify deploy before regular use.
-
