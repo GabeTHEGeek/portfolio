@@ -1,5 +1,5 @@
 ---
-title: "BrandCompanionsAI"
+title: "Brand Companions.ai"
 slug: "brand-companions"
 description: "An experiment in turning branded product experiences into interactive AI conversations instead of static interfaces."
 heroImage: "../../assets/projects/brand-companions-1.png"
@@ -17,7 +17,7 @@ publishDate: 2026-08-01
 
 ## Overview
 
-BrandCompanionsAI began as RedditLeads, an AI-powered companion designed to help brands contribute useful, on-brand responses to real Reddit conversations. It scans for high-intent keywords, drafts responses, and can be customized by vertical, tone, and targeting rules.
+Brand Companions.ai began as RedditLeads, an AI-powered companion designed to help brands contribute useful, on-brand responses to real Reddit conversations. It scans for high-intent keywords, drafts responses, and can be customized by vertical, tone, and targeting rules.
 
 ## Product approach
 
