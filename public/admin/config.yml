@@ -36,8 +36,8 @@ collections:
         field: { label: Image, name: image, widget: image, choose_url: false }
       - { label: Tags, name: tags, widget: list, required: false, default: [] }
       - { label: Status, name: status, widget: select, options: [concept, in-progress, in-development, launched, archived] }
-      - { label: Live URL, name: liveUrl, widget: string, required: false, pattern: ['^https?://[^\\s]+$', 'Enter a full HTTP or HTTPS URL.'] }
-      - { label: GitHub URL, name: githubUrl, widget: string, required: false, pattern: ['^https?://[^\\s]+$', 'Enter a full HTTP or HTTPS URL.'] }
+      - { label: Live URL, name: liveUrl, widget: string, required: false, pattern: ['^https?://[^\s]+$', 'Enter a full HTTP or HTTPS URL.'] }
+      - { label: GitHub URL, name: githubUrl, widget: string, required: false, pattern: ['^https?://[^\s]+$', 'Enter a full HTTP or HTTPS URL.'] }
       - { label: Featured, name: featured, widget: boolean, default: false, required: false }
       - { label: Kind, name: kind, widget: select, options: [ai, product], default: product }
       - { label: Company, name: company, widget: string, required: false }
@@ -68,4 +68,3 @@ collections:
       - { label: Display order, name: order, widget: number, value_type: int, default: 99, hint: 'Lower numbers appear first. Current lead articles use 1 and 2.' }
       - { label: Author, name: author, widget: string, default: Gabriel Pendleton }
       - { label: Body, name: body, widget: markdown }
-
