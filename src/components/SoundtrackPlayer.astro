@@ -5,18 +5,31 @@ const audioUrl = 'https://t4.bcbits.com/stream/234c0e64cc042062b9267ac97120414e/
 <aside class="soundtrack-player hud-panel" aria-label="Optional site soundtrack">
   <a class="soundtrack-art" href="https://benprunty.bandcamp.com/album/ftl" target="_blank" rel="noreferrer" aria-label="FTL soundtrack by Ben Prunty on Bandcamp"><img src="https://f4.bcbits.com/img/a460013667_1x1_700.avif" alt="FTL Original Soundtrack cover" width="64" height="64" loading="lazy" /></a>
   <div><span>OPTIONAL AUDIO</span><strong>FTL — Ben Prunty</strong><small>Soundtrack credit ↗</small></div>
-  <button type="button" aria-pressed="false" aria-label="Play optional FTL soundtrack"><i aria-hidden="true">▶</i><span>PLAY THIS</span></button>
+  <button class="soundtrack-play" type="button" aria-pressed="false" aria-label="Play optional FTL soundtrack"><i aria-hidden="true">▶</i><span>PLAY THIS</span></button>
+  <button class="soundtrack-close" type="button" aria-label="Minimize soundtrack player and pause audio">×</button>
   <audio preload="none" loop src={audioUrl}></audio>
 </aside>
 
 <script>
   const player = document.querySelector<HTMLElement>('.soundtrack-player');
-  const button = player?.querySelector<HTMLButtonElement>('button');
+  const button = player?.querySelector<HTMLButtonElement>('.soundtrack-play');
+  const close = player?.querySelector<HTMLButtonElement>('.soundtrack-close');
   const audio = player?.querySelector<HTMLAudioElement>('audio');
   const label = button?.querySelector<HTMLElement>('span');
   const icon = button?.querySelector<HTMLElement>('i');
+  close?.addEventListener('click', () => {
+    audio?.pause();
+    player?.classList.remove('is-playing');
+    player?.classList.add('is-minimized');
+    button?.setAttribute('aria-pressed', 'false');
+    button?.setAttribute('aria-label', 'Expand player and play optional FTL soundtrack');
+    if (label) label.textContent = 'PLAY THIS';
+    if (icon) icon.textContent = '▶';
+    button?.focus();
+  });
   button?.addEventListener('click', async () => {
     if (!audio) return;
+    player?.classList.remove('is-minimized');
     if (audio.paused) {
       try {
         await audio.play();
@@ -39,3 +52,14 @@ const audioUrl = 'https://t4.bcbits.com/stream/234c0e64cc042062b9267ac97120414e/
     }
   });
 </script>
+
+<style is:global>
+  .soundtrack-player.hud-panel { padding-right: 44px; }
+  .soundtrack-player .soundtrack-close { position: absolute; right: 5px; top: 5px; padding: 0; width: 32px; height: 32px; justify-content: center; font-size: 22px; border-color: var(--line); }
+  .soundtrack-player.hud-panel.is-minimized { width: 52px; height: 52px; padding: 0; display: grid; grid-template-columns: 1fr; clip-path: none; }
+  .soundtrack-player.is-minimized .soundtrack-art,
+  .soundtrack-player.is-minimized > div,
+  .soundtrack-player.is-minimized .soundtrack-close,
+  .soundtrack-player.is-minimized .soundtrack-play span { display: none; }
+  .soundtrack-player.is-minimized .soundtrack-play { width: 100%; height: 100%; justify-content: center; padding: 0; font-size: 18px; }
+</style>
