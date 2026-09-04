@@ -3,7 +3,7 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import ArticleCard from '../../components/ArticleCard.astro';
 import { Image } from 'astro:assets';
-const articles = (await getCollection('writing')).sort((a, b) => b.data.publishDate.valueOf() - a.data.publishDate.valueOf());
+const articles = (await getCollection('writing')).sort((a, b) => a.data.order - b.data.order || b.data.publishDate.valueOf() - a.data.publishDate.valueOf());
 const [featured, ...recent] = articles;
 const categories = [...new Set(articles.map((article) => article.data.category))];
 ---

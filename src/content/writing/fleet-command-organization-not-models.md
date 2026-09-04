@@ -4,6 +4,7 @@ slug: "fleet-command-organization-not-models"
 description: "An experiment with multi-agent systems changed how I think about roles, models, cost, and what should stay constant when the intelligence underneath an agent changes."
 coverImage: "../../assets/article-fleet-command-organization.png"
 category: "AI Agents"
+order: 1
 tags: ["AI Product", "Agents", "Model Routing", "Building in Public"]
 publishDate: 2026-09-03
 readTime: "6 min read"
