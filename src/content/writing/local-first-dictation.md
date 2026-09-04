@@ -1,13 +1,18 @@
 ---
-title: "Why I built a local-first dictation app instead of another cloud tool"
-slug: "local-first-dictation"
-description: "Privacy, latency, cost, and the product decisions behind keeping speech recognition on-device."
-coverImage: "../../assets/article-local-first-dictation.png"
-category: "Local AI"
-tags: ["Local AI", "Product Design", "Speakit"]
+title: Why I built a local-first dictation app instead of another cloud tool
+slug: local-first-dictation
+description: Privacy, latency, cost, and the product decisions behind keeping
+  speech recognition on-device.
+coverImage: ../../assets/media/speakit_linkedin_1200x1200.png
+category: Local AI
+tags:
+  - Local AI
+  - Product Design
+  - Speakit
 publishDate: 2026-08-24
-readTime: "5 min read"
-author: "Gabriel Pendleton"
+readTime: 5 min read
+order: 3
+author: Gabriel Pendleton
 ---
 
 ## Local AI should feel invisible
