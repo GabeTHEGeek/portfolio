@@ -10,7 +10,8 @@ const currentPath = Astro.url.pathname;
 
 <header class="site-header wrap">
   <div class="brand-group"><a class="brand" href="/" aria-label="Gabriel Pendleton, home">Gabriel Pendleton <span>· Product + AI</span></a><a class="hire-status" href="mailto:hello@gabrielpendleton.me" aria-label="Email Gabriel about an opportunity"><i aria-hidden="true"></i> Available for hire</a></div>
-  <nav aria-label="Primary navigation">
+  <button class="menu-toggle" type="button" aria-label="Open navigation" aria-expanded="false" aria-controls="primary-navigation"><span aria-hidden="true">☰</span></button>
+  <nav id="primary-navigation" aria-label="Primary navigation">
     <ul>
       {links.map(({ href, label }) => (
         <li><a href={href} aria-current={(href === '/#systems' ? currentPath === '/' : currentPath.startsWith(href)) ? 'page' : undefined}>{label}</a></li>
@@ -36,4 +37,59 @@ const currentPath = Astro.url.pathname;
     syncToggle();
   });
   syncToggle();
+  const header = document.querySelector<HTMLElement>('.site-header');
+  const menu = document.querySelector<HTMLButtonElement>('.menu-toggle');
+  const nav = document.querySelector<HTMLElement>('#primary-navigation');
+  const mobile = window.matchMedia('(max-width: 940px)');
+  const setMenu = (open: boolean) => {
+    header?.classList.toggle('menu-open', open);
+    menu?.setAttribute('aria-expanded', String(open));
+    menu?.setAttribute('aria-label', open ? 'Close navigation' : 'Open navigation');
+    if (menu?.firstElementChild) menu.firstElementChild.textContent = open ? '×' : '☰';
+  };
+  header?.classList.add('navigation-ready');
+  menu?.addEventListener('click', () => setMenu(menu.getAttribute('aria-expanded') !== 'true'));
+  nav?.addEventListener('click', (event) => {
+    if ((event.target as Element).closest('a')) setMenu(false);
+  });
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && menu?.getAttribute('aria-expanded') === 'true') {
+      setMenu(false);
+      menu.focus();
+    }
+  });
+  document.addEventListener('click', (event) => {
+    if (!header?.contains(event.target as Node)) setMenu(false);
+  });
+  mobile.addEventListener('change', () => setMenu(false));
 </script>
+
+<style is:global>
+  .site-header #primary-navigation { margin-left: auto; }
+  .site-header .nav-actions { margin-left: 20px; }
+  .site-header .menu-toggle { display: none; }
+  @media (max-width: 940px) {
+    .site-header.navigation-ready { flex-wrap: wrap; gap: 10px; min-height: 66px; }
+    .site-header.navigation-ready:before { height: 66px; }
+    .site-header .brand-group { flex: 1; min-width: 0; }
+    .site-header .hire-status { display: none; }
+    .site-header .nav-actions { margin-left: 0; }
+    .site-header.navigation-ready .menu-toggle {
+      display: grid; place-items: center; width: 44px; height: 44px; flex-shrink: 0;
+      border: 1px solid var(--line); border-radius: 2px; background: var(--panel);
+      color: var(--cyan); font-size: 24px; cursor: pointer;
+    }
+    .site-header .menu-toggle:hover { border-color: var(--cyan); }
+    .site-header #primary-navigation {
+      order: 3; width: 100%; margin: 0; overflow: visible;
+      background: var(--panel); border: 1px solid var(--line); padding: 12px;
+    }
+    .site-header.navigation-ready:not(.menu-open) #primary-navigation { display: none; }
+    .site-header #primary-navigation ul { display: grid; width: 100%; min-width: 0; gap: 4px; padding: 0; }
+    .site-header #primary-navigation a { display: block; padding: 12px; font-size: 14px; }
+    .site-header #primary-navigation a:hover { background: var(--panel2); }
+  }
+  @media (max-width: 420px) {
+    .site-header .brand span { display: none; }
+  }
+</style>
