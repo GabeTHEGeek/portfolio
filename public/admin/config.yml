@@ -1,0 +1,71 @@
+backend:
+  name: github
+  repo: GabeTHEGeek/portfolio
+  branch: main
+  base_url: https://api.netlify.com
+  auth_endpoint: auth
+  site_domain: gabrielpendleton.me
+
+site_url: https://gabrielpendleton.me
+display_url: https://gabrielpendleton.me
+publish_mode: simple
+media_folder: src/assets/media
+public_folder: ../../assets/media
+
+collections:
+  - name: projects
+    label: Projects
+    folder: src/content/projects
+    create: true
+    delete: false
+    extension: md
+    format: frontmatter
+    slug: "{{fields.slug}}"
+    preview_path: "projects/{{fields.slug}}/"
+    editor: { preview: false }
+    fields:
+      - { label: Title, name: title, widget: string }
+      - { label: URL slug, name: slug, widget: string, pattern: ['^[a-z0-9]+(?:-[a-z0-9]+)*$', 'Use lowercase words separated by hyphens.'], hint: 'Unique project URL. Do not change existing slugs without a redirect.' }
+      - { label: Description, name: description, widget: text }
+      - { label: Hero image, name: heroImage, widget: image, required: false, choose_url: false }
+      - label: Screenshots
+        name: screenshots
+        widget: list
+        required: false
+        default: []
+        field: { label: Image, name: image, widget: image, choose_url: false }
+      - { label: Tags, name: tags, widget: list, required: false, default: [] }
+      - { label: Status, name: status, widget: select, options: [concept, in-progress, in-development, launched, archived] }
+      - { label: Live URL, name: liveUrl, widget: string, required: false, pattern: ['^https?://[^\\s]+$', 'Enter a full HTTP or HTTPS URL.'] }
+      - { label: GitHub URL, name: githubUrl, widget: string, required: false, pattern: ['^https?://[^\\s]+$', 'Enter a full HTTP or HTTPS URL.'] }
+      - { label: Featured, name: featured, widget: boolean, default: false, required: false }
+      - { label: Kind, name: kind, widget: select, options: [ai, product], default: product }
+      - { label: Company, name: company, widget: string, required: false }
+      - { label: Role, name: role, widget: string, required: false }
+      - { label: Display order, name: order, widget: number, value_type: int, default: 99, hint: 'Lower numbers appear first.' }
+      - { label: Publish date, name: publishDate, widget: datetime, format: 'YYYY-MM-DD', date_format: 'YYYY-MM-DD', time_format: false }
+      - { label: Body, name: body, widget: markdown }
+
+  - name: writing
+    label: Writing
+    folder: src/content/writing
+    create: true
+    delete: false
+    extension: md
+    format: frontmatter
+    slug: "{{fields.slug}}"
+    preview_path: "writing/{{fields.slug}}/"
+    editor: { preview: false }
+    fields:
+      - { label: Title, name: title, widget: string }
+      - { label: URL slug, name: slug, widget: string, pattern: ['^[a-z0-9]+(?:-[a-z0-9]+)*$', 'Use lowercase words separated by hyphens.'], hint: 'Unique article URL. Preserve existing slugs.' }
+      - { label: Description, name: description, widget: text }
+      - { label: Cover image, name: coverImage, widget: image, required: false, choose_url: false }
+      - { label: Category, name: category, widget: string }
+      - { label: Tags, name: tags, widget: list, required: false, default: [] }
+      - { label: Publish date, name: publishDate, widget: datetime, format: 'YYYY-MM-DD', date_format: 'YYYY-MM-DD', time_format: false }
+      - { label: Reading time, name: readTime, widget: string, hint: 'For example: 8 min read' }
+      - { label: Display order, name: order, widget: number, value_type: int, default: 99, hint: 'Lower numbers appear first. Current lead articles use 1 and 2.' }
+      - { label: Author, name: author, widget: string, default: Gabriel Pendleton }
+      - { label: Body, name: body, widget: markdown }
+
