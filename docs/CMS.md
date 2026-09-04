@@ -33,25 +33,26 @@ References:
 Choose Projects → New Projects. Fill in title, a unique hyphenated URL slug,
 description, status, kind, and publish date. Add optional company/role, links,
 hero image, screenshots, tags, and the Markdown body. Featured controls the existing
-featured treatment. Publish when ready, then position it under Display Order.
+featured treatment. Publish when ready, then position it in the Projects list.
 
 ## Publish an article
 
 Choose Writing → New Writing. Fill in title, unique slug, description, category,
 publish date, reading time, author, and body. Select/upload a cover image and add
-inline images with the Markdown editor. Publish, then position it under Display Order.
+inline images with the Markdown editor. Publish, then position it in the Writing list.
 
-## Drag-and-drop ordering
+## Ordering entries in the publishing lists
 
-Open **Display Order** in the CMS sidebar, then **Projects — drag to reorder** or
-**Writing — drag to reorder**. Drag the collapsed rows into the desired order and
-click **Publish**. Decap's list editor also provides move controls. No order numbers
-need to be entered. The ordering screen is separate from the normal content list.
+Open **Projects** or **Writing** in the CMS sidebar. Use the **↑ / ↓** buttons
+beside each entry to move it, then click **Publish order** above the list.
+The title still opens the regular content editor. There is no separate ordering
+page, and no order numbers need to be entered. Controls work with keyboard and touch.
 
-For a newly published entry, use **Add Project** or **Add Article**, search for its
-title, select it, then drag its row into place. Entries not listed here still appear
-after the explicitly ordered entries. Removing a row does not delete the content.
-Add each entry only once; if duplicated, its first position wins.
+Newly published entries are automatically included after explicitly ordered entries.
+Return to the list (or reload it) and use the arrows to position them. Clear any
+filters before reordering. **Discard changes** restores the last published order.
+Unsaved moves are retained when switching collections within the CMS; leaving or
+reloading the admin tab warns before discarding them.
 
 Projects controls the project directory and order within each homepage group;
 the homepage still separates AI systems from product history. Writing controls
@@ -63,6 +64,23 @@ using references to existing slugs; content is not duplicated or migrated.
 Existing frontmatter order numbers are preserved and hidden in the editor, and
 remain fallback values for unlisted entries. Publishing an order triggers the
 normal Netlify deployment. No additional authentication setup is required.
+
+The portfolio-github backend is a thin adapter over Decap's built-in GitHub backend,
+not a new authentication provider. It uses the same OAuth configuration and current
+authenticated API instance. Ordering publishes use GitHub's Contents API with the
+loaded file SHA, so simultaneous changes are rejected rather than overwritten.
+If publication fails, the pending order is retained. Reload to retrieve the latest
+repository order before retrying a conflict. No content files are rewritten.
+
+The custom list in public/admin/ordering.js replaces only the collection cards on
+the existing Projects/Writing screens. The native list remains the filter source;
+editing, creating, uploading, and logging in stay with Decap. This adapter is tested
+against pinned Decap 3.16.0. Re-test collection loading, title links, filters, arrows,
+publication failures, and keyboard use before upgrading Decap.
+Browser regression tests: `node scripts/test-cms-ordering.mjs` (requires Playwright
+and Chrome). Set `REAL_CMS=1` to test the actual pinned Decap interface against a
+mock repository; this never edits live GitHub content. `PLAYWRIGHT_MODULE` may
+point to an existing Playwright module, and `PLAYWRIGHT_CHANNEL` selects a browser.
 
 Publish commits to main and triggers Netlify. Wait for the deployment to succeed
 before checking the public URL. A future publish date is metadata, not scheduling:

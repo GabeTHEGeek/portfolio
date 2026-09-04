@@ -1,5 +1,5 @@
 backend:
-  name: github
+  name: portfolio-github
   repo: GabeTHEGeek/portfolio
   branch: main
   base_url: https://api.netlify.com
@@ -15,6 +15,7 @@ public_folder: ../../assets/media
 collections:
   - name: projects
     label: Projects
+    sortable_fields: []
     folder: src/content/projects
     create: true
     delete: false
@@ -48,6 +49,7 @@ collections:
 
   - name: writing
     label: Writing
+    sortable_fields: []
     folder: src/content/writing
     create: true
     delete: false
@@ -68,36 +70,3 @@ collections:
       - { name: order, widget: hidden, default: 99 }
       - { label: Author, name: author, widget: string, default: Gabriel Pendleton }
       - { label: Body, name: body, widget: markdown }
-
-  - name: display_order
-    label: Display Order
-    editor: { preview: false }
-    files:
-      - name: project_order
-        label: Projects — drag to reorder
-        file: src/data/project-order.json
-        format: json
-        fields:
-          - name: entries
-            label: Projects
-            label_singular: Project
-            widget: list
-            collapsed: true
-            summary: '{{fields.entry}}'
-            hint: 'Drag rows into order, then Publish. Add newly published projects here to position them. Homepage AI and product groups remain separate.'
-            fields:
-              - { label: Project, name: entry, widget: relation, collection: projects, search_fields: [title, slug], display_fields: [title], value_field: slug }
-      - name: writing_order
-        label: Writing — drag to reorder
-        file: src/data/writing-order.json
-        format: json
-        fields:
-          - name: entries
-            label: Articles
-            label_singular: Article
-            widget: list
-            collapsed: true
-            summary: '{{fields.entry}}'
-            hint: 'Drag rows into order, then Publish. The first three appear on the homepage. Add newly published articles here to position them.'
-            fields:
-              - { label: Article, name: entry, widget: relation, collection: writing, search_fields: [title, slug], display_fields: [title], value_field: slug }

@@ -7,11 +7,15 @@
   <title>Portfolio Content Manager</title>
   <link rel="icon" href="/favicon.svg">
   <link href="/admin/config.yml" type="text/yaml" rel="cms-config-url">
+  <link rel="stylesheet" href="/admin/ordering.css">
 </head>
 <body>
   <noscript>Enable JavaScript to use the content manager.</noscript>
+  <script>window.CMS_MANUAL_INIT = true;</script>
   <script src="https://unpkg.com/decap-cms@3.16.0/dist/decap-cms.js"></script>
+  <script src="https://unpkg.com/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
   <script src="/admin/editor.js"></script>
+  <script src="/admin/ordering.js"></script>
+  <script>CMS.init();</script>
 </body>
 </html>
-
