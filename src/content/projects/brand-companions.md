@@ -1,16 +1,20 @@
 ---
-title: "Brand Companions.ai"
-slug: "brand-companions"
-description: "An experiment in turning branded product experiences into interactive AI conversations instead of static interfaces."
-heroImage: "../../assets/projects/brand-companions-1.png"
+title: BrandCompanions.ai
+slug: brand-companions
+description: An experiment in turning branded product experiences into
+  interactive AI conversations instead of static interfaces.
+heroImage: ../../assets/projects/brand-companions-1.png
 screenshots:
-  - "../../assets/projects/brand-companions-2.png"
-  - "../../assets/projects/brand-companions-3.png"
-tags: ["Conversational interfaces", "Brand experience", "AI products"]
-status: "concept"
-liveUrl: "https://brandcompanions.vercel.app/"
+  - ../../assets/projects/brand-companions-2.png
+  - ../../assets/projects/brand-companions-3.png
+tags:
+  - Conversational interfaces
+  - Brand experience
+  - AI products
+status: concept
+liveUrl: https://brandcompanions.vercel.app/
 featured: true
-kind: "ai"
+kind: ai
 order: 4
 publishDate: 2026-08-01
 ---
