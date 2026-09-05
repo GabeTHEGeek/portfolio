@@ -1,0 +1,89 @@
+GABRIEL PENDLETON
+AI Product Manager | 2x Founder / Head of Product | LLMs & Agentic Workflows
+
+PROFESSIONAL SUMMARY
+
+AI Product Manager and two-time founder with 7 years in product management and 15 total years in technology, including shipping ML-powered products at Twitch. Builds and runs AI agents daily, from a multi-agent system spanning sales, product, and engineering to a growth agent that drove 200-300 monthly quote requests with zero paid marketing. Led Creator Home's personalization platform to a 27% conversion lift across 10M+ streamers.
+
+CORE COMPETENCIES
+
+- Agentic workflow architecture
+- Human-in-the-loop design
+- LLM evaluation and reliability
+- Zero-to-one product building
+- API-first marketplace development
+- A/B testing and experimentation
+- Cross-functional team leadership
+- Prompt engineering for structured output
+
+PROFESSIONAL EXPERIENCE
+
+WarrantyPilot - Co-Founder & Head of Product | November 2024-Present
+
+- Built an API-first vehicle service contract marketplace and AI-powered recommendation experience that analyzes vehicle data and matches customers with relevant coverage options.
+- Grew WarrantyPilot to 200-300 monthly quote requests through organic acquisition with zero paid marketing spend.
+- Built an AI growth agent capable of scanning up to 1,000 Reddit posts per day, identifying high-intent conversations, prioritizing engagement opportunities, and generating personalized responses.
+- Raised pre-seed funding, generated early revenue, and secured partnerships with 13+ vehicle service contract providers and 4 distribution partners.
+
+Blockchains - Senior Product Manager | June 2024-October 2024
+
+- Led Web3 experience development for a 3D identity and social platform, coordinating engineering, UX, and marketing across web and mobile.
+- Oversaw integration of third-party identity verification services and managed product roadmap alignment across stakeholders.
+- Role ended during company-wide layoffs.
+
+Sizzl - Head of Product | May 2022-May 2024
+
+- Led product strategy and roadmap from concept to beta launch for a zero-to-one livestreaming platform across native iOS, Android, and web, directing a cross-functional team of 10 and managing 2 product designers.
+- Built strategic partnerships with culinary influencers, contributing to more than 400 broadcast hours during the initial launch month.
+- Improved signup-to-stream conversion 30% through onboarding, navigation, and content-discovery improvements.
+
+Twitch - Product Manager, Creator Experience | March 2021-May 2022
+
+- Led a team of 13 across engineering, UX, and data science to launch Creator Home for more than 10 million streamers. A Personalization Service delivered lifecycle-based recommendations and lifted dedicated-creator conversion 27%.
+- Ran the Creator Home experimentation program, including A/B tests reaching 835,000 users per month, with pre-registered segments, kill criteria, and data science partnership to seed future machine-learning models.
+- Shipped Your Community, a feature recommending co-streaming partners to creators, which lifted collaborations 12%.
+- Launched the Affiliates Dashboard to centralize monetization tools, driving 32% feature adoption and $5 million in incremental creator payouts.
+
+AudioStaq - Co-Founder & Head of Product | June 2017-March 2021
+
+- Led product for a SaaS podcast hosting and audio advertising platform.
+- Closed and grew partnerships with media affiliates including NPR, The Baltimore Sun, and Fox Sports, generating $100,000 in revenue and scaling to $15,000 in monthly revenue within the first year.
+- Designed data schemas and API architecture for a programmatic podcast advertising platform and coordinated integration requirements with demand-side and supply-side platforms.
+- Managed tracking and reporting implementations across the podcast advertising ecosystem, working directly with engineers on pixel firing and data delivery systems.
+
+DealerOn - Product Manager | Career experience preceding AudioStaq
+
+- Led the launch of the Auto Parts Kit ecommerce integration for dealership websites, combining vehicle parts discovery, purchasing, analytics, support, promotions, and merchandising.
+- Expanded the product to more than 25 dealerships; pricing-model changes contributed to a reported 92% revenue increase.
+
+TECHNICAL AND PRODUCT SKILLS
+
+Applied AI engineering: prompt engineering for structured output; multi-model orchestration and cost/quality routing; agentic workflow architecture; workflow-versus-agent design tradeoffs; LLM evaluation and reliability; calibration debugging; failure-mode analysis; API integration and data extraction.
+
+AI and LLM tools: OpenAI API, Claude Code, Gemini API, Vercel v0, Lovable.
+
+Product and analytics: product strategy, A/B testing, Mixpanel, Google Analytics, Jira, Jira Product Discovery, Figma, Notion, Confluence, Agile, and Scrum.
+
+Technical foundation: SQL, JavaScript, HTML, CSS, C#, REST APIs, API integrations, and data schemas.
+
+EDUCATION
+
+University of Baltimore - Computer Science, 78 credits.
+
+CERTIFICATIONS
+
+- Certified Product Manager - AIPMM
+- Advanced Product Manager Program - Product Faculty
+- Certified Scrum Product Owner - Scrum Alliance
+
+SELECTED AI PROJECTS
+
+Fleet Command - A multi-agent AI operations system using specialized agents to discover and qualify prospects, generate scoped product requirements, produce and deploy deliverables, and improve through persistent memory, human approval gates, integrations, multi-model validation, and voice-based executive coordination.
+
+Speakit - A local-first macOS dictation app using Whisper Small and Tauri. A global shortcut inserts on-device speech-to-text into the active application with privacy, low latency, and no recurring API cost.
+
+Maester - A multi-source AI hiring panel that searches live job listings across five job-board APIs, scores results with a two-tier LLM pipeline, and produces ATS-optimized resumes and cover letters under a strict no-fabrication rule.
+
+BrandCompanions.ai - An AI growth and community intelligence agent that monitors high-intent Reddit conversations, prioritizes prospects, generates personalized human-reviewed responses, tracks engagement, and identifies SEO topics and keywords.
+
+This public resume source intentionally excludes Gabriel Pendleton's email address, phone number, and location.

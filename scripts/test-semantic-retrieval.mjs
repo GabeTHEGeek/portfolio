@@ -7,9 +7,13 @@ const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SEC
 const endpoint = process.env.ASK_GABRIEL_URL || 'http://localhost:8888/.netlify/functions/ask-gabriel';
 const threshold = Number(process.env.ASK_GABRIEL_MATCH_THRESHOLD || 0.62);
 const questions = process.argv.slice(2).length ? process.argv.slice(2) : [
-  'What is Fleet Command?',
-  'How does Fleet Command manage agent autonomy?',
-  'What is Gabriel’s favorite restaurant?'
+  "Tell me about Gabriel's portfolio.",
+  "Tell me about Gabriel's time at Twitch.",
+  'What has Gabriel built with AI?',
+  'What is Speakit?',
+  'What certifications does Gabriel have?',
+  'What experience does Gabriel have with APIs?',
+  "What is Gabriel's favorite restaurant?"
 ];
 
 for (const question of questions) {

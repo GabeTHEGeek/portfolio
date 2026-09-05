@@ -1,0 +1,12 @@
+{
+  "portfolio": {
+    "title": "Gabriel Pendleton Portfolio",
+    "summary": "Gabriel Pendleton's portfolio is an operating record of product leadership and hands-on building across AI-native products, creator platforms, marketplaces, APIs, integrations, and autonomous systems. It brings together selected product work, AI experiments, professional experience, writing, credentials, and the systems Gabriel is building in public.",
+    "professionalSummary": "Gabriel Pendleton is a Senior Product Leader and two-time founder focused on turning ambiguous opportunities into working products and systems. His work spans zero-to-one strategy, creator platforms, personalization, experimentation, API-first marketplaces, podcast infrastructure, local AI, multi-agent systems, product discovery, and cross-functional delivery.",
+    "skills": ["AI product strategy", "agentic workflow architecture", "human-in-the-loop design", "LLM evaluation and reliability", "multi-model orchestration", "prompt engineering for structured output", "zero-to-one product building", "product strategy and roadmapping", "A/B testing and experimentation", "creator platforms", "marketplaces", "REST APIs and integrations", "data schemas", "SQL", "JavaScript", "HTML and CSS", "analytics", "cross-functional team leadership"]
+  },
+  "askGabriel": {
+    "title": "Ask Gabriel",
+    "summary": "Ask Gabriel is the portfolio's grounded AI interface. It answers visitor questions about Gabriel's experience, projects, skills, credentials, and writing by retrieving relevant portfolio knowledge from Supabase with pgvector and using that evidence to generate a concise answer. Gemini creates query and document embeddings, while DeepSeek generates the grounded response. The interface returns citations, rejects weak evidence, keeps conversations session-only, and does not invent unsupported personal or professional facts."
+  }
+}
