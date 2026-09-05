@@ -15,13 +15,14 @@ Add these lines to the local `.env` file used in Phase 1:
 
 ```dotenv
 GEMINI_API_KEY=your-gemini-api-key
-GEMINI_MODEL=gemini-3.6-flash
+DEEPSEEK_API_KEY=your-deepseek-api-key
+DEEPSEEK_MODEL=deepseek-v4-flash
 ```
 
-`GEMINI_MODEL` is optional and defaults to the stable `gemini-3.6-flash` model.
+Gemini remains responsible for embeddings. DeepSeek handles grounded answer generation; `DEEPSEEK_MODEL` is optional and defaults to `deepseek-v4-flash`.
 Neither variable is included in browser code. In Netlify, add `GEMINI_API_KEY`
 under **Project configuration → Environment variables** with **Functions** scope
-(or all scopes) and redeploy. Add `GEMINI_MODEL` there only to override the default.
+(or all scopes) and redeploy. Add `DEEPSEEK_MODEL` there only to override the default.
 
 ## Test
 

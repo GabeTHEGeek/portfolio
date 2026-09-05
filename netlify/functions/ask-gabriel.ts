@@ -1,4 +1,4 @@
-import { askGemini } from './_lib/gemini';
+import { askDeepSeek } from './_lib/deepseek';
 import { retrieveDocumentChunks } from './_lib/documents';
 import { logStage, safeErrorCode } from './_lib/observability';
 
@@ -53,7 +53,7 @@ export default async (request: Request) => {
     return json({ error: `Question must be no more than ${MAX_QUESTION_LENGTH} characters.` }, 400);
   }
 
-  const missingConfiguration = ['SUPABASE_URL', 'SUPABASE_SECRET_KEY', 'GEMINI_API_KEY']
+  const missingConfiguration = ['SUPABASE_URL', 'SUPABASE_SECRET_KEY', 'GEMINI_API_KEY', 'DEEPSEEK_API_KEY']
     .filter(name => !process.env[name]);
   if (missingConfiguration.length) {
     logStage(trace, 'configuration.failed', { error_code: 'MISSING_REQUIRED_ENV', missing_variable_count: missingConfiguration.length, rate_limited: false });
@@ -90,7 +90,7 @@ export default async (request: Request) => {
   }
 
   try {
-    const answer = await askGemini(question.trim(), chunks, trace);
+    const answer = await askDeepSeek(question.trim(), chunks, trace);
     const sources = [...new Map(chunks.map(chunk => [
       `${chunk.title}\u0000${chunk.source_url ?? ''}`,
       { title: chunk.title, url: chunk.source_url }
