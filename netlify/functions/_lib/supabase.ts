@@ -5,7 +5,7 @@ export type Database = {
     Tables: {
       documents: {
         Row: {
-          id: string;
+          id: number;
           title: string;
           content: string;
           source_url: string | null;
@@ -14,7 +14,7 @@ export type Database = {
           updated_at: string;
         };
         Insert: {
-          id?: string;
+          id?: number;
           title: string;
           content: string;
           source_url?: string | null;
@@ -23,7 +23,7 @@ export type Database = {
           updated_at?: string;
         };
         Update: {
-          id?: string;
+          id?: number;
           title?: string;
           content?: string;
           source_url?: string | null;
@@ -33,9 +33,64 @@ export type Database = {
         };
         Relationships: [];
       };
+      document_chunks: {
+        Row: {
+          id: number;
+          document_id: number;
+          chunk_index: number;
+          content: string;
+          title: string;
+          source_url: string | null;
+          source_type: string;
+          embedding: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: number;
+          document_id: number;
+          chunk_index: number;
+          content: string;
+          title: string;
+          source_url?: string | null;
+          source_type: string;
+          embedding: string | number[];
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          document_id?: number;
+          chunk_index?: number;
+          content?: string;
+          title?: string;
+          source_url?: string | null;
+          source_type?: string;
+          embedding?: string | number[];
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
-    Functions: Record<string, never>;
+    Functions: {
+      match_document_chunks: {
+        Args: {
+          query_embedding: number[];
+          match_threshold?: number;
+          match_count?: number;
+        };
+        Returns: Array<{
+          id: number;
+          document_id: number;
+          chunk_index: number;
+          content: string;
+          title: string;
+          source_url: string | null;
+          source_type: string;
+          similarity: number;
+        }>;
+      };
+    };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;
   };

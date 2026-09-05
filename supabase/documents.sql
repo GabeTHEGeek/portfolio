@@ -1,7 +1,7 @@
 create extension if not exists pgcrypto;
 
 create table if not exists public.documents (
-  id uuid primary key default gen_random_uuid(),
+  id bigint generated always as identity primary key,
   title text not null check (char_length(trim(title)) > 0),
   content text not null,
   source_url text,

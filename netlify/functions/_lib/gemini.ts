@@ -1,4 +1,4 @@
-import type { DocumentRow } from './documents';
+import type { DocumentChunkMatch } from './documents';
 
 export const DEFAULT_GEMINI_MODEL = 'gemini-3.6-flash';
 const MAX_DOCUMENT_CHARACTERS = 6_000;
@@ -14,16 +14,17 @@ type GeminiResponse = {
 
 const MAX_OUTPUT_TOKENS = 1_024;
 
-export function buildGroundedPrompt(question: string, documents: DocumentRow[]) {
+export function buildGroundedPrompt(question: string, chunks: DocumentChunkMatch[]) {
   let remaining = MAX_CONTEXT_CHARACTERS;
-  const evidence = documents.map((document, index) => {
-    const content = document.content.slice(0, Math.min(MAX_DOCUMENT_CHARACTERS, remaining));
+  const evidence = chunks.map((chunk, index) => {
+    const content = chunk.content.slice(0, Math.min(MAX_DOCUMENT_CHARACTERS, remaining));
     remaining -= content.length;
     return {
       evidence_id: index + 1,
-      title: document.title,
-      source_url: document.source_url,
-      source_type: document.source_type,
+      title: chunk.title,
+      source_url: chunk.source_url,
+      source_type: chunk.source_type,
+      similarity: Number(chunk.similarity.toFixed(4)),
       content
     };
   }).filter(document => document.content.length > 0);
@@ -38,7 +39,7 @@ export function buildGroundedPrompt(question: string, documents: DocumentRow[]) 
   ].join('\n\n');
 }
 
-export async function askGemini(question: string, documents: DocumentRow[]) {
+export async function askGemini(question: string, chunks: DocumentChunkMatch[]) {
   const apiKey = process.env.GEMINI_API_KEY;
   const model = process.env.GEMINI_MODEL?.trim() || DEFAULT_GEMINI_MODEL;
   if (!apiKey) throw new Error('Missing GEMINI_API_KEY.');
@@ -67,7 +68,7 @@ export async function askGemini(question: string, documents: DocumentRow[]) {
         },
         contents: [{
           role: 'user',
-          parts: [{ text: buildGroundedPrompt(question, documents) }]
+          parts: [{ text: buildGroundedPrompt(question, chunks) }]
         }],
         generationConfig: {
           temperature: 0.1,

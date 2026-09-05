@@ -1,5 +1,5 @@
 import { askGemini } from './_lib/gemini';
-import { retrieveDocuments } from './_lib/documents';
+import { retrieveDocumentChunks } from './_lib/documents';
 
 const MIN_QUESTION_LENGTH = 3;
 const MAX_QUESTION_LENGTH = 500;
@@ -41,6 +41,16 @@ export default async (request: Request) => {
     return json({ error: 'Request rejected.' }, 400);
   }
 
+  const question = typeof body === 'object' && body !== null && 'question' in body
+    ? (body as { question?: unknown }).question
+    : undefined;
+  if (typeof question !== 'string' || question.trim().length < MIN_QUESTION_LENGTH) {
+    return json({ error: `Question must be at least ${MIN_QUESTION_LENGTH} characters.` }, 400);
+  }
+  if (question.trim().length > MAX_QUESTION_LENGTH) {
+    return json({ error: `Question must be no more than ${MAX_QUESTION_LENGTH} characters.` }, 400);
+  }
+
   const clientAddress = request.headers.get('x-nf-client-connection-ip')
     ?? request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
     ?? 'unknown';
@@ -52,25 +62,15 @@ export default async (request: Request) => {
   recentRequests.push(now);
   requestLog.set(clientAddress, recentRequests);
 
-  const question = typeof body === 'object' && body !== null && 'question' in body
-    ? (body as { question?: unknown }).question
-    : undefined;
-  if (typeof question !== 'string' || question.trim().length < MIN_QUESTION_LENGTH) {
-    return json({ error: `Question must be at least ${MIN_QUESTION_LENGTH} characters.` }, 400);
-  }
-  if (question.trim().length > MAX_QUESTION_LENGTH) {
-    return json({ error: `Question must be no more than ${MAX_QUESTION_LENGTH} characters.` }, 400);
-  }
-
-  let documents;
+  let chunks;
   try {
-    documents = await retrieveDocuments(question.trim());
+    chunks = await retrieveDocumentChunks(question.trim());
   } catch (error) {
     console.error('Ask Gabriel retrieval failed:', error);
     return json({ error: 'Unable to retrieve portfolio knowledge.' }, 500);
   }
 
-  if (documents.length === 0) {
+  if (chunks.length === 0) {
     return json({
       error: 'No relevant documents were found.',
       answer: 'There is not enough information available to answer that.',
@@ -79,13 +79,14 @@ export default async (request: Request) => {
   }
 
   try {
-    const answer = await askGemini(question.trim(), documents);
+    const answer = await askGemini(question.trim(), chunks);
+    const sources = [...new Map(chunks.map(chunk => [
+      `${chunk.title}\u0000${chunk.source_url ?? ''}`,
+      { title: chunk.title, url: chunk.source_url }
+    ])).values()];
     return json({
       answer,
-      sources: documents.map(document => ({
-        title: document.title,
-        url: document.source_url
-      }))
+      sources
     });
   } catch (error) {
     console.error('Ask Gabriel generation failed:', error);
