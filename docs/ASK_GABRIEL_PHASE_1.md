@@ -8,8 +8,8 @@ embeddings, vector search, ingestion, model providers, or scheduled jobs.
 
 Open the Supabase dashboard for the project, choose **SQL Editor**, paste the
 contents of `supabase/documents.sql`, and run it once. The script creates the
-table, maintains `updated_at` on updates, and enables Row Level Security without
-public policies.
+table, maintains `updated_at` on updates, grants the server role read access,
+and enables Row Level Security without public policies.
 
 ## Environment variables
 

@@ -28,5 +28,10 @@ for each row execute function public.set_documents_updated_at();
 
 alter table public.documents enable row level security;
 
+-- Secret API keys assume the service_role database role. PostgreSQL grants are
+-- checked before RLS, so explicitly grant only the access Phase 1 requires.
+grant usage on schema public to service_role;
+grant select on table public.documents to service_role;
+
 -- Intentionally no anon/authenticated policies in Phase 1. The server-only
 -- Supabase secret key bypasses RLS; browser clients cannot read this table.
