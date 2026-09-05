@@ -1,6 +1,6 @@
 import type { DocumentRow } from './documents';
 
-export const DEFAULT_GEMINI_MODEL = 'gemini-2.5-flash';
+export const DEFAULT_GEMINI_MODEL = 'gemini-3.6-flash';
 const MAX_DOCUMENT_CHARACTERS = 6_000;
 const MAX_CONTEXT_CHARACTERS = 24_000;
 
