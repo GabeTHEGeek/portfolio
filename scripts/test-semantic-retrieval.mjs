@@ -20,6 +20,8 @@ for (const question of questions) {
     match_count: 5
   });
   if (error) throw error;
+  const bestSimilarity = chunks?.length ? Math.max(...chunks.map(chunk => Number(chunk.similarity))) : 0;
+  const relevantChunks = (chunks ?? []).filter(chunk => Number(chunk.similarity) >= bestSimilarity - 0.08);
 
   const response = await fetch(endpoint, {
     method: 'POST',
@@ -30,8 +32,8 @@ for (const question of questions) {
 
   console.log(`\nQUESTION: ${question}`);
   console.log('RETRIEVED CHUNKS:');
-  if (!chunks?.length) console.log('  none above threshold');
-  for (const chunk of chunks ?? []) {
+  if (!relevantChunks.length) console.log('  none above threshold');
+  for (const chunk of relevantChunks) {
     const preview = chunk.content.replace(/\s+/g, ' ').slice(0, 180);
     console.log(`  ${chunk.title} [${chunk.chunk_index}] similarity=${Number(chunk.similarity).toFixed(4)}`);
     console.log(`    ${preview}${chunk.content.length > 180 ? '…' : ''}`);

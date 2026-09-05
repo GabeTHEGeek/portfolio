@@ -9,12 +9,14 @@
     "preview": "astro preview",
     "check": "astro check",
     "embed:documents": "node --env-file=.env scripts/embed-documents.mjs",
+    "ingest:portfolio": "node --env-file=.env scripts/ingest-portfolio.mjs",
     "test:retrieval": "node --env-file=.env scripts/test-semantic-retrieval.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.6.0",
     "@supabase/supabase-js": "^2.115.0",
-    "astro": "^5.13.5"
+    "astro": "^5.13.5",
+    "parse5": "^7.3.0"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.4",

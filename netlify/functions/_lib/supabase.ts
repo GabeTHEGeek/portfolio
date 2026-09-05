@@ -10,6 +10,9 @@ export type Database = {
           content: string;
           source_url: string | null;
           source_type: string;
+          content_hash: string | null;
+          last_fetched_at: string | null;
+          last_changed_at: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -19,6 +22,9 @@ export type Database = {
           content: string;
           source_url?: string | null;
           source_type: string;
+          content_hash?: string | null;
+          last_fetched_at?: string | null;
+          last_changed_at?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -28,6 +34,9 @@ export type Database = {
           content?: string;
           source_url?: string | null;
           source_type?: string;
+          content_hash?: string | null;
+          last_fetched_at?: string | null;
+          last_changed_at?: string | null;
           created_at?: string;
           updated_at?: string;
         };

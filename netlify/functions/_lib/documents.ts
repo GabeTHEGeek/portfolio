@@ -5,6 +5,7 @@ export type DocumentChunkMatch = Database['public']['Functions']['match_document
 
 const DEFAULT_MATCH_THRESHOLD = 0.62;
 const DEFAULT_MATCH_COUNT = 5;
+const RELATIVE_SCORE_WINDOW = 0.08;
 
 const boundedNumber = (value: string | undefined, fallback: number, min: number, max: number) => {
   const parsed = Number(value);
@@ -33,5 +34,8 @@ export async function retrieveDocumentChunks(question: string) {
   });
 
   if (error) throw error;
-  return data ?? [];
+  const matches = data ?? [];
+  if (!matches.length) return [];
+  const bestSimilarity = Math.max(...matches.map(match => match.similarity));
+  return matches.filter(match => match.similarity >= bestSimilarity - RELATIVE_SCORE_WINDOW);
 }
