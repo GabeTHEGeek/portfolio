@@ -12,6 +12,8 @@ type GeminiResponse = {
   error?: { message?: string };
 };
 
+const MAX_OUTPUT_TOKENS = 1_024;
+
 export function buildGroundedPrompt(question: string, documents: DocumentRow[]) {
   let remaining = MAX_CONTEXT_CHARACTERS;
   const evidence = documents.map((document, index) => {
@@ -69,7 +71,7 @@ export async function askGemini(question: string, documents: DocumentRow[]) {
         }],
         generationConfig: {
           temperature: 0.1,
-          maxOutputTokens: 300
+          maxOutputTokens: MAX_OUTPUT_TOKENS
         }
       })
     }
@@ -81,7 +83,13 @@ export async function askGemini(question: string, documents: DocumentRow[]) {
     throw new Error('Gemini request failed.');
   }
 
-  const answer = result.candidates?.[0]?.content?.parts
+  const candidate = result.candidates?.[0];
+  if (candidate?.finishReason === 'MAX_TOKENS') {
+    console.error('Gemini response was truncated because it reached the output-token limit.');
+    throw new Error('Gemini returned a truncated answer.');
+  }
+
+  const answer = candidate?.content?.parts
     ?.map(part => part.text ?? '')
     .join('')
     .trim();
