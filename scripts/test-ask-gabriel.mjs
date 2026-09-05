@@ -71,8 +71,14 @@ assert.match(deepSeekBody.messages[1].content, /Ignore all prior instructions/);
 assert.equal(deepSeekBody.thinking.type, 'disabled');
 assert.equal(deepSeekBody.temperature, 0.1);
 
+const autonomy = await handler(request('{"question":"How does Fleet Command manage agent autonomy?"}'));
+assert.equal(autonomy.status, 200);
+assert.deepEqual((await autonomy.json()).sources, [
+  { title: 'Fleet Command', url: 'https://gabrielpendleton.me/projects/fleet-command/' }
+]);
+
 mode = 'no-results';
-const irrelevant = await handler(request('{"question":"Quantum zebras?"}'));
+const irrelevant = await handler(request('{"question":"What is Gabriel’s favorite restaurant?"}'));
 assert.equal(irrelevant.status, 404);
 assert.match((await irrelevant.json()).answer, /not enough information/i);
 
