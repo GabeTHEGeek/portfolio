@@ -1,0 +1,178 @@
+<div class="ask-gabriel" data-ask-gabriel>
+  <button class="ask-launcher" type="button" aria-expanded="false" aria-controls="ask-gabriel-panel">
+    <span class="ask-launcher-signal" aria-hidden="true"></span>
+    <span><small>AI INTERFACE</small><strong>ASK GABRIEL</strong></span>
+  </button>
+
+  <section class="ask-panel hud-panel" id="ask-gabriel-panel" role="dialog" aria-modal="false" aria-labelledby="ask-gabriel-title" hidden>
+    <header class="ask-panel-header">
+      <div>
+        <span class="hud-label">KNOWLEDGE INTERFACE // BETA</span>
+        <h2 id="ask-gabriel-title">Ask Gabriel</h2>
+      </div>
+      <button class="ask-close" type="button" aria-label="Close Ask Gabriel">×</button>
+    </header>
+
+    <div class="ask-transcript" aria-label="Conversation">
+      <div class="ask-intro">
+        <span aria-hidden="true">AG // 01</span>
+        <p>Ask about Gabriel’s projects, experience, or writing. Answers use verified portfolio knowledge.</p>
+      </div>
+    </div>
+
+    <p class="ask-status" role="status" aria-live="polite"></p>
+    <form class="ask-form">
+      <label for="ask-gabriel-question">Your question</label>
+      <div class="ask-input-row">
+        <textarea id="ask-gabriel-question" name="question" rows="2" minlength="3" maxlength="500" placeholder="What is Fleet Command?" required></textarea>
+        <input class="ask-trap" name="website" type="text" tabindex="-1" autocomplete="off" aria-hidden="true" />
+        <button type="submit"><span>TRANSMIT</span><i aria-hidden="true">↗</i></button>
+      </div>
+      <small>Enter to send · Shift + Enter for a new line</small>
+    </form>
+  </section>
+</div>
+
+<script>
+  type Source = { title?: unknown; url?: unknown };
+  type AskResponse = { answer?: unknown; sources?: unknown; error?: unknown };
+
+  const root = document.querySelector<HTMLElement>('[data-ask-gabriel]');
+  const launcher = root?.querySelector<HTMLButtonElement>('.ask-launcher');
+  const panel = root?.querySelector<HTMLElement>('.ask-panel');
+  const close = root?.querySelector<HTMLButtonElement>('.ask-close');
+  const form = root?.querySelector<HTMLFormElement>('.ask-form');
+  const question = root?.querySelector<HTMLTextAreaElement>('#ask-gabriel-question');
+  const transcript = root?.querySelector<HTMLElement>('.ask-transcript');
+  const status = root?.querySelector<HTMLElement>('.ask-status');
+  const submit = form?.querySelector<HTMLButtonElement>('button[type="submit"]');
+  let lastRequestAt = 0;
+  let requestInFlight = false;
+
+  const setOpen = (open: boolean) => {
+    if (!panel || !launcher) return;
+    panel.hidden = !open;
+    launcher.setAttribute('aria-expanded', String(open));
+    launcher.hidden = open;
+    document.body.classList.toggle('ask-gabriel-open', open);
+    if (open) question?.focus();
+    else launcher.focus();
+  };
+
+  const addMessage = (kind: 'question' | 'answer' | 'notice', text: string, sources: Source[] = []) => {
+    if (!transcript) return;
+    const item = document.createElement('article');
+    item.className = `ask-message ask-message-${kind}`;
+    const label = document.createElement('span');
+    label.textContent = kind === 'question' ? 'YOU // QUERY' : kind === 'answer' ? 'AG // RESPONSE' : 'SYSTEM // NOTICE';
+    const copy = document.createElement('p');
+    copy.textContent = text;
+    item.append(label, copy);
+
+    const validSources = sources.filter((source) => typeof source.title === 'string' && typeof source.url === 'string');
+    if (validSources.length) {
+      const list = document.createElement('ul');
+      list.setAttribute('aria-label', 'Sources');
+      validSources.forEach((source) => {
+        try {
+          const url = new URL(source.url as string, window.location.origin);
+          if (!['http:', 'https:'].includes(url.protocol)) return;
+          const li = document.createElement('li');
+          const link = document.createElement('a');
+          link.href = url.href;
+          link.textContent = source.title as string;
+          link.target = '_blank';
+          link.rel = 'noreferrer';
+          li.append(link);
+          list.append(li);
+        } catch {}
+      });
+      if (list.children.length) item.append(list);
+    }
+    transcript.append(item);
+    transcript.scrollTop = transcript.scrollHeight;
+  };
+
+  launcher?.addEventListener('click', () => setOpen(true));
+  close?.addEventListener('click', () => setOpen(false));
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && panel && !panel.hidden) setOpen(false);
+  });
+  question?.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault();
+      form?.requestSubmit();
+    }
+  });
+
+  form?.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    if (!question || !submit || !status || requestInFlight) return;
+    const text = question.value.trim();
+    if (text.length < 3) {
+      status.textContent = 'Enter a question with at least 3 characters.';
+      question.focus();
+      return;
+    }
+    const wait = 3000 - (Date.now() - lastRequestAt);
+    if (wait > 0) {
+      status.textContent = `Please wait ${Math.ceil(wait / 1000)} seconds before asking again.`;
+      return;
+    }
+
+    addMessage('question', text);
+    question.value = '';
+    requestInFlight = true;
+    lastRequestAt = Date.now();
+    submit.disabled = true;
+    question.disabled = true;
+    root?.classList.add('is-loading');
+    status.textContent = 'Searching Gabriel’s portfolio knowledge…';
+
+    try {
+      const payload = { question: text, website: new FormData(form).get('website') };
+      const response = await fetch('/.netlify/functions/ask-gabriel', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await response.json() as AskResponse;
+      if (response.status === 404) {
+        addMessage('notice', typeof data.answer === 'string' ? data.answer : 'There is not enough information available to answer that.');
+      } else if (response.status === 429) {
+        addMessage('notice', 'The interface has received too many questions. Please wait a moment and try again.');
+      } else if (!response.ok || typeof data.answer !== 'string') {
+        throw new Error(typeof data.error === 'string' ? data.error : 'Request failed');
+      } else {
+        addMessage('answer', data.answer, Array.isArray(data.sources) ? data.sources as Source[] : []);
+      }
+      status.textContent = 'Response complete.';
+    } catch {
+      addMessage('notice', 'Ask Gabriel is temporarily unavailable. Please try again shortly.');
+      status.textContent = 'The request could not be completed.';
+    } finally {
+      requestInFlight = false;
+      submit.disabled = false;
+      question.disabled = false;
+      root?.classList.remove('is-loading');
+      question.focus();
+    }
+  });
+</script>
+
+<style is:global>
+  .ask-gabriel{position:fixed;z-index:45;left:18px;bottom:18px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+  .ask-launcher{display:flex;align-items:center;gap:11px;min-height:54px;padding:9px 15px 9px 12px;border:1px solid var(--cyan);background:color-mix(in srgb,var(--bg) 92%,transparent);color:var(--text);clip-path:polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px);box-shadow:0 0 24px color-mix(in srgb,var(--cyan) 12%,transparent);backdrop-filter:blur(14px);cursor:pointer}
+  .ask-launcher[hidden]{display:none}
+  .ask-launcher:hover{background:color-mix(in srgb,var(--cyan) 11%,var(--panel));box-shadow:0 0 30px color-mix(in srgb,var(--cyan) 22%,transparent)}
+  .ask-launcher-signal{width:9px;height:9px;border:1px solid var(--cyan);background:var(--cyan);transform:rotate(45deg);box-shadow:0 0 10px var(--cyan)}
+  .ask-launcher small,.ask-launcher strong{display:block;text-align:left}.ask-launcher small{color:var(--cyan);font-size:7px;letter-spacing:.15em}.ask-launcher strong{margin-top:2px;font-size:11px;letter-spacing:.08em}
+  .ask-panel{display:grid;grid-template-rows:auto minmax(130px,1fr) auto auto;width:min(430px,calc(100vw - 36px));height:min(610px,calc(100vh - 100px));background:color-mix(in srgb,var(--bg) 96%,transparent);backdrop-filter:blur(18px);clip-path:polygon(14px 0,100% 0,100% calc(100% - 14px),calc(100% - 14px) 100%,0 100%,0 14px);box-shadow:0 20px 70px rgba(0,0,0,.45)}
+  .ask-panel[hidden]{display:none}.ask-panel-header{display:flex;align-items:start;justify-content:space-between;gap:20px;padding:18px;border-bottom:1px solid var(--line)}.ask-panel-header h2{margin:7px 0 0;font-size:27px;letter-spacing:-.035em;text-transform:uppercase}.ask-close{display:grid;place-items:center;width:36px;height:36px;padding:0;border:1px solid var(--line);background:var(--panel);color:var(--cyan);font:24px/1 ui-monospace,SFMono-Regular,Menlo,monospace;cursor:pointer}.ask-close:hover{border-color:var(--cyan)}
+  .ask-transcript{overflow-y:auto;padding:18px;scrollbar-color:var(--cyan) var(--panel)}.ask-intro,.ask-message{padding:13px;border-left:2px solid var(--line);background:color-mix(in srgb,var(--panel) 72%,transparent)}.ask-intro span,.ask-message>span{display:block;margin-bottom:6px;color:var(--cyan);font-size:8px;letter-spacing:.13em}.ask-intro p,.ask-message p{margin:0;color:var(--muted);font:13px/1.6 "Arial Narrow",Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.ask-message{margin-top:12px}.ask-message-question{margin-left:38px;border-left-color:var(--signal)}.ask-message-question>span{color:var(--signal)}.ask-message-answer{border-left-color:var(--cyan)}.ask-message-answer p{color:var(--text)}.ask-message-notice{border-left-color:var(--orange)}.ask-message-notice>span{color:var(--orange)}.ask-message ul{display:flex;flex-wrap:wrap;gap:7px;margin:12px 0 0;padding:0;list-style:none}.ask-message a{display:inline-block;padding:6px 8px;border:1px solid var(--line);color:var(--cyan);font-size:9px;letter-spacing:.05em}.ask-message a:hover{text-decoration:underline;text-underline-offset:3px}
+  .ask-status{min-height:30px;margin:0;padding:7px 18px;border-top:1px solid var(--line);color:var(--muted);font-size:9px;letter-spacing:.03em}.is-loading .ask-status{color:var(--cyan)}.is-loading .ask-status:before{content:"";display:inline-block;width:6px;height:6px;margin-right:8px;background:var(--cyan);box-shadow:0 0 8px var(--cyan);animation:ask-pulse 1s ease-in-out infinite}
+  .ask-form{padding:14px 18px 18px;border-top:1px solid var(--line)}.ask-form label{display:block;margin-bottom:7px;color:var(--cyan);font-size:8px;letter-spacing:.13em;text-transform:uppercase}.ask-input-row{display:grid;grid-template-columns:1fr auto;gap:8px}.ask-form textarea{width:100%;min-height:58px;max-height:130px;resize:vertical;padding:10px;border:1px solid var(--line);border-radius:0;background:var(--panel);color:var(--text);font:14px/1.4 "Arial Narrow",Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.ask-form textarea::placeholder{color:var(--muted)}.ask-form button[type="submit"]{display:flex;align-items:center;gap:7px;padding:10px;border:1px solid var(--cyan);background:color-mix(in srgb,var(--cyan) 10%,var(--panel));color:var(--text);font:9px ui-monospace,SFMono-Regular,Menlo,monospace;cursor:pointer}.ask-form button:disabled{cursor:wait;opacity:.55}.ask-form button i{color:var(--cyan);font-style:normal}.ask-form>small{display:block;margin-top:7px;color:var(--muted);font-size:8px}.ask-trap{position:absolute!important;width:1px!important;height:1px!important;overflow:hidden!important;clip:rect(0 0 0 0)!important;white-space:nowrap!important}
+  @keyframes ask-pulse{50%{opacity:.25}}
+  @media(max-width:680px){.ask-gabriel{left:10px;bottom:10px}.ask-panel{position:fixed;inset:10px;width:auto;height:auto;max-height:none}.ask-gabriel-open{overflow:hidden}.ask-gabriel-open .soundtrack-player{display:none}.ask-input-row{grid-template-columns:1fr}.ask-form button[type="submit"]{justify-content:center;min-height:42px}.ask-launcher{min-height:48px}}
+  @media(prefers-reduced-motion:reduce){.is-loading .ask-status:before{animation:none}}
+</style>
