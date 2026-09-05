@@ -1,13 +1,18 @@
 ---
-title: "Speakit"
-slug: "speakit"
-description: "A local-first dictation app for macOS: hold a shortcut, speak, and insert text directly where you are working using on-device speech recognition."
-heroImage: "../../assets/projects/speakit-1.png"
-tags: ["Local AI", "macOS", "Speech recognition"]
-status: "launched"
-liveUrl: "https://tryspeakit.netlify.app/"
+title: Speakit
+slug: speakit
+description: "A dictation app made while sleeping for macOS: hold a shortcut,
+  speak, and insert text directly where you are working using on-device speech
+  recognition."
+heroImage: ../../assets/projects/speakit-1.png
+tags:
+  - Local AI
+  - macOS
+  - Speech recognition
+status: launched
+liveUrl: https://tryspeakit.netlify.app/
 featured: true
-kind: "ai"
+kind: ai
 order: 2
 publishDate: 2026-08-20
 ---
