@@ -1,5 +1,6 @@
 import { askGemini } from './_lib/gemini';
 import { retrieveDocumentChunks } from './_lib/documents';
+import { logStage, safeErrorCode } from './_lib/observability';
 
 const MIN_QUESTION_LENGTH = 3;
 const MAX_QUESTION_LENGTH = 500;
@@ -19,6 +20,7 @@ const json = (body: unknown, status = 200, extraHeaders: Record<string, string> 
   });
 
 export default async (request: Request) => {
+  const trace = { requestId: request.headers.get('x-nf-request-id') ?? crypto.randomUUID() };
   if (request.method !== 'POST') {
     return json({ error: 'Method not allowed. Send a POST request.' }, 405, { allow: 'POST' });
   }
@@ -51,12 +53,21 @@ export default async (request: Request) => {
     return json({ error: `Question must be no more than ${MAX_QUESTION_LENGTH} characters.` }, 400);
   }
 
+  const missingConfiguration = ['SUPABASE_URL', 'SUPABASE_SECRET_KEY', 'GEMINI_API_KEY']
+    .filter(name => !process.env[name]);
+  if (missingConfiguration.length) {
+    logStage(trace, 'configuration.failed', { error_code: 'MISSING_REQUIRED_ENV', missing_variable_count: missingConfiguration.length, rate_limited: false });
+    return json({ error: 'Unable to retrieve portfolio knowledge.' }, 500);
+  }
+  logStage(trace, 'request.accepted', { question_length: question.trim().length });
+
   const clientAddress = request.headers.get('x-nf-client-connection-ip')
     ?? request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
     ?? 'unknown';
   const now = Date.now();
   const recentRequests = (requestLog.get(clientAddress) ?? []).filter(time => now - time < RATE_LIMIT_WINDOW_MS);
   if (recentRequests.length >= RATE_LIMIT_REQUESTS) {
+    logStage(trace, 'rate_limit.rejected', { rate_limited: true, limit: RATE_LIMIT_REQUESTS, window_ms: RATE_LIMIT_WINDOW_MS });
     return json({ error: 'Too many questions. Please wait a moment and try again.' }, 429, { 'retry-after': '60' });
   }
   recentRequests.push(now);
@@ -64,9 +75,9 @@ export default async (request: Request) => {
 
   let chunks;
   try {
-    chunks = await retrieveDocumentChunks(question.trim());
+    chunks = await retrieveDocumentChunks(question.trim(), trace);
   } catch (error) {
-    console.error('Ask Gabriel retrieval failed:', error);
+    logStage(trace, 'request.failed', { stage: 'retrieval', error_code: safeErrorCode(error) });
     return json({ error: 'Unable to retrieve portfolio knowledge.' }, 500);
   }
 
@@ -79,17 +90,18 @@ export default async (request: Request) => {
   }
 
   try {
-    const answer = await askGemini(question.trim(), chunks);
+    const answer = await askGemini(question.trim(), chunks, trace);
     const sources = [...new Map(chunks.map(chunk => [
       `${chunk.title}\u0000${chunk.source_url ?? ''}`,
       { title: chunk.title, url: chunk.source_url }
     ])).values()];
+    logStage(trace, 'request.completed', { chunks_retrieved: chunks.length, sources_returned: sources.length });
     return json({
       answer,
       sources
     });
   } catch (error) {
-    console.error('Ask Gabriel generation failed:', error);
+    logStage(trace, 'request.failed', { stage: 'generation', error_code: safeErrorCode(error) });
     return json({ error: 'Unable to generate an answer right now.' }, 502);
   }
 };

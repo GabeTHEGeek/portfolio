@@ -1,4 +1,5 @@
 import type { DocumentChunkMatch } from './documents';
+import { logStage, type TraceContext } from './observability';
 
 export const DEFAULT_GEMINI_MODEL = 'gemini-3.6-flash';
 const MAX_DOCUMENT_CHARACTERS = 6_000;
@@ -9,7 +10,7 @@ type GeminiResponse = {
     content?: { parts?: Array<{ text?: string }> };
     finishReason?: string;
   }>;
-  error?: { message?: string };
+  error?: { message?: string; status?: string; code?: number };
 };
 
 const MAX_OUTPUT_TOKENS = 1_024;
@@ -39,14 +40,20 @@ export function buildGroundedPrompt(question: string, chunks: DocumentChunkMatch
   ].join('\n\n');
 }
 
-export async function askGemini(question: string, chunks: DocumentChunkMatch[]) {
+export async function askGemini(question: string, chunks: DocumentChunkMatch[], trace: TraceContext) {
   const apiKey = process.env.GEMINI_API_KEY;
   const model = process.env.GEMINI_MODEL?.trim() || DEFAULT_GEMINI_MODEL;
-  if (!apiKey) throw new Error('Missing GEMINI_API_KEY.');
+  if (!apiKey) {
+    logStage(trace, 'generation.failed', { provider: 'gemini', error_code: 'MISSING_GEMINI_API_KEY', rate_limited: false });
+    throw new Error('Missing GEMINI_API_KEY.');
+  }
 
-  const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`,
-    {
+  const startedAt = Date.now();
+  logStage(trace, 'generation.started', { provider: 'gemini', model, chunks_supplied: chunks.length });
+
+  let response: Response;
+  try {
+    response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, {
       method: 'POST',
       signal: AbortSignal.timeout(20_000),
       headers: {
@@ -75,18 +82,25 @@ export async function askGemini(question: string, chunks: DocumentChunkMatch[]) 
           maxOutputTokens: MAX_OUTPUT_TOKENS
         }
       })
-    }
-  );
+    });
+  } catch (error) {
+    logStage(trace, 'generation.failed', { provider: 'gemini', model, error_code: error instanceof Error ? error.name : 'NETWORK_ERROR', rate_limited: false, duration_ms: Date.now() - startedAt });
+    throw error;
+  }
 
   const result = await response.json() as GeminiResponse;
   if (!response.ok) {
-    console.error('Gemini API request failed:', response.status, result.error?.message ?? 'Unknown API error');
+    logStage(trace, 'generation.failed', {
+      provider: 'gemini', model, provider_http_status: response.status,
+      error_code: result.error?.status ?? result.error?.code ?? 'GEMINI_GENERATION_ERROR',
+      rate_limited: response.status === 429, duration_ms: Date.now() - startedAt
+    });
     throw new Error('Gemini request failed.');
   }
 
   const candidate = result.candidates?.[0];
   if (candidate?.finishReason === 'MAX_TOKENS') {
-    console.error('Gemini response was truncated because it reached the output-token limit.');
+    logStage(trace, 'generation.failed', { provider: 'gemini', model, provider_http_status: response.status, error_code: 'MAX_TOKENS', rate_limited: false, duration_ms: Date.now() - startedAt });
     throw new Error('Gemini returned a truncated answer.');
   }
 
@@ -94,6 +108,10 @@ export async function askGemini(question: string, chunks: DocumentChunkMatch[]) 
     ?.map(part => part.text ?? '')
     .join('')
     .trim();
-  if (!answer) throw new Error('Gemini returned no text answer.');
+  if (!answer) {
+    logStage(trace, 'generation.failed', { provider: 'gemini', model, provider_http_status: response.status, error_code: 'EMPTY_RESPONSE', rate_limited: false, duration_ms: Date.now() - startedAt });
+    throw new Error('Gemini returned no text answer.');
+  }
+  logStage(trace, 'generation.completed', { provider: 'gemini', model, provider_http_status: response.status, duration_ms: Date.now() - startedAt });
   return answer;
 }
