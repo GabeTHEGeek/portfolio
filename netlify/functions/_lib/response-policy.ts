@@ -34,7 +34,7 @@ export function applyOutputPolicy(answer: string): string {
     .replace(/Gabriel Pendleton/g, 'Gabriel')
     .replace(/\s*[—–]\s*/g, '. ')
     .replace(/;/g, '.')
-    .replace(/\s+-\s+/g, '. ')
+    .replace(/[ \t]+-[ \t]+/g, '. ')
     .replace(/\s{2,}/g, ' ')
     .replace(/(^|[.!?]\s+)([a-z])/g, (_, boundary: string, letter: string) => `${boundary}${letter.toUpperCase()}`)
     .trim();
