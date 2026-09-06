@@ -40,7 +40,7 @@ export async function askDeepSeek(question: string, chunks: DocumentChunkMatch[]
         ],
         thinking: { type: 'disabled' },
         temperature: 0.1,
-        max_tokens: 350,
+        max_tokens: 280,
         stream: false
       })
     });

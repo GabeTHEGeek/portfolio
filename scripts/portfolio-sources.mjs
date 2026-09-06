@@ -63,7 +63,7 @@ async function profileSources() {
   const profile = JSON.parse(await read('src/data/ask-gabriel-profile.json'));
   return [
     { key: 'profile:portfolio', title: profile.portfolio.title, sourceUrl: sourceUrl('/'), sourceType: 'portfolio-profile', sourcePath: 'src/data/ask-gabriel-profile.json#portfolio',
-      content: cleanMarkdown([profile.portfolio.title, profile.portfolio.summary, 'Professional summary', profile.portfolio.professionalSummary, 'Skills', profile.portfolio.skills.join(', ')].join('\n\n')) },
+      content: cleanMarkdown([profile.portfolio.title, profile.portfolio.summary, 'Professional summary', profile.portfolio.professionalSummary, 'Why Gabriel built this portfolio', profile.portfolio.story, 'Skills', profile.portfolio.skills.join(', ')].join('\n\n')) },
     { key: 'product:ask-gabriel', title: profile.askGabriel.title, sourceUrl: sourceUrl('/#ask-gabriel'), sourceType: 'portfolio-ai-interface', sourcePath: 'src/data/ask-gabriel-profile.json#askGabriel', content: cleanMarkdown(`${profile.askGabriel.title}\n\n${profile.askGabriel.summary}`) }
   ];
 }

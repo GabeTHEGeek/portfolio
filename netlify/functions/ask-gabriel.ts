@@ -1,6 +1,7 @@
 import { askDeepSeek } from './_lib/deepseek';
 import { retrieveDocumentChunks } from './_lib/documents';
 import { logStage, safeErrorCode } from './_lib/observability';
+import { applyOutputPolicy, getPolicyResponse } from './_lib/response-policy';
 
 const MIN_QUESTION_LENGTH = 3;
 const MAX_QUESTION_LENGTH = 500;
@@ -61,6 +62,12 @@ export default async (request: Request) => {
   }
   logStage(trace, 'request.accepted', { question_length: question.trim().length });
 
+  const policyResponse = getPolicyResponse(question.trim());
+  if (policyResponse) {
+    logStage(trace, 'request.completed', { policy_response: true, sources_returned: policyResponse.sources.length });
+    return json(policyResponse);
+  }
+
   const clientAddress = request.headers.get('x-nf-client-connection-ip')
     ?? request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
     ?? 'unknown';
@@ -84,13 +91,13 @@ export default async (request: Request) => {
   if (chunks.length === 0) {
     return json({
       error: 'No relevant documents were found.',
-      answer: 'There is not enough information available to answer that.',
+      answer: "I don't have enough information about that yet.",
       sources: []
     }, 404);
   }
 
   try {
-    const answer = await askDeepSeek(question.trim(), chunks, trace);
+    const answer = applyOutputPolicy(await askDeepSeek(question.trim(), chunks, trace));
     const sources = [...new Map(chunks.map(chunk => [
       `${chunk.title}\u0000${chunk.source_url ?? ''}`,
       { title: chunk.title, url: chunk.source_url }

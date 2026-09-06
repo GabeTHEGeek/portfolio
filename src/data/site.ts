@@ -13,5 +13,6 @@ export const proofPoints = [
   ['Product-led', 'Discovery, UX, adoption, iteration']
 ];
 
-export const githubUrl = 'https://github.com/GabeTHEGeek';
-export const linkedinUrl = 'https://www.linkedin.com/in/gpendleton';
+export const githubUrl = publicLinks.github;
+export const linkedinUrl = publicLinks.linkedin;
+import publicLinks from './public-links.json';

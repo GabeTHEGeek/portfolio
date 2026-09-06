@@ -8,13 +8,19 @@ const DEFAULT_MATCH_THRESHOLD = 0.62;
 const DEFAULT_MATCH_COUNT = 5;
 const RELATIVE_SCORE_WINDOW = 0.08;
 
+export function normalizeRetrievalQuestion(question: string) {
+  const portfolioAlias = /\b(this (site|website|portfolio|page)|the portfolio|gabriel'?s (site|website|portfolio))\b/i;
+  if (!portfolioAlias.test(question)) return question;
+  return `${question}\nContext: The visitor is asking about Gabriel's portfolio website, what it represents, its design, or why Gabriel built it.`;
+}
+
 const boundedNumber = (value: string | undefined, fallback: number, min: number, max: number) => {
   const parsed = Number(value);
   return Number.isFinite(parsed) ? Math.min(max, Math.max(min, parsed)) : fallback;
 };
 
 export async function retrieveDocumentChunks(question: string, trace: TraceContext) {
-  const queryEmbedding = await embedText(question, 'RETRIEVAL_QUERY', undefined, trace);
+  const queryEmbedding = await embedText(normalizeRetrievalQuestion(question), 'RETRIEVAL_QUERY', undefined, trace);
   const matchThreshold = boundedNumber(
     process.env.ASK_GABRIEL_MATCH_THRESHOLD,
     DEFAULT_MATCH_THRESHOLD,
