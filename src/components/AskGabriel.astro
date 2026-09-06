@@ -115,7 +115,7 @@
       visible.textContent = text;
     } else {
       const segments = text.match(/\S+\s*/g) ?? [text];
-      const delay = Math.max(12, Math.min(34, 1800 / Math.max(segments.length, 1)));
+      const delay = Math.max(45, Math.min(75, 3800 / Math.max(segments.length, 1)));
       for (const segment of segments) {
         visible.textContent += segment;
         transcript.scrollTop = transcript.scrollHeight;
@@ -125,6 +125,16 @@
     item.classList.remove('is-typing');
     appendSources(item, sources);
     transcript.scrollTop = transcript.scrollHeight;
+  };
+
+  const addTypingIndicator = () => {
+    const item = addMessage('answer', '', []);
+    const copy = item?.querySelector<HTMLParagraphElement>('p');
+    if (!item || !copy) return null;
+    item.classList.add('ask-typing-indicator');
+    copy.setAttribute('aria-label', 'Gabriel is typing');
+    copy.innerHTML = '<span>Gabriel is typing</span><i></i><i></i><i></i>';
+    return item;
   };
 
   launcher?.addEventListener('click', () => setOpen(true));
@@ -162,6 +172,7 @@
     question.disabled = true;
     root?.classList.add('is-loading');
     status.textContent = 'Searching Gabriel’s portfolio knowledge…';
+    const typingIndicator = addTypingIndicator();
 
     try {
       const payload = { question: text, website: new FormData(form).get('website') };
@@ -171,6 +182,7 @@
         body: JSON.stringify(payload)
       });
       const data = await response.json() as AskResponse;
+      typingIndicator?.remove();
       if (response.status === 404) {
         addMessage('notice', typeof data.answer === 'string' ? data.answer : "I don't have enough information about that yet.");
       } else if (response.status === 429) {
@@ -182,6 +194,7 @@
       }
       status.textContent = 'Response complete.';
     } catch {
+      typingIndicator?.remove();
       addMessage('notice', 'Ask Gabriel is temporarily unavailable. Please try again shortly.');
       status.textContent = 'The request could not be completed.';
     } finally {
@@ -203,11 +216,11 @@
   .ask-launcher-copy{flex:1}.ask-launcher small,.ask-launcher strong,.ask-launcher em{display:block;text-align:left}.ask-launcher small{color:var(--cyan);font-size:7px;letter-spacing:.15em}.ask-launcher strong{margin-top:2px;font-size:11px;letter-spacing:.08em}.ask-launcher em{display:flex;align-items:center;gap:5px;margin-top:3px;color:var(--muted);font-size:7px;font-style:normal;letter-spacing:.13em}.ask-launcher em i{width:5px;height:5px;border-radius:50%;background:var(--cyan);box-shadow:0 0 7px var(--cyan)}.ask-launcher-action{display:flex;align-items:center;gap:5px;max-width:0;overflow:hidden;color:var(--cyan);font-size:8px;letter-spacing:.12em;opacity:0;transform:translateX(-5px);transition:max-width .22s ease,opacity .18s ease,transform .22s ease}.ask-launcher-action i{font-style:normal}.ask-launcher:hover .ask-launcher-action,.ask-launcher:focus-visible .ask-launcher-action{max-width:58px;opacity:1;transform:none}
   .ask-panel{display:grid;grid-template-rows:auto minmax(130px,1fr) auto auto;width:min(430px,calc(100vw - 36px));height:min(610px,calc(100vh - 100px));background:color-mix(in srgb,var(--bg) 96%,transparent);backdrop-filter:blur(18px);clip-path:polygon(14px 0,100% 0,100% calc(100% - 14px),calc(100% - 14px) 100%,0 100%,0 14px);box-shadow:0 20px 70px rgba(0,0,0,.45)}
   .ask-panel[hidden]{display:none}.ask-panel-header{display:flex;align-items:start;justify-content:space-between;gap:20px;padding:18px;border-bottom:1px solid var(--line)}.ask-panel-header h2{margin:7px 0 0;font-size:27px;letter-spacing:-.035em;text-transform:uppercase}.ask-close{display:grid;place-items:center;width:36px;height:36px;padding:0;border:1px solid var(--line);background:var(--panel);color:var(--cyan);font:24px/1 ui-monospace,SFMono-Regular,Menlo,monospace;cursor:pointer}.ask-close:hover{border-color:var(--cyan)}
-  .ask-transcript{min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:18px;scrollbar-color:var(--cyan) var(--panel)}.ask-intro,.ask-message{padding:13px;border-left:2px solid var(--line);background:color-mix(in srgb,var(--panel) 72%,transparent)}.ask-intro span,.ask-message>span{display:block;margin-bottom:6px;color:var(--cyan);font-size:8px;letter-spacing:.13em}.ask-intro p,.ask-message p{margin:0;color:var(--muted);font:13px/1.6 "Arial Narrow",Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.ask-message{margin-top:12px}.ask-message-question{margin-left:38px;border-left-color:var(--signal)}.ask-message-question>span{color:var(--signal)}.ask-message-answer{border-left-color:var(--cyan)}.ask-message-answer p{color:var(--text)}.ask-message-answer.is-typing p:after{content:"";display:inline-block;width:3px;height:1em;margin-left:5px;background:var(--cyan);vertical-align:-.12em;box-shadow:0 0 7px var(--cyan);animation:ask-caret .7s steps(1,end) infinite}.ask-message-notice{border-left-color:var(--orange)}.ask-message-notice>span{color:var(--orange)}.ask-message ul{display:flex;flex-wrap:wrap;gap:7px;margin:12px 0 0;padding:0;list-style:none}.ask-message a{display:inline-block;padding:6px 8px;border:1px solid var(--line);color:var(--cyan);font-size:9px;letter-spacing:.05em}.ask-message a:hover{text-decoration:underline;text-underline-offset:3px}
+  .ask-transcript{min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:18px;scrollbar-color:var(--cyan) var(--panel)}.ask-intro,.ask-message{padding:13px;border-left:2px solid var(--line);background:color-mix(in srgb,var(--panel) 72%,transparent)}.ask-intro span,.ask-message>span{display:block;margin-bottom:6px;color:var(--cyan);font-size:8px;letter-spacing:.13em}.ask-intro p,.ask-message p{margin:0;color:var(--muted);font:13px/1.6 "Arial Narrow",Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.ask-message{margin-top:12px}.ask-message-question{margin-left:38px;border-left-color:var(--signal)}.ask-message-question>span{color:var(--signal)}.ask-message-answer{border-left-color:var(--cyan)}.ask-message-answer p{color:var(--text)}.ask-message-answer.is-typing p:after{content:"";display:inline-block;width:3px;height:1em;margin-left:5px;background:var(--cyan);vertical-align:-.12em;box-shadow:0 0 7px var(--cyan);animation:ask-caret .7s steps(1,end) infinite}.ask-typing-indicator p{display:flex;align-items:center;gap:5px;color:var(--muted)}.ask-typing-indicator p span{margin-right:3px}.ask-typing-indicator p i{width:5px;height:5px;border-radius:50%;background:var(--cyan);box-shadow:0 0 6px var(--cyan);animation:ask-dot 1s ease-in-out infinite}.ask-typing-indicator p i:nth-of-type(2){animation-delay:.16s}.ask-typing-indicator p i:nth-of-type(3){animation-delay:.32s}.ask-message-notice{border-left-color:var(--orange)}.ask-message-notice>span{color:var(--orange)}.ask-message ul{display:flex;flex-wrap:wrap;gap:7px;margin:12px 0 0;padding:0;list-style:none}.ask-message a{display:inline-block;padding:6px 8px;border:1px solid var(--line);color:var(--cyan);font-size:9px;letter-spacing:.05em}.ask-message a:hover{text-decoration:underline;text-underline-offset:3px}
   .ask-screen-reader-answer{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
   .ask-status{min-height:30px;margin:0;padding:7px 18px;border-top:1px solid var(--line);color:var(--muted);font-size:9px;letter-spacing:.03em}.is-loading .ask-status{color:var(--cyan)}.is-loading .ask-status:before{content:"";display:inline-block;width:6px;height:6px;margin-right:8px;background:var(--cyan);box-shadow:0 0 8px var(--cyan);animation:ask-pulse 1s ease-in-out infinite}
   .ask-form{padding:14px 18px 18px;border-top:1px solid var(--line)}.ask-form label{display:block;margin-bottom:7px;color:var(--cyan);font-size:8px;letter-spacing:.13em;text-transform:uppercase}.ask-input-row{display:grid;grid-template-columns:1fr auto;gap:8px}.ask-form textarea{width:100%;min-height:58px;max-height:130px;resize:vertical;padding:10px;border:1px solid var(--line);border-radius:0;background:var(--panel);color:var(--text);font:14px/1.4 "Arial Narrow",Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.ask-form textarea::placeholder{color:var(--muted)}.ask-form button[type="submit"]{display:flex;align-items:center;gap:7px;padding:10px;border:1px solid var(--cyan);background:color-mix(in srgb,var(--cyan) 10%,var(--panel));color:var(--text);font:9px ui-monospace,SFMono-Regular,Menlo,monospace;cursor:pointer}.ask-form button:disabled{cursor:wait;opacity:.55}.ask-form button i{color:var(--cyan);font-style:normal}.ask-form>small{display:block;margin-top:7px;color:var(--muted);font-size:8px}.ask-trap{position:absolute!important;width:1px!important;height:1px!important;overflow:hidden!important;clip:rect(0 0 0 0)!important;white-space:nowrap!important}
-  @keyframes ask-pulse{50%{opacity:.25}}@keyframes ask-caret{50%{opacity:0}}
+  @keyframes ask-pulse{50%{opacity:.25}}@keyframes ask-caret{50%{opacity:0}}@keyframes ask-dot{0%,60%,100%{opacity:.25;transform:translateY(0)}30%{opacity:1;transform:translateY(-3px)}}
   @media(max-width:680px){.ask-gabriel{left:10px;bottom:10px}.ask-panel{position:fixed;inset:auto 10px 10px;width:auto;height:min(700px,calc(100dvh - 20px));max-height:calc(100dvh - 20px)}.ask-gabriel-open{overflow:hidden}.ask-gabriel-open .soundtrack-player{display:none}.ask-input-row{grid-template-columns:1fr}.ask-form button[type="submit"]{justify-content:center;min-height:42px}.ask-launcher{min-height:56px}.ask-launcher:hover,.ask-launcher:focus-visible{min-width:176px}.ask-launcher-action{display:none}}
-  @media(prefers-reduced-motion:reduce){.is-loading .ask-status:before,.ask-message-answer.is-typing p:after{animation:none}.ask-launcher,.ask-launcher-action{transition:none}}
+  @media(prefers-reduced-motion:reduce){.is-loading .ask-status:before,.ask-message-answer.is-typing p:after,.ask-typing-indicator p i{animation:none}.ask-launcher,.ask-launcher-action{transition:none}}
 </style>
