@@ -17,6 +17,10 @@ const audioUrl = '/audio/ftl-ben-prunty.mp3';
   const audio = player?.querySelector<HTMLAudioElement>('audio');
   const label = button?.querySelector<HTMLElement>('span');
   const icon = button?.querySelector<HTMLElement>('i');
+  if (window.matchMedia('(max-width: 680px)').matches) {
+    player?.classList.add('is-minimized');
+    button?.setAttribute('aria-label', 'Expand player and play optional FTL soundtrack');
+  }
   close?.addEventListener('click', () => {
     audio?.pause();
     player?.classList.remove('is-playing');
