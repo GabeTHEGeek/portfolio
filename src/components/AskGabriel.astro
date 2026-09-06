@@ -1,8 +1,13 @@
+---
+import launcherPortrait from '../assets/gabriel-pendleton-cyborg-v2.png';
+---
+
 <div class="ask-gabriel" data-ask-gabriel>
   <button class="ask-launcher" type="button" aria-expanded="false" aria-controls="ask-gabriel-panel">
     <span class="ask-launcher-signal" aria-hidden="true"></span>
     <span class="ask-launcher-copy"><small>AI INTERFACE</small><strong>ASK GABRIEL</strong><em><i aria-hidden="true"></i> ONLINE</em></span>
     <span class="ask-launcher-action" aria-hidden="true">OPEN <i>↗</i></span>
+    <img class="ask-launcher-portrait" src={launcherPortrait.src} alt="" width="40" height="40" aria-hidden="true" />
   </button>
 
   <section class="ask-panel hud-panel" id="ask-gabriel-panel" role="dialog" aria-modal="false" aria-labelledby="ask-gabriel-title" hidden>
@@ -49,6 +54,21 @@
   const submit = form?.querySelector<HTMLButtonElement>('button[type="submit"]');
   let lastRequestAt = 0;
   let requestInFlight = false;
+
+  const formatAnswer = (value: string) => {
+    const clean = value.replace(/\s*[—–]\s*/g, ', ').replace(/,\s*,/g, ',').trim();
+    const sentences = clean.match(/[^.!?]+[.!?]+|[^.!?]+$/g)?.map((sentence) => sentence.trim()).filter(Boolean) ?? [clean];
+    const paragraphs: string[] = [];
+    let paragraph = '';
+    sentences.forEach((sentence) => {
+      if (paragraph && `${paragraph} ${sentence}`.length > 150) {
+        paragraphs.push(paragraph);
+        paragraph = sentence;
+      } else paragraph = paragraph ? `${paragraph} ${sentence}` : sentence;
+    });
+    if (paragraph) paragraphs.push(paragraph);
+    return paragraphs.join('\n\n');
+  };
 
   const setOpen = (open: boolean) => {
     if (!panel || !launcher) return;
@@ -100,6 +120,7 @@
 
   const addTypedAnswer = async (text: string, sources: Source[]) => {
     if (!transcript) return;
+    text = formatAnswer(text);
     const item = addMessage('answer', '', []);
     const visible = item?.querySelector<HTMLParagraphElement>('p');
     if (!item || !visible) return;
@@ -223,4 +244,6 @@
   @keyframes ask-pulse{50%{opacity:.25}}@keyframes ask-caret{50%{opacity:0}}@keyframes ask-dot{0%,60%,100%{opacity:.25;transform:translateY(0)}30%{opacity:1;transform:translateY(-3px)}}
   @media(max-width:680px){.ask-gabriel{left:10px;bottom:10px}.ask-panel{position:fixed;inset:auto 10px 10px;width:auto;height:min(700px,calc(100dvh - 20px));max-height:calc(100dvh - 20px)}.ask-gabriel-open{overflow:hidden}.ask-gabriel-open .soundtrack-player{display:none}.ask-input-row{grid-template-columns:1fr}.ask-form button[type="submit"]{justify-content:center;min-height:42px}.ask-launcher{min-height:56px}.ask-launcher:hover,.ask-launcher:focus-visible{min-width:176px}.ask-launcher-action{display:none}}
   @media(prefers-reduced-motion:reduce){.is-loading .ask-status:before,.ask-message-answer.is-typing p:after,.ask-typing-indicator p i{animation:none}.ask-launcher,.ask-launcher-action{transition:none}}
+  .ask-launcher-portrait{flex:0 0 40px;width:40px;height:40px;border:1px solid color-mix(in srgb,var(--cyan) 70%,transparent);border-radius:50%;background:#fff;object-fit:cover;object-position:center;box-shadow:0 0 14px color-mix(in srgb,var(--cyan) 20%,transparent)}
+  .ask-message-answer p{white-space:pre-line}
 </style>

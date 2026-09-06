@@ -40,6 +40,7 @@ body{background:linear-gradient(180deg,rgba(5,10,17,.3),transparent 40%),var(--b
 @keyframes type-caret{50%{opacity:.68;box-shadow:0 0 10px var(--cyan),0 0 26px var(--cyan)}}
 @media(max-width:680px){.data-marker{font-size:9px}.hero-telemetry button:nth-child(2){border-right:0}.hero-telemetry button:nth-child(-n+2){border-bottom:1px solid var(--line)}.agent-stage{display:grid;grid-template-columns:1fr 1fr;gap:10px;min-height:0;padding:28px}.agent-links{display:none}.agent-node{position:relative;inset:auto!important;width:auto}.node-1{grid-column:1/-1}.soundtrack-player{right:10px;bottom:78px;grid-template-columns:42px 1fr auto;width:calc(100vw - 20px)}.soundtrack-player.is-minimized{right:10px;bottom:10px}.soundtrack-art{width:42px;height:42px}.soundtrack-player>div small{display:none}.soundtrack-player button span{display:none}}
 @media(prefers-reduced-motion:reduce){.command-statement i{display:inline-block;animation:none}}
+.soundtrack-player{grid-template-columns:52px minmax(105px,1fr) auto;gap:8px;width:min(350px,calc(100vw - 36px))}
 
 /* Fully outlined angular controls with a cyan active state. */
 .command-button{position:relative;isolation:isolate;padding:14px 17px;border:0;background:var(--line);transition:transform .2s ease,background-color .2s ease,color .2s ease,box-shadow .2s ease}

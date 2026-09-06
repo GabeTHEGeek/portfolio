@@ -64,7 +64,7 @@ export async function askDeepSeek(question: string, chunks: DocumentChunkMatch[]
     logStage(trace, 'generation.failed', { provider: 'deepseek', model, provider_http_status: response.status, error_code: 'MAX_TOKENS', rate_limited: false, duration_ms: Date.now() - startedAt });
     throw new Error('DeepSeek returned a truncated answer.');
   }
-  const answer = choice?.message?.content?.trim();
+  const answer = choice?.message?.content?.trim().replace(/\s*[—–]\s*/g, ', ').replace(/,\s*,/g, ',');
   if (!answer) {
     logStage(trace, 'generation.failed', { provider: 'deepseek', model, provider_http_status: response.status, error_code: 'EMPTY_RESPONSE', rate_limited: false, duration_ms: Date.now() - startedAt });
     throw new Error('DeepSeek returned no text answer.');
