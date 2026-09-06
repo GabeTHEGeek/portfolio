@@ -15,7 +15,7 @@ publishDate: 2022-05-01
 
 ## Overview
 
-Led product work on Creator Home, the default landing page in Twitch's Creator Dashboard. It brings relevant announcements, recent-stream performance, guidance, and actionable insights into one personalized experience for streamers.
+Led product work on Creator Home, the default landing page in Twitch's Creator Dashboard. It brings relevant announcements, recent-stream performance, guidance, and actionable insights into one personalized experience for streamers. The product launched in 2022 and served more than 10 million creators.
 
 ## Product approach
 

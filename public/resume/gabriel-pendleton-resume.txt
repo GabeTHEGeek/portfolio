@@ -3,7 +3,7 @@ AI Product Manager | 2x Founder / Head of Product | LLMs & Agentic Workflows
 
 PROFESSIONAL SUMMARY
 
-AI Product Manager and two-time founder with 7 years in product management and 15 total years in technology, including shipping ML-powered products at Twitch. Builds and runs AI agents daily, from a multi-agent system spanning sales, product, and engineering to a growth agent that drove 200-300 monthly quote requests with zero paid marketing. Led Creator Home's personalization platform to a 27% conversion lift across 10M+ streamers.
+AI Product Manager and two-time founder with 7 years in product management and 15 total years in technology, including shipping ML-powered products at Twitch. Builds and runs AI agents daily, from a multi-agent system spanning sales, product, and engineering to a growth agent that drove 200-300 monthly quote requests with zero paid marketing. Led Creator Home's personalization platform to a 27% conversion lift across 10M+ creators.
 
 CORE COMPETENCIES
 
@@ -39,7 +39,7 @@ Sizzl - Head of Product | May 2022-May 2024
 
 Twitch - Product Manager, Creator Experience | March 2021-May 2022
 
-- Led a team of 13 across engineering, UX, and data science to launch Creator Home for more than 10 million streamers. A Personalization Service delivered lifecycle-based recommendations and lifted dedicated-creator conversion 27%.
+- Led a team of 13 across engineering, UX, and data science to launch Creator Home for more than 10 million creators. A Personalization Service delivered lifecycle-based recommendations and lifted dedicated-creator conversion 27%.
 - Ran the Creator Home experimentation program, including A/B tests reaching 835,000 users per month, with pre-registered segments, kill criteria, and data science partnership to seed future machine-learning models.
 - Shipped Your Community, a feature recommending co-streaming partners to creators, which lifted collaborations 12%.
 - Launched the Affiliates Dashboard to centralize monetization tools, driving 32% feature adoption and $5 million in incremental creator payouts.

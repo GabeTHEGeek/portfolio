@@ -1,10 +1,10 @@
 ---
 title: "API-first warranty marketplace"
 slug: "warrantypilot"
-description: "A vehicle service contract marketplace with provider integrations and AI-assisted product exploration."
+description: "A revenue-generating vehicle service contract marketplace with more than 13 provider partnerships, provider integrations, and AI-assisted product exploration."
 heroImage: "../../assets/projects/warrantypilot-1.png"
 tags: ["Marketplace", "APIs", "AI-assisted workflows"]
-status: "in-progress"
+status: "launched"
 featured: false
 kind: "product"
 company: "WarrantyPilot"
@@ -19,4 +19,4 @@ Co-founded and led product strategy and roadmap for a mobile and web vehicle-pro
 
 ## Product approach
 
-The product combines transparent comparison, provider integrations, AI-assisted recommendations, purchasing, educational resources, second-chance programs, and repair-shop integrations. I led a cross-functional team from concept through beta launch, established partnerships with more than 13 warranty providers and repair shops, and helped generate more than 290 contracts in the first year.
+The product combines transparent comparison, provider integrations, AI-assisted recommendations, purchasing, educational resources, second-chance programs, and repair-shop integrations. I led a cross-functional team from concept through beta launch, established more than 13 provider partnerships, and helped the product begin generating revenue.

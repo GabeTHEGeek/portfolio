@@ -128,6 +128,12 @@ body{background:linear-gradient(180deg,rgba(5,10,17,.3),transparent 40%),var(--b
 .about-actions .about-writing .command-button__content{color:var(--deep)}
 .about-actions .command-button:hover,.about-actions .command-button:focus-visible{background:var(--cyan);box-shadow:0 0 26px color-mix(in srgb,var(--cyan) 30%,transparent)}
 .about-actions .command-button:hover::before,.about-actions .command-button:focus-visible::before{background:var(--cyan)}
+:root[data-theme="light"] .about-actions .about-projects,:root[data-theme="light"] .about-actions .about-projects::before{background:#a83f08}
+:root[data-theme="light"] .about-actions .about-writing,:root[data-theme="light"] .about-actions .about-writing::before{background:#08384a}
+:root[data-theme="light"] .about-actions .about-projects .command-button__content,:root[data-theme="light"] .about-actions .about-writing .command-button__content{color:#fff}
+:root[data-theme="light"] .about-actions .command-button{box-shadow:0 5px 14px rgba(3,30,40,.16)}
+:root[data-theme="light"] .about-actions .command-button:hover,:root[data-theme="light"] .about-actions .command-button:focus-visible,:root[data-theme="light"] .about-actions .command-button:hover::before,:root[data-theme="light"] .about-actions .command-button:focus-visible::before{background:#087e9b}
+:root[data-theme="light"] .about-actions .command-button:hover .command-button__content,:root[data-theme="light"] .about-actions .command-button:focus-visible .command-button__content{color:#fff}
 .agent-links .peer-link{stroke:var(--cyan);stroke-dasharray:5 6;opacity:.8;animation:dash-flow 7s linear infinite}.agent-links marker path{fill:var(--cyan);stroke:none}
 
 @media(max-width:680px){.command-cta{padding-top:70px}}

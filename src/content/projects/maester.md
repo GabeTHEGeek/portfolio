@@ -4,7 +4,7 @@ slug: "maester"
 description: "A grounded multi-source hiring workflow using a two-stage LLM pipeline designed to reduce fabrication and improve matching."
 heroImage: "../../assets/projects/maester-1.png"
 tags: ["Hiring workflows", "Grounded AI", "LLM pipelines"]
-status: "concept"
+status: "launched"
 githubUrl: "https://github.com/GabeTHEGeek/maester"
 featured: true
 kind: "ai"
