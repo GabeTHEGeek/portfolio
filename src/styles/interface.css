@@ -144,8 +144,8 @@ body{background:linear-gradient(180deg,rgba(5,10,17,.3),transparent 40%),var(--b
 .portrait-orbit{inset:auto 26px;top:66px;aspect-ratio:1;height:auto}
 @media(max-width:680px){.augmented-profile{min-height:clamp(430px,calc(92vw + 54px),620px)}.augmented-photo{inset:auto 35px;top:73px;aspect-ratio:1}.portrait-orbit{inset:auto 17px;top:54px;aspect-ratio:1}.profile-status{bottom:18px}}
 
-/* Keep the desktop orbit on a stable composited layer. The earlier desktop
+/* Keep the orbit on a stable composited layer. The earlier desktop
    aspect-ratio override could leave animation geometry unresolved in Safari. */
 .portrait-orbit{transform-origin:50% 50%;will-change:transform;animation-name:orbit-spin-desktop;animation-duration:24s;animation-timing-function:linear;animation-iteration-count:infinite}
 @keyframes orbit-spin-desktop{from{transform:translateZ(0) rotate(0deg)}to{transform:translateZ(0) rotate(360deg)}}
-@media(prefers-reduced-motion:reduce){.portrait-orbit{will-change:auto;animation:none}}
+@media(prefers-reduced-motion:reduce){.portrait-orbit{animation:orbit-spin-desktop 36s linear infinite}.scan-line{display:block;animation:portrait-scan 8s ease-in-out infinite;opacity:.32}}
