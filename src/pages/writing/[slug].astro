@@ -3,6 +3,7 @@ import { getCollection, render, type CollectionEntry } from 'astro:content';
 import { Image } from 'astro:assets';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import authorPortrait from '../../assets/gabriel-pendleton-cyborg-v2.png';
+import { readingTime } from '../../utils/reading-time';
 
 export async function getStaticPaths() {
   const articles = await getCollection('writing');
@@ -11,6 +12,7 @@ export async function getStaticPaths() {
 type Props = { article: CollectionEntry<'writing'> };
 const { article } = Astro.props;
 const { Content, headings } = await render(article);
+const duration = readingTime(article.body ?? '');
 const allArticles = await getCollection('writing');
 const related = allArticles.filter(({ id }) => id !== article.id).map((entry) => ({ entry, shared: entry.data.tags.filter((tag) => article.data.tags.includes(tag)).length })).sort((a, b) => b.shared - a.shared || b.entry.data.publishDate.valueOf() - a.entry.data.publishDate.valueOf()).slice(0, 3).map(({ entry }) => entry);
 const schema = {
@@ -24,14 +26,14 @@ const schema = {
   <header class="article-hero wrap">
     <p class="crumbs"><a href="/writing/">Writing</a><span>/</span><span>{article.data.category}</span></p>
     <p class="eyebrow cyan">{article.data.category}</p><h1>{article.data.title}</h1><p class="lede">{article.data.description}</p>
-    <div class="article-meta"><Image class="avatar" src={authorPortrait} alt="" width={40} height={40} widths={[40, 80]} sizes="40px" format="webp" /><div><strong>{article.data.author}</strong><span><time datetime={article.data.publishDate.toISOString()}>{article.data.publishDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric', timeZone: 'UTC' })}</time> · {article.data.readTime}</span></div></div>
+    <div class="article-meta"><Image class="avatar" src={authorPortrait} alt="" width={40} height={40} widths={[40, 80]} sizes="40px" format="webp" /><div><strong>{article.data.author}</strong><span><time datetime={article.data.publishDate.toISOString()}>{article.data.publishDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric', timeZone: 'UTC' })}</time> · {duration}</span></div></div>
     {article.data.coverImage && <Image class="article-hero-image" src={article.data.coverImage} alt="" width={1600} widths={[800, 1200, 1600]} sizes="92vw" />}
   </header>
   <div class="article-shell wrap">
     <aside class="toc"><p class="eyebrow">In this article</p><nav aria-label="Table of contents">{headings.filter(({ depth }) => depth === 2 || depth === 3).map((heading, index) => <a class:list={[`depth-${heading.depth}`]} href={`#${heading.slug}`}><span class="toc-number">{String(index + 1).padStart(2, '0')}</span><span>{heading.text}</span></a>)}</nav></aside>
     <article class="article-prose"><Content /><footer class="article-end"><h2>Keep exploring</h2><p>More product thinking and hands-on AI work from Gabriel Pendleton.</p><div class="article-actions"><a class="command-button primary" href="/writing/"><span class="command-button__content"><b>AR</b> ALL WRITING</span></a><a class="command-button" href="/projects/"><span class="command-button__content"><b>SYS</b> VIEW PROJECTS</span></a></div></footer></article>
   </div>
-  {related.length > 0 && <section class="related band"><div class="wrap"><div class="section-head"><div><p class="eyebrow">Related</p><h2>Continue reading.</h2></div></div><div class="related-grid">{related.map((item) => <a href={`/writing/${item.data.slug}/`}><span>{item.data.category} · {item.data.readTime}</span><h3>{item.data.title}</h3><p>{item.data.description}</p></a>)}</div></div></section>}
+  {related.length > 0 && <section class="related band"><div class="wrap"><div class="section-head"><div><p class="eyebrow">Related</p><h2>Continue reading.</h2></div></div><div class="related-grid">{related.map((item) => <a href={`/writing/${item.data.slug}/`}><span>{item.data.category} · {readingTime(item.body ?? '')}</span><h3>{item.data.title}</h3><p>{item.data.description}</p></a>)}</div></div></section>}
 </BaseLayout>
 
 <script>

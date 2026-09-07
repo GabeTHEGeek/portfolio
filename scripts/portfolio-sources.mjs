@@ -44,7 +44,7 @@ async function writingSources() {
   const articles = await Promise.all(files.map(async (file) => {
     const { data, body } = parseMarkdown(await read(`src/content/writing/${file}`));
     return { key: `article:${data.slug}`, title: String(data.title), sourceUrl: sourceUrl(`/writing/${data.slug}/`), sourceType: 'portfolio-article', sourcePath: `src/content/writing/${file}`,
-      content: cleanMarkdown([data.title, metadataText(data, [['Description', 'description'], ['Category', 'category'], ['Tags', 'tags'], ['Published', 'publishDate'], ['Reading time', 'readTime'], ['Author', 'author']]), body].filter(Boolean).join('\n\n')) };
+      content: cleanMarkdown([data.title, metadataText(data, [['Description', 'description'], ['Category', 'category'], ['Tags', 'tags'], ['Published', 'publishDate'], ['Author', 'author']]), body].filter(Boolean).join('\n\n')) };
   }));
   const catalog = { key: 'writing:index', title: 'Gabriel Pendleton Writing', sourceUrl: sourceUrl('/writing/'), sourceType: 'portfolio-writing-index', sourcePath: 'src/content/writing/*.md',
     content: cleanMarkdown(['Gabriel Pendleton Writing', 'Articles and field notes about AI products, agent systems, product leadership, local AI, product judgment, and building in public.', ...articles.map((article) => `${article.title}\n${article.content.split('\n').find((line) => line.startsWith('Description:')) ?? ''}\nSource: ${article.sourceUrl}`)].join('\n\n')) };

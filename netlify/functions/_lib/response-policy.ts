@@ -46,6 +46,7 @@ export function applyOutputPolicy(answer: string): string {
   }
   return answer
     .replace(/Gabriel Pendleton/g, 'Gabriel')
+    .replace(/\bGabriel\s+is\s+Gabriel\b/gi, 'Gabriel is')
     .replace(/\s*[—–]\s*/g, '. ')
     .replace(/;/g, '.')
     .replace(/[ \t]+-[ \t]+/g, '. ')

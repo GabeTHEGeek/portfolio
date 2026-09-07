@@ -7,7 +7,6 @@ category: "AI Agents"
 order: 2
 tags: ["AI Product", "Agents", "Building in Public", "Evaluation"]
 publishDate: 2026-09-03
-readTime: "8 min read"
 author: "Gabriel Pendleton"
 ---
 

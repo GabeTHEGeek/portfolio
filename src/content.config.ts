@@ -32,7 +32,6 @@ const writing = defineCollection({
     category: z.string(),
     tags: z.array(z.string()).default([]),
     publishDate: z.coerce.date(),
-    readTime: z.string(),
     order: z.number().int().default(99),
     author: z.string()
   })

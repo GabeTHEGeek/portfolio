@@ -18,7 +18,7 @@ collections:
     sortable_fields: []
     folder: src/content/projects
     create: true
-    delete: false
+    delete: true
     extension: md
     format: frontmatter
     slug: "{{fields.slug}}"
@@ -52,7 +52,7 @@ collections:
     sortable_fields: []
     folder: src/content/writing
     create: true
-    delete: false
+    delete: true
     extension: md
     format: frontmatter
     slug: "{{fields.slug}}"
@@ -66,7 +66,6 @@ collections:
       - { label: Category, name: category, widget: string }
       - { label: Tags, name: tags, widget: list, required: false, default: [] }
       - { label: Publish date, name: publishDate, widget: datetime, format: 'YYYY-MM-DD', date_format: 'YYYY-MM-DD', time_format: false }
-      - { label: Reading time, name: readTime, widget: string, hint: 'For example: 8 min read' }
       - { name: order, widget: hidden, default: 99 }
       - { label: Author, name: author, widget: string, default: Gabriel Pendleton }
       - { label: Body, name: body, widget: markdown }

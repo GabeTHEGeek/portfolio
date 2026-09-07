@@ -10,7 +10,6 @@ tags:
   - Product Design
   - Speakit
 publishDate: 2026-08-24
-readTime: 5 min read
 order: 3
 author: Gabriel Pendleton
 ---
