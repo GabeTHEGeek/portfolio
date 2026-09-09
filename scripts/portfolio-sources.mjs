@@ -33,7 +33,7 @@ async function projectSources() {
   return Promise.all(files.map(async (file) => {
     const { data, body } = parseMarkdown(await read(`src/content/projects/${file}`));
     const title = data.company ? `${data.company}: ${data.title}` : String(data.title);
-    return { key: `project:${data.slug}`, title, sourceUrl: sourceUrl(`/projects/${data.slug}/`), sourceType: 'portfolio-project', sourcePath: `src/content/projects/${file}`,
+    return { key: `project:${data.slug}`, title, sourceUrl: sourceUrl(`/projects/${data.slug}/`), sourceType: 'portfolio-project', sourcePath: `src/content/projects/${file}`, relatedProject: data.slug, githubUrl: data.githubUrl ?? null,
       content: cleanMarkdown([title, metadataText(data, [['Description', 'description'], ['Role', 'role'], ['Status', 'status'], ['Tags', 'tags'], ['Published', 'publishDate']]), body].filter(Boolean).join('\n\n')) };
   }));
 }
@@ -43,7 +43,7 @@ async function writingSources() {
   const files = (await readdir(directory)).filter((file) => file.endsWith('.md')).sort();
   const articles = await Promise.all(files.map(async (file) => {
     const { data, body } = parseMarkdown(await read(`src/content/writing/${file}`));
-    return { key: `article:${data.slug}`, title: String(data.title), sourceUrl: sourceUrl(`/writing/${data.slug}/`), sourceType: 'portfolio-article', sourcePath: `src/content/writing/${file}`,
+    return { key: `article:${data.slug}`, title: String(data.title), sourceUrl: sourceUrl(`/writing/${data.slug}/`), sourceType: 'portfolio-article', sourcePath: `src/content/writing/${file}`, relatedProject: data.relatedProject ?? null, githubUrl: null,
       content: cleanMarkdown([data.title, metadataText(data, [['Description', 'description'], ['Category', 'category'], ['Tags', 'tags'], ['Published', 'publishDate'], ['Author', 'author']]), body].filter(Boolean).join('\n\n')) };
   }));
   const catalog = { key: 'writing:index', title: 'Gabriel Pendleton Writing', sourceUrl: sourceUrl('/writing/'), sourceType: 'portfolio-writing-index', sourcePath: 'src/content/writing/*.md',

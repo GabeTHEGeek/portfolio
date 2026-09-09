@@ -10,6 +10,8 @@
     "check": "astro check",
     "embed:documents": "node --env-file=.env scripts/embed-documents.mjs",
     "ingest:portfolio": "node --env-file=.env scripts/ingest-portfolio.mjs",
+    "ingest:github": "node --env-file=.env scripts/ingest-github.mjs",
+    "test:github-ingestion": "node scripts/test-github-ingestion.mjs",
     "test:retrieval": "node --env-file=.env scripts/test-semantic-retrieval.mjs"
   },
   "dependencies": {

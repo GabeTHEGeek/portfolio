@@ -7,6 +7,7 @@ category: "AI Agents"
 order: 1
 tags: ["AI Product", "Agents", "Model Routing", "Building in Public"]
 publishDate: 2026-09-03
+relatedProject: fleet-command
 author: "Gabriel Pendleton"
 ---
 

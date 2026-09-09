@@ -6,6 +6,7 @@ coverImage: "../../assets/article-fleet-command.png"
 category: "AI Agents"
 tags: ["AI Product", "Agents", "Building in Public"]
 publishDate: 2026-09-01
+relatedProject: fleet-command
 author: "Gabriel Pendleton"
 ---
 

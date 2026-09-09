@@ -13,6 +13,13 @@ export type Database = {
           content_hash: string | null;
           last_fetched_at: string | null;
           last_changed_at: string | null;
+          source_external_id: string | null;
+          source_status: 'active' | 'unavailable' | 'removed';
+          source_updated_at: string | null;
+          last_seen_at: string | null;
+          removed_at: string | null;
+          related_project: string | null;
+          github_url: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -25,6 +32,13 @@ export type Database = {
           content_hash?: string | null;
           last_fetched_at?: string | null;
           last_changed_at?: string | null;
+          source_external_id?: string | null;
+          source_status?: 'active' | 'unavailable' | 'removed';
+          source_updated_at?: string | null;
+          last_seen_at?: string | null;
+          removed_at?: string | null;
+          related_project?: string | null;
+          github_url?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -37,6 +51,13 @@ export type Database = {
           content_hash?: string | null;
           last_fetched_at?: string | null;
           last_changed_at?: string | null;
+          source_external_id?: string | null;
+          source_status?: 'active' | 'unavailable' | 'removed';
+          source_updated_at?: string | null;
+          last_seen_at?: string | null;
+          removed_at?: string | null;
+          related_project?: string | null;
+          github_url?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -51,6 +72,7 @@ export type Database = {
           title: string;
           source_url: string | null;
           source_type: string;
+          related_project: string | null;
           embedding: string;
           created_at: string;
           updated_at: string;
@@ -63,6 +85,7 @@ export type Database = {
           title: string;
           source_url?: string | null;
           source_type: string;
+          related_project?: string | null;
           embedding: string | number[];
           created_at?: string;
           updated_at?: string;
@@ -74,6 +97,7 @@ export type Database = {
           title?: string;
           source_url?: string | null;
           source_type?: string;
+          related_project?: string | null;
           embedding?: string | number[];
           updated_at?: string;
         };
@@ -96,6 +120,7 @@ export type Database = {
           title: string;
           source_url: string | null;
           source_type: string;
+          related_project: string | null;
           similarity: number;
         }>;
       };

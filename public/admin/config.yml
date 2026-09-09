@@ -67,5 +67,14 @@ collections:
       - { label: Tags, name: tags, widget: list, required: false, default: [] }
       - { label: Publish date, name: publishDate, widget: datetime, format: 'YYYY-MM-DD', date_format: 'YYYY-MM-DD', time_format: false }
       - { name: order, widget: hidden, default: 99 }
+      - label: Related project
+        name: relatedProject
+        widget: relation
+        collection: projects
+        search_fields: [title, company, slug]
+        value_field: slug
+        display_fields: [title]
+        required: false
+        hint: Optional. Links this article, the project page, and its GitHub repository in Ask Gabriel sources.
       - { label: Author, name: author, widget: string, default: Gabriel Pendleton }
       - { label: Body, name: body, widget: markdown }

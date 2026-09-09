@@ -20,8 +20,16 @@ async function ingestSource(entry) {
   const { data: existing, error: lookupError } = await supabase.from('documents').select('id, content_hash').eq('source_url', entry.sourceUrl).maybeSingle();
   if (lookupError) throw lookupError;
   if (existing?.content_hash === contentHash) {
-    const { error } = await supabase.from('documents').update({ last_fetched_at: fetchedAt }).eq('id', existing.id);
+    const { error } = await supabase.from('documents').update({
+      last_fetched_at: fetchedAt,
+      related_project: entry.relatedProject ?? null,
+      github_url: entry.githubUrl ?? null
+    }).eq('id', existing.id);
     if (error) throw error;
+    const { error: chunkError } = await supabase.from('document_chunks').update({
+      related_project: entry.relatedProject ?? null
+    }).eq('document_id', existing.id);
+    if (chunkError) throw chunkError;
     stats.unchanged += 1;
     console.log(`UNCHANGED ${entry.key}`);
     return;
@@ -36,7 +44,8 @@ async function ingestSource(entry) {
   }
   const values = {
     title: entry.title, content: entry.content, source_url: entry.sourceUrl, source_type: entry.sourceType,
-    content_hash: contentHash, last_fetched_at: fetchedAt, last_changed_at: fetchedAt
+    content_hash: contentHash, last_fetched_at: fetchedAt, last_changed_at: fetchedAt,
+    related_project: entry.relatedProject ?? null, github_url: entry.githubUrl ?? null
   };
   let documentId = existing?.id;
   if (documentId) {
@@ -47,7 +56,7 @@ async function ingestSource(entry) {
     if (error) throw error;
     documentId = data.id;
   }
-  const rows = embeddedChunks.map((chunk) => ({ ...chunk, document_id: documentId, title: entry.title, source_url: entry.sourceUrl, source_type: entry.sourceType }));
+  const rows = embeddedChunks.map((chunk) => ({ ...chunk, document_id: documentId, title: entry.title, source_url: entry.sourceUrl, source_type: entry.sourceType, related_project: entry.relatedProject ?? null }));
   const { error: deleteError } = await supabase.from('document_chunks').delete().eq('document_id', documentId);
   if (deleteError) throw deleteError;
   if (rows.length) {

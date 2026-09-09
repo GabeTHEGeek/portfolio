@@ -33,6 +33,7 @@ const writing = defineCollection({
     tags: z.array(z.string()).default([]),
     publishDate: z.coerce.date(),
     order: z.number().int().default(99),
+    relatedProject: z.string().optional(),
     author: z.string()
   })
 });

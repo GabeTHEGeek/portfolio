@@ -1,5 +1,5 @@
 import { askDeepSeek } from './_lib/deepseek';
-import { retrieveDocumentChunks } from './_lib/documents';
+import { getAnswerSources, retrieveDocumentChunks } from './_lib/documents';
 import { logStage, safeErrorCode } from './_lib/observability';
 import { applyOutputPolicy, getPolicyResponse } from './_lib/response-policy';
 
@@ -98,10 +98,7 @@ export default async (request: Request) => {
 
   try {
     const answer = applyOutputPolicy(await askDeepSeek(question.trim(), chunks, trace));
-    const sources = [...new Map(chunks.map(chunk => [
-      `${chunk.title}\u0000${chunk.source_url ?? ''}`,
-      { title: chunk.title, url: chunk.source_url }
-    ])).values()];
+    const sources = await getAnswerSources(chunks, trace);
     logStage(trace, 'request.completed', { chunks_retrieved: chunks.length, sources_returned: sources.length });
     return json({
       answer,
