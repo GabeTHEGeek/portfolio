@@ -8,6 +8,6 @@
   },
   "askGabriel": {
     "title": "Ask Gabriel",
-    "summary": "Ask Gabriel is the portfolio's RAG-powered knowledge experience. It uses semantic retrieval, embeddings, and vector search to find relevant information in Gabriel's published portfolio knowledge, then generates concise grounded answers with source citations. It is designed to reject weak evidence instead of inventing unsupported personal or professional facts. Conversations remain session-only. Specific providers, models, endpoints, thresholds, deployment configuration, and other private infrastructure are intentionally not public portfolio knowledge."
+    "summary": "Ask Gabriel is the portfolio's grounded AI knowledge experience. It uses semantic retrieval to find relevant information across Gabriel's portfolio, writing, resume, and approved public GitHub repositories, then provides concise answers with links to supporting project pages, articles, and repositories. Its knowledge is synchronized automatically, weak evidence is rejected instead of guessed, and conversations remain session-only. Specific providers, models, endpoints, thresholds, deployment configuration, and other private infrastructure are intentionally not public portfolio knowledge."
   }
 }
