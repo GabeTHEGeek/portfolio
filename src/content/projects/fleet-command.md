@@ -31,7 +31,7 @@ The product combines agent orchestration, persistent state, structured telemetry
 
 ## Architecture and workflow
 
-Sidious serves as Chief of Staff, Boba Fett handles prospecting and outreach, Tarkin produces requirements, and Vader builds and deploys deliverables. An append-only event architecture records actions, state changes, interventions, runtime, model use, failures, and estimated cost. Git-based delivery, review, reporting, and Netlify deployment are part of the handoff process.
+Sidious serves as Chief of Staff. Obi-Wan researches and qualifies opportunities before handing contact-ready prospects to Boba Fett for outreach. Tarkin produces requirements, Vader builds and deploys deliverables, and Leia supports growth and communications. An append-only event architecture records actions, state changes, interventions, runtime, model use, failures, and estimated cost. Git-based delivery, review, reporting, and Netlify deployment are part of the handoff process.
 
 ## Key lessons
 

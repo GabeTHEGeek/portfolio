@@ -100,7 +100,6 @@ body{background:linear-gradient(180deg,rgba(5,10,17,.3),transparent 40%),var(--b
 .article-actions .command-button:hover,.article-actions .command-button:focus-visible{background:var(--signal);box-shadow:0 0 26px color-mix(in srgb,var(--signal) 34%,transparent)}
 .article-actions .command-button:hover::before,.article-actions .command-button:focus-visible::before{background:var(--signal)}
 .related-grid span{color:var(--cyan);font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-weight:700;letter-spacing:.04em}
-.related-grid a:nth-child(2n) span{color:var(--signal)}
 
 @media(max-width:900px){.work-principles{grid-template-columns:1fr 1fr}.project-registry{grid-template-columns:1fr}.project-registry>.system-entry:first-child{grid-column:auto}.project-registry>.system-entry:first-child .system-entry-body{grid-template-columns:1fr}.project-registry>.system-entry:first-child .system-visual{height:320px;min-height:320px;border-right:0;border-bottom:1px solid var(--line)}.project-registry>.system-entry .system-copy{height:auto;min-height:250px}.gallery{grid-template-columns:1fr}}
 @media(max-width:640px){.work-principles{grid-template-columns:1fr}.work-principles article{min-height:0}.article-prose{font-size:19px}.toc nav a{font-size:16px}}
@@ -144,6 +143,9 @@ body{background:linear-gradient(180deg,rgba(5,10,17,.3),transparent 40%),var(--b
 .site-header .hire-status i{display:block;flex:0 0 7px;margin:0;align-self:center}
 .command-interface .command-hero{min-height:0;row-gap:48px;grid-template-rows:auto auto auto}
 @media(max-width:680px){.command-interface .command-hero{row-gap:32px}}
+
+/* Six-agent organization map: Sidious leads five specialist units. */
+@media(min-width:681px){.agent-stage .agent-node{width:clamp(104px,17%,132px)}.agent-stage .node-1{left:50%;transform:translateX(-50%)}.agent-stage .node-2{left:10%;transform:translateX(-50%)}.agent-stage .node-3{left:30%;transform:translateX(-50%)}.agent-stage .node-4{left:50%;right:auto;transform:translateX(-50%)}.agent-stage .node-5{left:70%;right:auto;transform:translateX(-50%)}.agent-stage .node-6{left:90%;right:auto;bottom:55px;transform:translateX(-50%)}}
 
 /* Preserve the square portrait source and circular HUD geometry at every width. */
 .augmented-photo{inset:auto 50px;top:90px;aspect-ratio:1;height:auto}

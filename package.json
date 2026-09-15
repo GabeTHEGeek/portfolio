@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "astro dev",
+    "dev:cms": "decap-server",
     "build": "astro check && astro build",
     "preview": "astro preview",
     "check": "astro check",
@@ -22,6 +23,7 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.4",
+    "decap-server": "^3.3.1",
     "typescript": "^5.9.2"
   }
 }

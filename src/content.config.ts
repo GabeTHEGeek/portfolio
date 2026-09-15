@@ -1,5 +1,6 @@
 import { defineCollection, z } from 'astro:content';
 import { glob } from 'astro/loaders';
+import { getYouTubeEmbedUrl } from './utils/youtube';
 
 const projects = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/projects' }),
@@ -8,6 +9,7 @@ const projects = defineCollection({
     slug: z.string(),
     description: z.string(),
     heroImage: image().optional(),
+    videoUrl: z.string().url().refine((value) => Boolean(getYouTubeEmbedUrl(value)), 'Enter a valid YouTube video URL.').optional(),
     screenshots: z.array(image()).default([]),
     tags: z.array(z.string()).default([]),
     status: z.enum(['concept', 'in-progress', 'in-development', 'launched', 'archived']),
@@ -29,6 +31,7 @@ const writing = defineCollection({
     slug: z.string(),
     description: z.string(),
     coverImage: image().optional(),
+    videoUrl: z.string().url().refine((value) => Boolean(getYouTubeEmbedUrl(value)), 'Enter a valid YouTube video URL.').optional(),
     category: z.string(),
     tags: z.array(z.string()).default([]),
     publishDate: z.coerce.date(),

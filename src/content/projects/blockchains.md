@@ -1,14 +1,18 @@
 ---
-title: "Identity + social platform"
-slug: "blockchains"
-description: "Product work on a Web3 3D identity and social experience with identity verification and platform-level user systems."
-heroImage: "../../assets/projects/blockchains-1.png"
-tags: ["Digital identity", "Social products", "Platforms"]
-status: "archived"
+title: Identity + social platform
+slug: blockchains
+description: Product work on a Web3 3D identity and social experience with
+  identity verification and platform-level user systems.
+heroImage: ../../assets/projects/blockchains-1.png
+tags:
+  - Digital identity
+  - Social products
+  - Platforms
+status: concept
 featured: false
-kind: "product"
-company: "Blockchains"
-role: "Senior Product Manager"
+kind: product
+company: Blockchains
+role: Senior Product Manager
 order: 5
 publishDate: 2024-10-01
 ---

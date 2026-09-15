@@ -1,12 +1,15 @@
-/* Adapter for pinned Decap 3.16.0. Uses its registered GitHub backend, never
- * reads browser token storage, and leaves editing/upload/authentication to Decap.
- * Only the existing collection list is replaced; React-owned cards are not moved.
+/* Ordering extension for pinned Decap 3.16.0. Production delegates to Decap's
+ * registered GitHub backend; localhost uses Decap's file-system proxy. It never
+ * reads browser token storage. Only the collection list is replaced; React-owned
+ * cards are not moved.
  */
 (() => {
   const states = new Map();
   let backend;
   let mounted;
   let scheduled = false;
+  const local = ['localhost', '127.0.0.1'].includes(location.hostname) && location.pathname.startsWith('/admin/');
+  const localProxy = `http://${location.hostname}:8081/api/v1`;
   const names = { projects: 'project', writing: 'writing' };
   const decode = (value) => new TextDecoder().decode(Uint8Array.from(atob(value.replace(/\s/g, '')), c => c.charCodeAt(0)));
   const encode = (value) => btoa(Array.from(new TextEncoder().encode(value), b => String.fromCharCode(b)).join(''));
@@ -14,6 +17,27 @@
   const dirty = state => state.order.join('\n') !== state.saved.join('\n');
   const pathFor = name => `src/data/${names[name]}-order.json`;
   const endpoint = name => `/repos/${backend.repo}/contents/${pathFor(name)}`;
+
+  async function localRequest(action, params = {}) {
+    const response = await fetch(localProxy, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action, params: { branch: 'main', ...params } })
+    });
+    if (!response.ok) throw new Error(`Local CMS proxy returned ${response.status}.`);
+    return response.json();
+  }
+
+  function entries(name) {
+    if (local) {
+      return localRequest('entriesByFolder', {
+        folder: `src/content/${name}`,
+        extension: 'md',
+        depth: 1
+      });
+    }
+    return backend.allEntriesByFolder(`src/content/${name}`, 'md', 1);
+  }
 
   function parseEntry(item) {
     const match = item.data.match(/^---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)/);
@@ -24,8 +48,10 @@
   }
 
   async function loadState(name, items) {
-    const file = await backend.api.request(endpoint(name), { params: { ref: backend.branch } });
-    const saved = JSON.parse(decode(file.content));
+    const file = local
+      ? await localRequest('getEntry', { path: pathFor(name) })
+      : await backend.api.request(endpoint(name), { params: { ref: backend.branch } });
+    const saved = JSON.parse(local ? file.data : decode(file.content));
     if (!Array.isArray(saved.entries) || saved.entries.some(e => typeof e.entry !== 'string')) throw new Error('The saved ordering file is invalid.');
     const entries = items.map(parseEntry);
     const available = new Set(entries.map(e => e.slug));
@@ -81,6 +107,22 @@
     state.message = 'Publishing order…';
     render();
     try {
+      const raw = JSON.stringify({ entries: state.order.map(entry => ({ entry })) }, null, 2) + '\n';
+      if (local) {
+        await localRequest('persistEntry', {
+          entry: { slug: `${name}-order`, path: pathFor(name), raw },
+          assets: [],
+          options: {
+            collectionName: name,
+            commitMessage: `Reorder ${name} from CMS collection list`,
+            useWorkflow: false,
+            status: 'published'
+          }
+        });
+        state.saved = [...state.order];
+        state.message = 'Order saved locally. The local site will update automatically.';
+        return;
+      }
       // Contents API requires the loaded blob SHA: a competing edit is rejected,
       // not overwritten. Only this ordering file is changed, never Markdown.
       const result = await backend.api.request(endpoint(name), {
@@ -89,7 +131,7 @@
           branch: backend.branch,
           sha: state.sha,
           message: `Reorder ${name} from CMS collection list`,
-          content: encode(JSON.stringify({ entries: state.order.map(entry => ({ entry })) }, null, 2) + '\n')
+          content: encode(raw)
         })
       });
       state.sha = result.content.sha;
@@ -167,7 +209,17 @@
       mounted.panel.remove();
       mounted = null;
     }
-    if (!name || !states.has(name)) return;
+    if (!name) return;
+    if (local && !states.has(name)) {
+      states.set(name, { loading: true });
+      entries(name).then(items => loadState(name, items)).then(state => {
+        states.set(name, state);
+      }).catch(() => {
+        states.set(name, { error: 'Ordering unavailable. Make sure npm run dev:cms is running, then reload.' });
+      }).finally(schedule);
+      return;
+    }
+    if (!states.has(name) || states.get(name).loading) return;
     const link = [...document.querySelectorAll(`#nc-root a[href*="/collections/${name}/entries/"]`)].find(a => !a.closest('.portfolio-order'));
     const native = link?.closest('ul');
     if (!native) return;
@@ -181,7 +233,7 @@
       if (mounted) { mounted.panel.remove(); mounted = null; }
       if (!state.refreshing) {
         state.refreshing = true;
-        backend.allEntriesByFolder(`src/content/${name}`, 'md', 1).then(items => {
+        entries(name).then(items => {
           mergeEntries(state, items);
           const unresolved = [...native.querySelectorAll('a[href*="/entries/"]')].some(a =>
             !state.entries.some(e => e.id === decodeURIComponent(a.hash.split('/entries/')[1] || '')));

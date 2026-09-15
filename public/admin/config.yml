@@ -6,6 +6,10 @@ backend:
   auth_endpoint: auth
   site_domain: gabrielpendleton.me
 
+# On localhost, Decap uses its local proxy instead of the production OAuth flow.
+# The live CMS continues to use the GitHub backend above.
+local_backend: true
+
 site_url: https://gabrielpendleton.me
 display_url: https://gabrielpendleton.me
 publish_mode: simple
@@ -29,6 +33,7 @@ collections:
       - { label: URL slug, name: slug, widget: string, pattern: ['^[a-z0-9]+(?:-[a-z0-9]+)*$', 'Use lowercase words separated by hyphens.'], hint: 'Unique project URL. Do not change existing slugs without a redirect.' }
       - { label: Description, name: description, widget: text }
       - { label: Hero image, name: heroImage, widget: image, required: false, choose_url: false }
+      - { label: YouTube header video, name: videoUrl, widget: string, required: false, pattern: ['^https?://((www|m)\.youtube\.com|youtube\.com|youtu\.be)/.+$', 'Enter a full YouTube or youtu.be URL.'], hint: 'Optional. When provided, the video replaces the hero image on the project page. The hero image is still used on project cards and for sharing.' }
       - label: Screenshots
         name: screenshots
         widget: list
@@ -63,6 +68,7 @@ collections:
       - { label: URL slug, name: slug, widget: string, pattern: ['^[a-z0-9]+(?:-[a-z0-9]+)*$', 'Use lowercase words separated by hyphens.'], hint: 'Unique article URL. Preserve existing slugs.' }
       - { label: Description, name: description, widget: text }
       - { label: Cover image, name: coverImage, widget: image, required: false, choose_url: false }
+      - { label: YouTube header video, name: videoUrl, widget: string, required: false, pattern: ['^https?://((www|m)\.youtube\.com|youtube\.com|youtu\.be)/.+$', 'Enter a full YouTube or youtu.be URL.'], hint: 'Optional. When provided, the video replaces the cover image in the article header. The cover image is still used on article cards and for sharing.' }
       - { label: Category, name: category, widget: string }
       - { label: Tags, name: tags, widget: list, required: false, default: [] }
       - { label: Publish date, name: publishDate, widget: datetime, format: 'YYYY-MM-DD', date_format: 'YYYY-MM-DD', time_format: false }

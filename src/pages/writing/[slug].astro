@@ -4,6 +4,7 @@ import { Image } from 'astro:assets';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import authorPortrait from '../../assets/gabriel-pendleton-cyborg-v2.png';
 import { readingTime } from '../../utils/reading-time';
+import { getYouTubeEmbedUrl } from '../../utils/youtube';
 
 export async function getStaticPaths() {
   const articles = await getCollection('writing');
@@ -13,6 +14,7 @@ type Props = { article: CollectionEntry<'writing'> };
 const { article } = Astro.props;
 const { Content, headings } = await render(article);
 const duration = readingTime(article.body ?? '');
+const videoEmbedUrl = getYouTubeEmbedUrl(article.data.videoUrl);
 const allArticles = await getCollection('writing');
 const related = allArticles.filter(({ id }) => id !== article.id).map((entry) => ({ entry, shared: entry.data.tags.filter((tag) => article.data.tags.includes(tag)).length })).sort((a, b) => b.shared - a.shared || b.entry.data.publishDate.valueOf() - a.entry.data.publishDate.valueOf()).slice(0, 3).map(({ entry }) => entry);
 const schema = {
@@ -27,7 +29,18 @@ const schema = {
     <p class="crumbs"><a href="/writing/">Writing</a><span>/</span><span>{article.data.category}</span></p>
     <p class="eyebrow cyan">{article.data.category}</p><h1>{article.data.title}</h1><p class="lede">{article.data.description}</p>
     <div class="article-meta"><Image class="avatar" src={authorPortrait} alt="" width={40} height={40} widths={[40, 80]} sizes="40px" format="webp" /><div><strong>{article.data.author}</strong><span><time datetime={article.data.publishDate.toISOString()}>{article.data.publishDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric', timeZone: 'UTC' })}</time> · {duration}</span></div></div>
-    {article.data.coverImage && <Image class="article-hero-image" src={article.data.coverImage} alt="" width={1600} widths={[800, 1200, 1600]} sizes="92vw" />}
+    {videoEmbedUrl ? (
+      <div class="article-hero-video">
+        <iframe
+          src={videoEmbedUrl}
+          title={`${article.data.title} video`}
+          loading="lazy"
+          referrerpolicy="strict-origin-when-cross-origin"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowfullscreen
+        ></iframe>
+      </div>
+    ) : article.data.coverImage && <Image class="article-hero-image" src={article.data.coverImage} alt="" width={1600} widths={[800, 1200, 1600]} sizes="92vw" />}
   </header>
   <div class="article-shell wrap">
     <aside class="toc"><p class="eyebrow">In this article</p><nav aria-label="Table of contents">{headings.filter(({ depth }) => depth === 2 || depth === 3).map((heading, index) => <a class:list={[`depth-${heading.depth}`]} href={`#${heading.slug}`}><span class="toc-number">{String(index + 1).padStart(2, '0')}</span><span>{heading.text}</span></a>)}</nav></aside>
@@ -79,11 +92,24 @@ const schema = {
   .article-prose :is(h2, h3)[id]:target::before { color: var(--signal); }
   .article-shell .toc nav a {
     display: grid;
-    grid-template-columns: max-content minmax(0, 1fr);
+    grid-template-columns: 2rem minmax(0, 1fr);
     column-gap: 14px;
     align-items: baseline;
+    padding-left: 12px;
+    text-align: left;
   }
+  .article-shell .toc nav a > span:last-child { text-align: left; }
   .toc-number { flex-shrink: 0; color: var(--cyan); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
   .toc nav a[aria-current='location'] { color: var(--signal); border-left-color: var(--signal); background: color-mix(in srgb, var(--signal) 8%, var(--panel)); }
   .toc nav a[aria-current='location'] .toc-number { color: var(--signal); }
+  .article-hero-video {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    margin-top: 42px;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    background: var(--deep);
+    clip-path: polygon(18px 0, 100% 0, 100% calc(100% - 18px), calc(100% - 18px) 100%, 0 100%, 0 18px);
+  }
+  .article-hero-video iframe { display: block; width: 100%; height: 100%; border: 0; }
 </style>
