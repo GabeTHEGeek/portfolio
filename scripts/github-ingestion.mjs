@@ -6,7 +6,8 @@ export const DEFAULT_GITHUB_USERNAME = 'GabeTHEGeek';
 export const ALWAYS_INCLUDED_REPOSITORY_IDS = new Set([
   '1359721557', // GabeTHEGeek/ai-agent-starter-templates
   '1310191971', // GabeTHEGeek/maester
-  '1353437174' // GabeTHEGeek/speakit
+  '1353437174', // GabeTHEGeek/speakit
+  '1368155437' // GabeTHEGeek/tolara-voice-demo
 ]);
 export const EXCLUDED_REPOSITORIES = new Set([
   'gabethegeek/portfolio'

@@ -22,6 +22,7 @@ const repository = {
 };
 
 assert.equal(isApprovedRepository(repository), true, 'initial repositories remain explicitly approved');
+assert.equal(isApprovedRepository({ ...repository, id: 1368155437, name: 'tolara-voice-demo', full_name: 'GabeTHEGeek/tolara-voice-demo', topics: [] }), true, 'Tolara voice demo is explicitly approved');
 assert.equal(isApprovedRepository({ ...repository, name: 'renamed-speakit', full_name: 'GabeTHEGeek/renamed-speakit' }), true, 'stable repository ID survives a rename');
 assert.equal(isApprovedRepository({ ...repository, id: 999, full_name: 'GabeTHEGeek/new-project', topics: ['ask-gabriel'] }), true);
 assert.equal(isApprovedRepository({ ...repository, id: 999, full_name: 'GabeTHEGeek/new-project', topics: [] }), false);

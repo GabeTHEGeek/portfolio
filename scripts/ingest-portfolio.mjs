@@ -10,6 +10,7 @@ const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SEC
   auth: { autoRefreshToken: false, persistSession: false, detectSessionInUrl: false }
 });
 const stats = { checked: 0, unchanged: 0, changed: 0, updated: 0, chunks: 0, embeddings: 0, failures: 0 };
+const EXCLUDED_SOURCE_KEYS = new Set(['article:test']);
 const hashContent = (content) => createHash('sha256').update(content, 'utf8').digest('hex');
 
 async function ingestSource(entry) {
@@ -69,8 +70,17 @@ async function ingestSource(entry) {
 }
 
 const sources = await loadPortfolioSources();
+for (const entry of sources.filter((entry) => EXCLUDED_SOURCE_KEYS.has(entry.key))) {
+  const { data: existing } = await supabase.from('documents').select('id').eq('source_url', entry.sourceUrl).maybeSingle();
+  if (existing?.id) {
+    await supabase.from('document_chunks').delete().eq('document_id', existing.id);
+    await supabase.from('documents').delete().eq('id', existing.id);
+    console.log(`EXCLUDED ${entry.key}`);
+  }
+}
 console.log(`Portfolio ingestion: ${sources.length} repository-backed sources`);
 for (const entry of sources) {
+  if (EXCLUDED_SOURCE_KEYS.has(entry.key)) continue;
   try { await ingestSource(entry); }
   catch (error) {
     stats.failures += 1;

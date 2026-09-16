@@ -1,9 +1,22 @@
 {
   "entries": [
-    { "entry": "building-ai-agent-starter-templates" },
-    { "entry": "fleet-command-organization-not-models" },
-    { "entry": "training-an-ai-agent-to-do-the-job" },
-    { "entry": "local-first-dictation" },
-    { "entry": "building-fleet-command" }
+    {
+      "entry": "test"
+    },
+    {
+      "entry": "building-ai-agent-starter-templates"
+    },
+    {
+      "entry": "fleet-command-organization-not-models"
+    },
+    {
+      "entry": "training-an-ai-agent-to-do-the-job"
+    },
+    {
+      "entry": "local-first-dictation"
+    },
+    {
+      "entry": "building-fleet-command"
+    }
   ]
 }
