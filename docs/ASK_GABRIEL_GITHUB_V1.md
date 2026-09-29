@@ -5,12 +5,14 @@ portfolio ingestion and public interface are unchanged.
 
 ## Approval rules
 
-The first three approved repositories are included directly using their stable
+The explicitly approved repositories are included directly using their stable
 GitHub repository IDs, so they remain approved if their names or URLs change:
 
 - `GabeTHEGeek/ai-agent-starter-templates`
 - `GabeTHEGeek/maester`
 - `GabeTHEGeek/speakit`
+- `GabeTHEGeek/tolara-voice-demo`
+- `GabeTHEGeek/tolara-atlas`
 
 Future public repositories are discovered automatically when they have the
 GitHub topic `ask-gabriel`. The portfolio repository is always excluded because

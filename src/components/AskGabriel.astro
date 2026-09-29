@@ -27,6 +27,8 @@ import launcherPortrait from '../assets/gabriel-pendleton-cyborg-v2.png';
     </div>
 
     <p class="ask-status" role="status" aria-live="polite"></p>
+    <button class="ask-voice-toggle" type="button" data-voice-toggle aria-expanded="false">Talk to Gabriel</button>
+    <div class="ask-voice" data-voice hidden><div class="ask-voice-controls"><button type="button" data-voice-start>Start listening</button><button type="button" data-voice-stop hidden>Stop</button><button type="button" data-voice-handsfree>Hands-free: on</button><button type="button" data-voice-mute aria-pressed="false">🔊</button><span data-voice-state>Voice ready</span><span data-voice-timer>00:00</span></div><p data-voice-live aria-live="polite"></p><small data-voice-fallback></small></div>
     <form class="ask-form">
       <label for="ask-gabriel-question">Your question</label>
       <div class="ask-input-row">
@@ -40,6 +42,7 @@ import launcherPortrait from '../assets/gabriel-pendleton-cyborg-v2.png';
 </div>
 
 <script>
+  import { ServerTTSVoiceProvider, VOICE_DISCLOSURE, VOICE_RETURN_GREETING, formatTimer, getSpeechRecognition } from '../utils/voice';
   type Source = { title?: unknown; url?: unknown };
   type AskResponse = { answer?: unknown; sources?: unknown; error?: unknown };
 
@@ -54,6 +57,27 @@ import launcherPortrait from '../assets/gabriel-pendleton-cyborg-v2.png';
   const submit = form?.querySelector<HTMLButtonElement>('button[type="submit"]');
   let lastRequestAt = 0;
   let requestInFlight = false;
+  let voiceActive = false;
+  let voiceRequest = false;
+  let voiceHandsFree = true;
+  let voiceSpeaking = false;
+  let voiceStartedAt = 0;
+  let voiceTimer: number | undefined;
+  let idleTimer: number | undefined;
+  const voicePanel = root?.querySelector<HTMLElement>('[data-voice]');
+  const voiceToggle = root?.querySelector<HTMLButtonElement>('[data-voice-toggle]');
+  const voiceStart = root?.querySelector<HTMLButtonElement>('[data-voice-start]');
+  const voiceStop = root?.querySelector<HTMLButtonElement>('[data-voice-stop]');
+  const voiceState = root?.querySelector<HTMLElement>('[data-voice-state]');
+  const voiceTimerLabel = root?.querySelector<HTMLElement>('[data-voice-timer]');
+  const voiceLive = root?.querySelector<HTMLElement>('[data-voice-live]');
+  const voiceFallback = root?.querySelector<HTMLElement>('[data-voice-fallback]');
+  const voiceHandsFreeButton = root?.querySelector<HTMLButtonElement>('[data-voice-handsfree]');
+  const voiceMuteButton = root?.querySelector<HTMLButtonElement>('[data-voice-mute]');
+  const voiceProvider = new ServerTTSVoiceProvider();
+  const maxVoiceSeconds = Number(import.meta.env.PUBLIC_ASK_GABRIEL_VOICE_MAX_SESSION_SECONDS || 300);
+  const idleVoiceSeconds = Number(import.meta.env.PUBLIC_ASK_GABRIEL_VOICE_IDLE_TIMEOUT_SECONDS || 45);
+  const recognition = getSpeechRecognition();
 
   const formatAnswer = (value: string) => {
     const clean = value
@@ -213,6 +237,54 @@ import launcherPortrait from '../assets/gabriel-pendleton-cyborg-v2.png';
     return item;
   };
 
+  const setVoiceState = (value: string) => { if (voiceState) voiceState.textContent = value; };
+  const stopVoice = () => { voiceActive = false; voiceRequest = false; recognition?.stop(); voiceProvider.cancel(); window.clearInterval(voiceTimer); window.clearTimeout(idleTimer); if (voiceStart) voiceStart.hidden = false; if (voiceStop) voiceStop.hidden = true; setVoiceState('Voice ready'); };
+  const resetIdle = () => { window.clearTimeout(idleTimer); idleTimer = window.setTimeout(stopVoice, idleVoiceSeconds * 1000); };
+  const speakAnswer = async (text: string) => {
+    voiceSpeaking = true;
+    recognition?.stop();
+    setVoiceState('Speaking');
+    try { for await (const _ of voiceProvider.synthesize(text)) {} }
+    finally { voiceSpeaking = false; }
+    if (voiceActive && voiceHandsFree) setVoiceState('Listening');
+  };
+  const startVoice = async () => {
+    if (!recognition || requestInFlight || voiceActive) return;
+    if (voiceFallback) voiceFallback.textContent = '';
+    voiceActive = true; voiceStartedAt = Date.now(); voiceStart!.hidden = true; voiceStop!.hidden = false; resetIdle();
+    voiceTimer = window.setInterval(() => { const elapsed = Math.floor((Date.now() - voiceStartedAt) / 1000); if (voiceTimerLabel) voiceTimerLabel.textContent = formatTimer(elapsed); if (elapsed >= maxVoiceSeconds) stopVoice(); }, 1000);
+    const isFirstVoiceSession = !sessionStorage.getItem('ask-gabriel-voice-disclosure');
+    const opening = isFirstVoiceSession ? VOICE_DISCLOSURE : VOICE_RETURN_GREETING;
+    if (isFirstVoiceSession) sessionStorage.setItem('ask-gabriel-voice-disclosure', '1');
+    addMessage('answer', opening);
+    await speakAnswer(opening);
+    if (!voiceActive) return;
+    setVoiceState('Listening');
+    try { recognition.start(); } catch { stopVoice(); }
+  };
+  voiceHandsFreeButton?.addEventListener('click', () => { voiceHandsFree = !voiceHandsFree; voiceHandsFreeButton.textContent = `Hands-free: ${voiceHandsFree ? 'on' : 'off'}`; if (!voiceActive) startVoice(); });
+  voiceMuteButton?.addEventListener('click', () => { const muted = voiceMuteButton.getAttribute('aria-pressed') !== 'true'; voiceMuteButton.setAttribute('aria-pressed', String(muted)); voiceMuteButton.textContent = muted ? '🔇' : '🔊'; voiceProvider.setMuted?.(muted); });
+  voiceToggle?.addEventListener('click', async () => {
+    const open = Boolean(voicePanel?.hidden);
+    if (voicePanel) voicePanel.hidden = !open;
+    voiceToggle.setAttribute('aria-expanded', String(open));
+    if (!open) {
+      stopVoice();
+      return;
+    }
+    voiceHandsFree = true;
+    if (voiceHandsFreeButton) voiceHandsFreeButton.textContent = 'Hands-free: on';
+    await startVoice();
+  });
+  voiceStart?.addEventListener('click', startVoice); voiceStop?.addEventListener('click', stopVoice);
+  if (!recognition) { voiceToggle?.setAttribute('disabled', 'true'); if (voiceFallback) voiceFallback.textContent = 'Voice input is not supported in this browser. Use the text box instead.'; }
+  if (recognition) {
+    recognition.continuous = false; recognition.interimResults = true; recognition.lang = 'en-US';
+    recognition.onresult = (event: any) => { resetIdle(); let finalText = ''; let interim = ''; for (let i = event.resultIndex; i < event.results.length; i++) (event.results[i].isFinal ? finalText += event.results[i][0].transcript : interim += event.results[i][0].transcript); if (voiceLive) voiceLive.textContent = interim || finalText; if (finalText.trim() && !voiceRequest) { voiceRequest = true; recognition.stop(); setVoiceState('Thinking'); if (question) question.value = finalText.trim(); form?.requestSubmit(); } };
+    recognition.onerror = (event: any) => { if (event.error === 'aborted' || event.error === 'no-speech') return; if (voiceFallback) voiceFallback.textContent = event.error === 'not-allowed' ? 'Microphone access was denied. You can still use the text box.' : 'Voice input is unavailable right now. Use the text box instead.'; stopVoice(); };
+    recognition.onend = () => { if (voiceActive && !voiceRequest && !voiceSpeaking) { setVoiceState('Listening'); if (voiceHandsFree) window.setTimeout(() => { if (voiceSpeaking) return; try { recognition.start(); } catch {} }, 250); } };
+  }
+
   launcher?.addEventListener('click', () => setOpen(true));
   close?.addEventListener('click', () => setOpen(false));
   document.addEventListener('keydown', (event) => {
@@ -267,6 +339,7 @@ import launcherPortrait from '../assets/gabriel-pendleton-cyborg-v2.png';
         throw new Error(typeof data.error === 'string' ? data.error : 'Request failed');
       } else {
         await addTypedAnswer(data.answer, Array.isArray(data.sources) ? data.sources as Source[] : []);
+        if (voiceRequest && voiceActive) await speakAnswer(data.answer);
       }
       status.textContent = 'Response complete.';
     } catch {
@@ -279,6 +352,9 @@ import launcherPortrait from '../assets/gabriel-pendleton-cyborg-v2.png';
       question.disabled = false;
       root?.classList.remove('is-loading');
       question.focus();
+      voiceRequest = false;
+      if (voiceActive && voiceHandsFree) { setVoiceState('Listening'); window.setTimeout(() => { try { recognition?.start(); } catch {} }, 500); }
+      else if (voiceActive) stopVoice();
     }
   });
 </script>
@@ -297,8 +373,10 @@ import launcherPortrait from '../assets/gabriel-pendleton-cyborg-v2.png';
   .ask-status{min-height:30px;margin:0;padding:7px 18px;border-top:1px solid var(--line);color:var(--muted);font-size:9px;letter-spacing:.03em}.is-loading .ask-status{color:var(--cyan)}.is-loading .ask-status:before{content:"";display:inline-block;width:6px;height:6px;margin-right:8px;background:var(--cyan);box-shadow:0 0 8px var(--cyan);animation:ask-pulse 1s ease-in-out infinite}
   .ask-form{padding:14px 18px 18px;border-top:1px solid var(--line)}.ask-form label{display:block;margin-bottom:7px;color:var(--cyan);font-size:8px;letter-spacing:.13em;text-transform:uppercase}.ask-input-row{display:grid;grid-template-columns:1fr auto;gap:8px}.ask-form textarea{width:100%;min-height:58px;max-height:130px;resize:vertical;padding:10px;border:1px solid var(--line);border-radius:0;background:var(--panel);color:var(--text);font:14px/1.4 "Arial Narrow",Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.ask-form textarea::placeholder{color:var(--muted)}.ask-form button[type="submit"]{display:flex;align-items:center;gap:7px;padding:10px;border:1px solid var(--cyan);background:color-mix(in srgb,var(--cyan) 10%,var(--panel));color:var(--text);font:9px ui-monospace,SFMono-Regular,Menlo,monospace;cursor:pointer}.ask-form button:disabled{cursor:wait;opacity:.55}.ask-form button i{color:var(--cyan);font-style:normal}.ask-form>small{display:block;margin-top:7px;color:var(--muted);font-size:8px}.ask-trap{position:absolute!important;width:1px!important;height:1px!important;overflow:hidden!important;clip:rect(0 0 0 0)!important;white-space:nowrap!important}
   @keyframes ask-pulse{50%{opacity:.25}}@keyframes ask-caret{50%{opacity:0}}@keyframes ask-dot{0%,60%,100%{opacity:.25;transform:translateY(0)}30%{opacity:1;transform:translateY(-3px)}}
-  @media(max-width:680px){.ask-gabriel{left:10px;bottom:10px}.ask-panel{position:fixed;inset:auto 10px 10px;width:auto;height:min(700px,calc(100dvh - 20px));max-height:calc(100dvh - 20px)}.ask-gabriel-open{overflow:hidden}.ask-gabriel-open .soundtrack-player{display:none}.ask-input-row{grid-template-columns:1fr}.ask-form button[type="submit"]{justify-content:center;min-height:42px}.ask-launcher{min-height:56px}.ask-launcher:hover,.ask-launcher:focus-visible{min-width:176px}.ask-launcher-action{display:none}}
+  @media(max-width:680px){.ask-gabriel{left:12px;right:auto;bottom:max(12px,env(safe-area-inset-bottom))}.ask-panel{position:fixed;left:50%;right:auto;bottom:max(12px,env(safe-area-inset-bottom));box-sizing:border-box;width:calc(100vw - 24px);max-width:none;height:min(78dvh,640px);max-height:calc(100dvh - 88px);overflow:hidden;transform:translateX(-50%)}.ask-panel-header{padding:14px 16px}.ask-panel-header h2{font-size:24px}.ask-transcript{padding:14px 16px}.ask-status{padding-inline:16px}.ask-form{min-width:0;padding:12px 16px 16px}.ask-input-row{grid-template-columns:minmax(0,1fr)}.ask-form textarea{box-sizing:border-box;min-width:0}.ask-form button[type="submit"]{justify-content:center;min-height:42px}.ask-gabriel-open{overflow:hidden}.ask-gabriel-open .soundtrack-player{display:none}.ask-launcher{min-height:56px}.ask-launcher:hover,.ask-launcher:focus-visible{min-width:176px}.ask-launcher-action{display:none}}
+  @media(max-width:390px){.ask-panel{width:calc(100vw - 16px);height:min(76dvh,600px)}.ask-panel-header,.ask-transcript{padding-inline:12px}.ask-form{padding-inline:12px}.ask-voice-toggle,.ask-voice{margin-inline:12px}}
   @media(prefers-reduced-motion:reduce){.is-loading .ask-status:before,.ask-message-answer.is-typing p:after,.ask-typing-indicator p i{animation:none}.ask-launcher,.ask-launcher-action{transition:none}}
   .ask-launcher-portrait{flex:0 0 40px;width:40px;height:40px;border:1px solid color-mix(in srgb,var(--cyan) 70%,transparent);border-radius:50%;background:#fff;object-fit:cover;object-position:center;box-shadow:0 0 14px color-mix(in srgb,var(--cyan) 20%,transparent)}
   .ask-message-answer p{white-space:pre-line}
+  .ask-voice-toggle{margin:0 18px 10px;padding:8px 10px;border:1px solid var(--cyan);background:transparent;color:var(--cyan);font:9px ui-monospace,SFMono-Regular,Menlo,monospace;cursor:pointer}.ask-voice-toggle:disabled{opacity:.5;cursor:not-allowed}.ask-voice{margin:0 18px 10px;padding:10px;border:1px solid var(--line);background:color-mix(in srgb,var(--panel) 80%,transparent)}.ask-voice-controls{display:flex;align-items:center;gap:8px}.ask-voice-controls button{padding:6px 8px;border:1px solid var(--cyan);background:transparent;color:var(--text);font:9px ui-monospace,SFMono-Regular,Menlo,monospace}.ask-voice-controls span{color:var(--muted);font-size:9px}.ask-voice-controls span:last-child{margin-left:auto;color:var(--cyan)}.ask-voice p{min-height:18px;margin:8px 0 0;color:var(--text);font-size:12px}.ask-voice small{display:block;margin-top:6px;color:var(--orange);font-size:9px}
 </style>

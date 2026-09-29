@@ -1,7 +1,7 @@
 import { askDeepSeek } from './_lib/deepseek';
 import { getAnswerSources, retrieveDocumentChunks } from './_lib/documents';
 import { logStage, safeErrorCode } from './_lib/observability';
-import { applyOutputPolicy, getPolicyResponse } from './_lib/response-policy';
+import { applyOutputPolicy, getPolicyResponse, sanitizeVisitorQuestion } from './_lib/response-policy';
 
 const MIN_QUESTION_LENGTH = 3;
 const MAX_QUESTION_LENGTH = 500;
@@ -62,10 +62,18 @@ export default async (request: Request) => {
   }
   logStage(trace, 'request.accepted', { question_length: question.trim().length });
 
-  const policyResponse = getPolicyResponse(question.trim());
+  const rawQuestion = question.trim();
+  const policyResponse = getPolicyResponse(rawQuestion);
   if (policyResponse) {
     logStage(trace, 'request.completed', { policy_response: true, sources_returned: policyResponse.sources.length });
     return json(policyResponse);
+  }
+  const safeQuestion = sanitizeVisitorQuestion(rawQuestion);
+  if (safeQuestion.length < MIN_QUESTION_LENGTH) {
+    return json({
+      answer: "I can answer questions about Gabriel’s published work, experience, projects, and writing, but I can’t follow instructions that override my safeguards.",
+      sources: []
+    });
   }
 
   const clientAddress = request.headers.get('x-nf-client-connection-ip')
@@ -82,7 +90,7 @@ export default async (request: Request) => {
 
   let chunks;
   try {
-    chunks = await retrieveDocumentChunks(question.trim(), trace);
+    chunks = await retrieveDocumentChunks(safeQuestion, trace);
   } catch (error) {
     logStage(trace, 'request.failed', { stage: 'retrieval', error_code: safeErrorCode(error) });
     return json({ error: 'Unable to retrieve portfolio knowledge.' }, 500);
@@ -97,7 +105,7 @@ export default async (request: Request) => {
   }
 
   try {
-    const answer = applyOutputPolicy(await askDeepSeek(question.trim(), chunks, trace));
+    const answer = applyOutputPolicy(await askDeepSeek(safeQuestion, chunks, trace));
     const sources = await getAnswerSources(chunks, trace);
     logStage(trace, 'request.completed', { chunks_retrieved: chunks.length, sources_returned: sources.length });
     return json({

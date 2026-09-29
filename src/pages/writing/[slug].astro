@@ -28,7 +28,7 @@ const schema = {
   <header class="article-hero wrap">
     <p class="crumbs"><a href="/writing/">Writing</a><span>/</span><span>{article.data.category}</span></p>
     <p class="eyebrow cyan">{article.data.category}</p><h1>{article.data.title}</h1><p class="lede">{article.data.description}</p>
-    <div class="article-meta"><Image class="avatar" src={authorPortrait} alt="" width={40} height={40} widths={[40, 80]} sizes="40px" format="webp" /><div><strong>{article.data.author}</strong><span><time datetime={article.data.publishDate.toISOString()}>{article.data.publishDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric', timeZone: 'UTC' })}</time> · {duration}</span></div></div>
+    <div class="article-meta"><Image class="avatar" src={authorPortrait} alt="" width={40} height={40} widths={[40, 80]} sizes="40px" format="webp" /><div><strong>{article.data.author}</strong><span><time datetime={article.data.publishDate.toISOString()}>{article.data.publishDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric', timeZone: 'UTC' })}</time> · {duration} · <span class="article-view-count" data-article-views data-slug={article.data.slug}>Views loading</span></span></div></div>
     {videoEmbedUrl ? (
       <div class="article-hero-video">
         <iframe
@@ -62,10 +62,31 @@ const schema = {
   };
   window.addEventListener('hashchange', syncSection);
   syncSection();
+
+  const viewCounter = document.querySelector<HTMLElement>('[data-article-views]');
+  const articleSlug = viewCounter?.dataset.slug;
+  if (viewCounter && articleSlug) {
+    const storageKey = `article-view:${articleSlug}`;
+    const counted = sessionStorage.getItem(storageKey) === '1';
+    fetch(`/.netlify/functions/article-views${counted ? `?slug=${encodeURIComponent(articleSlug)}` : ''}`, {
+      method: counted ? 'GET' : 'POST',
+      headers: counted ? undefined : { 'content-type': 'application/json' },
+      body: counted ? undefined : JSON.stringify({ slug: articleSlug })
+    })
+      .then((response) => response.ok ? response.json() : Promise.reject(new Error('View count unavailable')))
+      .then(({ views }) => {
+        const count = Number(views);
+        if (!Number.isFinite(count) || count < 0) throw new Error('Invalid view count');
+        if (!counted) sessionStorage.setItem(storageKey, '1');
+        viewCounter.textContent = `${count.toLocaleString()} ${count === 1 ? 'view' : 'views'}`;
+      })
+      .catch(() => { viewCounter.textContent = 'Views unavailable'; });
+  }
 </script>
 
 <style is:global>
   .article-meta .avatar { width: 40px; height: 40px; flex-shrink: 0; object-fit: cover; border-radius: 50%; }
+  .article-view-count { color: var(--cyan); }
   .article-prose { counter-reset: article-section; }
   .article-prose :is(h2, h3)[id] {
     counter-increment: article-section;

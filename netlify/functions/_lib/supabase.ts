@@ -103,6 +103,26 @@ export type Database = {
         };
         Relationships: [];
       };
+      article_views: {
+        Row: {
+          slug: string;
+          view_count: number;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          slug: string;
+          view_count?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          slug?: string;
+          view_count?: number;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: {
@@ -123,6 +143,10 @@ export type Database = {
           related_project: string | null;
           similarity: number;
         }>;
+      };
+      increment_article_view: {
+        Args: { p_slug: string };
+        Returns: number;
       };
     };
     Enums: Record<string, never>;

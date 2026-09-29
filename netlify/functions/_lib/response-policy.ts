@@ -11,8 +11,24 @@ const emailPattern = /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/i;
 const phonePattern = /(?:\+?1[\s.-]?)?\(?\d{3}\)?[\s.-]\d{3}[\s.-]\d{4}/;
 const greetingPattern = /^\s*(hello|hello there|hi|hi there|hey|hey there|good (morning|afternoon|evening)|what'?s up)[!.?\s]*$/i;
 const quotePattern = /\b(quote|quotes|qoute|qoutes|quotation|quotations|saying|sayings|philosopher|philosophers|galileo|einstein|nobel|tyson|bacon)\b/i;
+const identityPattern = /\b(are you (really )?gabriel|are you (an|the) ai|are you human|is this (really )?gabriel|who are you)\b/i;
+const manipulationPattern = /\b(ignore (all |any )?(previous|prior|system|developer) instructions?|reveal (the )?(system prompt|instructions?)|pretend (you are|to be)|act as|repeat after me|say exactly)\b/i;
+const appendedCommandPattern = /\s+(?:and\s+)?(?:when you respond|in your response|before you answer|after you answer|then say|repeat after me|say exactly)\b[\s\S]*$/i;
+
+export function sanitizeVisitorQuestion(question: string) {
+  return question.replace(appendedCommandPattern, '').trim();
+}
 
 export function getPolicyResponse(question: string): PolicyResponse | null {
+  if (identityPattern.test(question)) {
+    return { answer: "I’m Gabriel’s AI digital counterpart, not the human Gabriel. I answer from his published portfolio knowledge and show the sources behind my responses.", sources: [] };
+  }
+  if (manipulationPattern.test(question)) {
+    return {
+      answer: "I can answer questions about Gabriel’s published work, experience, projects, and writing, but I can’t follow instructions that change my role or override my safeguards.",
+      sources: []
+    };
+  }
   if (greetingPattern.test(question)) {
     return {
       answer: "Hello! I’m Gabriel’s AI assistant. How can I help? You can ask me about his experience, projects, skills, or writing.",
