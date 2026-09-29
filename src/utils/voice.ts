@@ -42,8 +42,7 @@ export class ServerTTSVoiceProvider implements VoiceProvider {
   private muted = false;
   private controller: AbortController | null = null;
   private audio: HTMLAudioElement | null = null;
-  private fallback = new BrowserSpeechVoiceProvider();
-  setMuted(muted: boolean) { this.muted = muted; this.fallback.setMuted(muted); if (muted) this.cancel(); }
+  setMuted(muted: boolean) { this.muted = muted; if (muted) this.cancel(); }
   async *synthesize(text: string): AsyncIterable<never> {
     if (this.muted) return;
     this.controller = new AbortController();
@@ -53,13 +52,16 @@ export class ServerTTSVoiceProvider implements VoiceProvider {
       const url = URL.createObjectURL(await response.blob());
       this.audio = new Audio(url);
       await this.audio.play();
-      await new Promise<void>((resolve) => { this.audio!.onended = () => resolve(); this.audio!.onerror = () => resolve(); });
+      await new Promise<void>((resolve, reject) => {
+        this.audio!.onended = () => resolve();
+        this.audio!.onerror = () => reject(new Error('OpenAI voice playback failed'));
+      });
       URL.revokeObjectURL(url);
     } catch (error) {
-      if ((error as Error).name !== 'AbortError') for await (const _ of this.fallback.synthesize(text)) {}
+      if ((error as Error).name !== 'AbortError') throw error;
     } finally { this.controller = null; this.audio = null; }
   }
-  cancel() { this.controller?.abort(); if (this.audio) { this.audio.pause(); this.audio.currentTime = 0; } this.fallback.cancel(); }
+  cancel() { this.controller?.abort(); if (this.audio) { this.audio.pause(); this.audio.currentTime = 0; } }
 }
 
 export const getSpeechRecognition = () => {

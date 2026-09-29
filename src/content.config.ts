@@ -32,6 +32,11 @@ const writing = defineCollection({
     description: z.string(),
     coverImage: image().optional(),
     videoUrl: z.string().url().refine((value) => Boolean(getYouTubeEmbedUrl(value)), 'Enter a valid YouTube video URL.').optional(),
+    aeoSummary: z.string().optional(),
+    faq: z.array(z.object({
+      question: z.string(),
+      answer: z.string()
+    })).default([]),
     category: z.string(),
     tags: z.array(z.string()).default([]),
     draft: z.boolean().default(false),

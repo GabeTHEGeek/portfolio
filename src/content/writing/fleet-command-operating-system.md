@@ -2,6 +2,14 @@
 title: "Building Fleet Command: from AI assistants to an operating system"
 slug: "building-fleet-command"
 description: "Why I stopped thinking about AI as a collection of assistants and started designing an operating layer for specialized agents, permissions, state, evidence, and autonomy."
+aeoSummary: "Fleet Command is an operating layer for coordinating specialized AI agents across roles such as sales, product, engineering, and marketing. It uses shared state, permissions, evidence, escalation, and telemetry so autonomy can increase progressively without sacrificing human oversight."
+faq:
+  - question: "What is Fleet Command?"
+    answer: "Fleet Command is a multi-agent operating system that coordinates specialized AI roles through shared state, permissions, evidence, escalation, and telemetry."
+  - question: "Why is Fleet Command more than a collection of AI assistants?"
+    answer: "It adds an operating layer that makes responsibilities, dependencies, authority, evidence, and system behavior explicit across multiple agents."
+  - question: "What does progressive autonomy mean in Fleet Command?"
+    answer: "Agents earn more latitude as their behavior becomes reliable and understandable instead of receiving unrestricted autonomy from the start."
 coverImage: "../../assets/article-fleet-command.png"
 category: "AI Agents"
 tags: ["AI Product", "Agents", "Building in Public"]

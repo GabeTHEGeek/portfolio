@@ -2,6 +2,14 @@
 title: "I’m starting to think the agent and the model should be two different things"
 slug: "fleet-command-organization-not-models"
 description: "An experiment with multi-agent systems changed how I think about roles, models, cost, and what should stay constant when the intelligence underneath an agent changes."
+aeoSummary: "An AI agent's role should remain stable even when the model underneath it changes. Separating responsibility from model choice lets a system route each task to code, a low-cost model, or stronger intelligence while preserving ownership, permissions, evidence, and organizational continuity."
+faq:
+  - question: "Why should an AI agent and its model be separate?"
+    answer: "The agent owns a durable role and outcome, while the model is one replaceable form of intelligence the system can use to complete the work."
+  - question: "How can separating agents from models reduce cost?"
+    answer: "Routine tasks can use deterministic code or lower-cost models, while stronger models are reserved for ambiguous decisions where additional reasoning can change the outcome."
+  - question: "What remains constant when an agent changes models?"
+    answer: "The role, objective, permissions, shared state, evidence requirements, work history, and responsibility for the outcome remain constant."
 coverImage: "../../assets/article-fleet-command-organization.png"
 category: "AI Agents"
 order: 1

@@ -15,14 +15,30 @@ const { article } = Astro.props;
 const { Content, headings } = await render(article);
 const duration = readingTime(article.body ?? '');
 const videoEmbedUrl = getYouTubeEmbedUrl(article.data.videoUrl);
+const aeoSummary = article.data.aeoSummary ?? article.data.description;
+const faq = article.data.faq ?? [];
 const allArticles = await getCollection('writing', ({ data }) => !data.draft);
 const related = allArticles.filter(({ id }) => id !== article.id).map((entry) => ({ entry, shared: entry.data.tags.filter((tag) => article.data.tags.includes(tag)).length })).sort((a, b) => b.shared - a.shared || b.entry.data.publishDate.valueOf() - a.entry.data.publishDate.valueOf()).slice(0, 3).map(({ entry }) => entry);
-const schema = {
-  '@context': 'https://schema.org', '@type': 'Article', headline: article.data.title,
+const articleSchema = {
+  '@type': 'Article', headline: article.data.title,
   description: article.data.description, datePublished: article.data.publishDate.toISOString(),
   mainEntityOfPage: new URL(`/writing/${article.data.slug}/`, Astro.site).href,
   author: { '@type': 'Person', name: article.data.author, url: Astro.site }
 };
+const schema = faq.length ? {
+  '@context': 'https://schema.org',
+  '@graph': [
+    articleSchema,
+    {
+      '@type': 'FAQPage',
+      mainEntity: faq.map((item) => ({
+        '@type': 'Question',
+        name: item.question,
+        acceptedAnswer: { '@type': 'Answer', text: item.answer }
+      }))
+    }
+  ]
+} : { '@context': 'https://schema.org', ...articleSchema };
 ---
 <BaseLayout title={article.data.title} description={article.data.description} image={article.data.coverImage} type="article" publishedTime={article.data.publishDate} {schema} bodyClass="article-page">
   <header class="article-hero wrap">
@@ -43,8 +59,21 @@ const schema = {
     ) : article.data.coverImage && <Image class="article-hero-image" src={article.data.coverImage} alt="" width={1600} widths={[800, 1200, 1600]} sizes="92vw" />}
   </header>
   <div class="article-shell wrap">
-    <aside class="toc"><p class="eyebrow">In this article</p><nav aria-label="Table of contents">{headings.filter(({ depth }) => depth === 2 || depth === 3).map((heading, index) => <a class:list={[`depth-${heading.depth}`]} href={`#${heading.slug}`}><span class="toc-number">{String(index + 1).padStart(2, '0')}</span><span>{heading.text}</span></a>)}</nav></aside>
-    <article class="article-prose"><Content /><footer class="article-end"><h2>Keep exploring</h2><p>More product thinking and hands-on AI work from Gabriel Pendleton.</p><div class="article-actions"><a class="command-button primary" href="/writing/"><span class="command-button__content"><b>AR</b> ALL WRITING</span></a><a class="command-button" href="/projects/"><span class="command-button__content"><b>SYS</b> VIEW PROJECTS</span></a></div></footer></article>
+    <aside class="toc"><p class="eyebrow">In this article</p><nav aria-label="Table of contents">{headings.filter(({ depth }) => depth === 2 || depth === 3).map((heading, index) => <a class:list={[`depth-${heading.depth}`]} href={`#${heading.slug}`}><span class="toc-number">{String(index + 1).padStart(2, '0')}</span><span>{heading.text}</span></a>)}{faq.length > 0 && <a class="depth-2" href="#frequently-asked-questions"><span class="toc-number">{String(headings.filter(({ depth }) => depth === 2 || depth === 3).length + 1).padStart(2, '0')}</span><span>Frequently asked questions</span></a>}</nav></aside>
+    <article class="article-prose">
+      <section class="article-aeo-summary" aria-labelledby="aeo-summary-title">
+        <p class="eyebrow">AEO summary</p>
+        <h2 id="aeo-summary-title">The short answer</h2>
+        <p>{aeoSummary}</p>
+      </section>
+      <Content />
+      {faq.length > 0 && <section class="article-faq" id="frequently-asked-questions" aria-labelledby="faq-title">
+        <p class="eyebrow">FAQ</p>
+        <h2 id="faq-title">Frequently asked questions</h2>
+        <div class="article-faq-list">{faq.map((item) => <details><summary>{item.question}</summary><p>{item.answer}</p></details>)}</div>
+      </section>}
+      <footer class="article-end"><h2>Keep exploring</h2><p>More product thinking and hands-on AI work from Gabriel Pendleton.</p><div class="article-actions"><a class="command-button primary" href="/writing/"><span class="command-button__content"><b>AR</b> ALL WRITING</span></a><a class="command-button" href="/projects/"><span class="command-button__content"><b>SYS</b> VIEW PROJECTS</span></a></div></footer>
+    </article>
   </div>
   {related.length > 0 && <section class="related band"><div class="wrap"><div class="section-head"><div><p class="eyebrow">Related</p><h2>Continue reading.</h2></div></div><div class="related-grid">{related.map((item) => <a href={`/writing/${item.data.slug}/`}><span>{item.data.category} · {readingTime(item.body ?? '')}</span><h3>{item.data.title}</h3><p>{item.data.description}</p></a>)}</div></div></section>}
 </BaseLayout>
@@ -88,7 +117,18 @@ const schema = {
   .article-meta .avatar { width: 40px; height: 40px; flex-shrink: 0; object-fit: cover; border-radius: 50%; }
   .article-view-count { color: var(--cyan); }
   .article-prose { counter-reset: article-section; }
-  .article-prose :is(h2, h3)[id] {
+  .article-aeo-summary {
+    margin: 0 0 38px;
+    padding: 22px 24px;
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--signal);
+    background: color-mix(in srgb, var(--signal) 7%, var(--panel));
+  }
+  .article-aeo-summary .eyebrow { margin-bottom: 8px; color: var(--signal); }
+  .article-aeo-summary h2 { margin: 0 0 10px; padding: 0; border: 0; background: none; font-size: clamp(1.35rem, 3vw, 2rem); }
+  .article-aeo-summary h2::before { display: none; }
+  .article-aeo-summary > p:last-child { margin: 0; font-size: 1.05em; }
+  .article-prose > :is(h2, h3)[id] {
     counter-increment: article-section;
     scroll-margin-top: 150px;
     padding: 18px 20px;
@@ -96,7 +136,7 @@ const schema = {
     border-left: 3px solid var(--cyan);
     background: var(--panel);
   }
-  .article-prose :is(h2, h3)[id]::before {
+  .article-prose > :is(h2, h3)[id]::before {
     content: 'SECTION ' counter(article-section, decimal-leading-zero);
     display: block;
     margin-bottom: 10px;
@@ -104,13 +144,13 @@ const schema = {
     font: 12px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace;
     letter-spacing: .12em;
   }
-  .article-prose :is(h2, h3)[id]:target {
+  .article-prose > :is(h2, h3)[id]:target {
     border-left-color: var(--signal);
     background: color-mix(in srgb, var(--signal) 12%, var(--panel));
     outline: 1px solid var(--signal);
     outline-offset: 0;
   }
-  .article-prose :is(h2, h3)[id]:target::before { color: var(--signal); }
+  .article-prose > :is(h2, h3)[id]:target::before { color: var(--signal); }
   .article-shell .toc nav a {
     display: grid;
     grid-template-columns: 2rem minmax(0, 1fr);
@@ -123,6 +163,12 @@ const schema = {
   .toc-number { flex-shrink: 0; color: var(--cyan); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
   .toc nav a[aria-current='location'] { color: var(--signal); border-left-color: var(--signal); background: color-mix(in srgb, var(--signal) 8%, var(--panel)); }
   .toc nav a[aria-current='location'] .toc-number { color: var(--signal); }
+  .article-faq { scroll-margin-top: 150px; margin-top: 56px; }
+  .article-faq > h2 { margin-top: 0; }
+  .article-faq-list { display: grid; gap: 10px; }
+  .article-faq details { border: 1px solid var(--line); background: var(--panel); }
+  .article-faq summary { padding: 16px 18px; color: var(--text); font-weight: 700; cursor: pointer; }
+  .article-faq details p { margin: 0; padding: 0 18px 18px; color: var(--muted); }
   .article-hero-video {
     width: 100%;
     aspect-ratio: 16 / 9;

@@ -2,6 +2,14 @@
 title: "I Thought Building the AI Agent Was the Hard Part. Training It to Do the Job Was Harder."
 slug: "training-an-ai-agent-to-do-the-job"
 description: "What building an AI sales agent taught me about judgment, deterministic safeguards, evidence, and knowing when to stop training and let the agent work."
+aeoSummary: "Building a working AI agent is easier than teaching it to exercise reliable judgment. The strongest approach combines models for judgment, deterministic software for invariants, stronger intelligence at points of ambiguity, evidence-based evaluation, and bounded workers for work at scale."
+faq:
+  - question: "Why are prompts not enough to make an AI agent reliable?"
+    answer: "Prompts can guide behavior, but rules such as state order, blocked actions, required records, and escalation conditions need deterministic enforcement that the model cannot waive."
+  - question: "When should an AI agent use a stronger model?"
+    answer: "A stronger model is most valuable at points of ambiguity or subtle judgment, while routine research, routing, extraction, and structured execution can often use cheaper intelligence."
+  - question: "How should AI agent performance be evaluated?"
+    answer: "Evaluation should examine both technical execution and the quality of evidence, judgment, and outcomes because a workflow can complete successfully while producing the wrong work."
 coverImage: "../../assets/article-agent-training-hero.jpeg"
 category: "AI Agents"
 order: 2

@@ -2,6 +2,14 @@
 title: "I Built Three AI Agent Templates to Make the Invisible Parts Visible"
 slug: "building-ai-agent-starter-templates"
 description: "What building three small, inspectable agent systems taught me about model routing, grounded research, website intelligence, and designing for trust."
+aeoSummary: "AI Agent Starter Templates is a set of three small, inspectable systems for grounded research, model routing, and website intelligence. The project demonstrates that trustworthy agents need visible evidence, bounded tools, deterministic checks, and execution records that people can review."
+faq:
+  - question: "What are the three AI Agent Starter Templates?"
+    answer: "The repository includes a deep research agent, a smart model router, and a website intelligence agent built on a shared, inspectable runtime."
+  - question: "Why does the project include a Run Inspector?"
+    answer: "The Run Inspector exposes inputs, configuration, provider and tool events, outputs, timing, and evaluation so developers can understand what an agent actually did."
+  - question: "How do the templates make AI agents safer?"
+    answer: "They use bounded network access, redacted logs, local environment variables, deterministic checks, mock providers for tests, and explicit evidence requirements."
 coverImage: "../../assets/article-agent-starter-templates-dashboard.png"
 category: "AI Agents"
 tags: ["AI Product", "Agents", "Model Routing", "Evaluation", "Building in Public"]

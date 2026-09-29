@@ -69,6 +69,16 @@ collections:
       - { label: Description, name: description, widget: text }
       - { label: Cover image, name: coverImage, widget: image, required: false, choose_url: false }
       - { label: YouTube header video, name: videoUrl, widget: string, required: false, pattern: ['^https?://((www|m)\.youtube\.com|youtube\.com|youtu\.be)/.+$', 'Enter a full YouTube or youtu.be URL.'], hint: 'Optional. When provided, the video replaces the cover image in the article header. The cover image is still used on article cards and for sharing.' }
+      - { label: AEO summary, name: aeoSummary, widget: text, required: false, hint: 'A concise, direct answer shown at the top of the article and structured for answer engines. If empty, the article description is used.' }
+      - label: Frequently asked questions
+        name: faq
+        widget: list
+        required: false
+        default: []
+        hint: 'Add concise questions and grounded answers related to the article.'
+        fields:
+          - { label: Question, name: question, widget: string }
+          - { label: Answer, name: answer, widget: text }
       - { label: Category, name: category, widget: string }
       - { label: Tags, name: tags, widget: list, required: false, default: [] }
       - { label: Draft, name: draft, widget: boolean, default: false, required: false, hint: Draft articles are saved in the CMS but excluded from the public site. }

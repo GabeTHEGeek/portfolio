@@ -244,7 +244,11 @@ import launcherPortrait from '../assets/gabriel-pendleton-cyborg-v2.png';
     voiceSpeaking = true;
     recognition?.stop();
     setVoiceState('Speaking');
-    try { for await (const _ of voiceProvider.synthesize(text)) {} }
+    try {
+      for await (const _ of voiceProvider.synthesize(text)) {}
+    } catch {
+      if (voiceFallback) voiceFallback.textContent = 'OpenAI voice is temporarily unavailable. The written answer is still available.';
+    }
     finally { voiceSpeaking = false; }
     if (voiceActive && voiceHandsFree) setVoiceState('Listening');
   };

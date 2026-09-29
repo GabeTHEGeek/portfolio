@@ -5,7 +5,7 @@ browser microphone (Web Speech API) → the existing `ask-gabriel` retrieval and
 
 ## Setup
 
-The browser asks for microphone permission when **Talk to Gabriel** is started. OpenAI TTS supplies the natural spoken reply through a server-only endpoint; browser speech synthesis remains the automatic fallback. The voice provider never writes the answer: the existing grounded Ask Gabriel response is converted to audio unchanged.
+The browser asks for microphone permission when **Talk to Gabriel** is started. OpenAI TTS supplies the natural spoken reply through a server-only endpoint. The app does not fall back to the browser's system voice; if OpenAI speech is unavailable, the written answer remains visible and the voice panel reports the playback problem. The voice provider never writes the answer: the existing grounded Ask Gabriel response is converted to audio unchanged.
 
 Set `OPENAI_API_KEY` on the server. Optional settings are `OPENAI_TTS_MODEL` (default `gpt-4o-mini-tts`) and `OPENAI_TTS_VOICE` (default `cedar`). Never expose these values in browser code.
 
