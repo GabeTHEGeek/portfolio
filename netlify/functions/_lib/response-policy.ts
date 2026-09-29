@@ -31,25 +31,25 @@ export function getPolicyResponse(question: string): PolicyResponse | null {
   }
   if (greetingPattern.test(question)) {
     return {
-      answer: "Hello! I’m Gabriel’s AI assistant. How can I help? You can ask me about his experience, projects, skills, or writing.",
+      answer: "Hello! I’m Gabriel’s AI assistant. How can I help? You can ask me about my experience, projects, skills, or writing.",
       sources: []
     };
   }
   if (quotePattern.test(question)) {
     return {
-      answer: "Gabriel is a student of the world’s great philosophers and thinkers. The quotes throughout the portfolio are favorites he has encountered in his reading. They resonate with his belief in innovation, discovery, experimentation, and having the courage to try new things.",
+      answer: "I study the world’s great philosophers and thinkers. The quotes throughout my portfolio are favorites I have encountered in my reading. They resonate with my belief in innovation, discovery, experimentation, and having the courage to try new things.",
       sources: [{ title: 'Gabriel Pendleton Portfolio', url: 'https://gabrielpendleton.me/' }]
     };
   }
   if (privateContactPattern.test(question)) {
     return {
-      answer: "Trying to get the direct line already? Gabriel keeps his private contact details private. You can connect with him on LinkedIn.",
+      answer: "Trying to get the direct line already? I keep my private contact details private. You can connect with me on LinkedIn.",
       sources: [{ title: 'Gabriel on LinkedIn', url: publicLinks.linkedin }]
     };
   }
   if (privateInfrastructurePattern.test(question)) {
     return {
-      answer: "Gabriel keeps some of the machinery behind Ask Gabriel private. The interesting part is that I use his published work as evidence instead of making things up.",
+      answer: "I keep some of the machinery behind Ask Gabriel private. The interesting part is that I use my published work as evidence instead of making things up.",
       sources: [{ title: 'Ask Gabriel', url: 'https://gabrielpendleton.me/#ask-gabriel' }]
     };
   }
@@ -58,11 +58,36 @@ export function getPolicyResponse(question: string): PolicyResponse | null {
 
 export function applyOutputPolicy(answer: string): string {
   if (emailPattern.test(answer) || phonePattern.test(answer)) {
-    return "I can't share Gabriel's private contact details. You can connect with him on LinkedIn.";
+    return "I can't share my private contact details. You can connect with me on LinkedIn.";
   }
   return answer
-    .replace(/Gabriel Pendleton/g, 'Gabriel')
-    .replace(/\bGabriel\s+is\s+Gabriel\b/gi, 'Gabriel is')
+    .replace(/\bAsk Gabriel\b/g, '__ASK_GABRIEL_PRODUCT__')
+    .replace(/\bGabriel Pendleton Portfolio\b/g, 'my portfolio')
+    .replace(/\b(?:Gabriel Pendleton|Gabriel)[’']s\b/g, 'my')
+    .replace(/\bGabriel Pendleton\b|\bGabriel\b/g, 'I')
+    .replace(/\bHis\b/g, 'My')
+    .replace(/\bhis\b/g, 'my')
+    .replace(/\bHe\b/g, 'I')
+    .replace(/\bhe\b/g, 'I')
+    .replace(/\bHim\b/g, 'Me')
+    .replace(/\bhim\b/g, 'me')
+    .replace(/\bHimself\b/g, 'Myself')
+    .replace(/\bhimself\b/g, 'myself')
+    .replace(/\bI is\b/g, 'I am')
+    .replace(/\bI has\b/g, 'I have')
+    .replace(/\bI does\b/g, 'I do')
+    .replace(/\bI works\b/g, 'I work')
+    .replace(/\bI builds\b/g, 'I build')
+    .replace(/\bI leads\b/g, 'I lead')
+    .replace(/\bI uses\b/g, 'I use')
+    .replace(/\bI keeps\b/g, 'I keep')
+    .replace(/\bI believes\b/g, 'I believe')
+    .replace(/\bI focuses\b/g, 'I focus')
+    .replace(/\bI creates\b/g, 'I create')
+    .replace(/\bI describes\b/g, 'I describe')
+    .replace(/\bI answers\b/g, 'I answer')
+    .replace(/\bI writes\b/g, 'I write')
+    .replace(/__ASK_GABRIEL_PRODUCT__/g, 'Ask Gabriel')
     .replace(/\s*[—–]\s*/g, '. ')
     .replace(/;/g, '.')
     .replace(/[ \t]+-[ \t]+/g, '. ')

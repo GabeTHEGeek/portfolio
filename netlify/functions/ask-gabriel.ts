@@ -71,7 +71,7 @@ export default async (request: Request) => {
   const safeQuestion = sanitizeVisitorQuestion(rawQuestion);
   if (safeQuestion.length < MIN_QUESTION_LENGTH) {
     return json({
-      answer: "I can answer questions about Gabriel’s published work, experience, projects, and writing, but I can’t follow instructions that override my safeguards.",
+      answer: "I can answer questions about my published work, experience, projects, and writing, but I can’t follow instructions that override my safeguards.",
       sources: []
     });
   }
