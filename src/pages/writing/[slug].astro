@@ -7,7 +7,7 @@ import { readingTime } from '../../utils/reading-time';
 import { getYouTubeEmbedUrl } from '../../utils/youtube';
 
 export async function getStaticPaths() {
-  const articles = await getCollection('writing');
+  const articles = await getCollection('writing', ({ data }) => !data.draft);
   return articles.map((article) => ({ params: { slug: article.data.slug }, props: { article } }));
 }
 type Props = { article: CollectionEntry<'writing'> };
@@ -15,7 +15,7 @@ const { article } = Astro.props;
 const { Content, headings } = await render(article);
 const duration = readingTime(article.body ?? '');
 const videoEmbedUrl = getYouTubeEmbedUrl(article.data.videoUrl);
-const allArticles = await getCollection('writing');
+const allArticles = await getCollection('writing', ({ data }) => !data.draft);
 const related = allArticles.filter(({ id }) => id !== article.id).map((entry) => ({ entry, shared: entry.data.tags.filter((tag) => article.data.tags.includes(tag)).length })).sort((a, b) => b.shared - a.shared || b.entry.data.publishDate.valueOf() - a.entry.data.publishDate.valueOf()).slice(0, 3).map(({ entry }) => entry);
 const schema = {
   '@context': 'https://schema.org', '@type': 'Article', headline: article.data.title,

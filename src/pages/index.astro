@@ -17,7 +17,7 @@ const allProjects = sortContent(await getCollection('projects'), 'projects');
 const systems = allProjects.filter(({ data }) => data.kind === 'ai');
 const productWork = allProjects.filter(({ data }) => data.kind === 'product');
 const certifications = await getCollection('certifications');
-const articles = sortContent(await getCollection('writing'), 'writing').slice(0, 3);
+const articles = sortContent(await getCollection('writing', ({ data }) => !data.draft), 'writing').slice(0, 3);
 const schema = { '@context': 'https://schema.org', '@type': 'Person', name: 'Gabriel Pendleton', jobTitle: 'Senior Product Leader', url: Astro.site, sameAs: [linkedinUrl, githubUrl], knowsAbout: ['AI products', 'Product leadership', 'Product strategy', 'Technical platforms'] };
 ---
 

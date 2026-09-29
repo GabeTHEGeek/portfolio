@@ -5,7 +5,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import ArticleCard from '../../components/ArticleCard.astro';
 import { Image } from 'astro:assets';
 import { readingTime } from '../../utils/reading-time';
-const articles = sortContent(await getCollection('writing'), 'writing');
+const articles = sortContent(await getCollection('writing', ({ data }) => !data.draft), 'writing');
 const [featured, ...recent] = articles;
 const categories = [...new Set(articles.map((article) => article.data.category))];
 ---
