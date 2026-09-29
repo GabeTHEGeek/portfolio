@@ -239,9 +239,14 @@ import launcherPortrait from '../assets/gabriel-pendleton-cyborg-v2.png';
 
   const setVoiceState = (value: string) => { if (voiceState) voiceState.textContent = value; };
   const stopVoice = () => { voiceActive = false; voiceRequest = false; recognition?.stop(); voiceProvider.cancel(); window.clearInterval(voiceTimer); window.clearTimeout(idleTimer); if (voiceStart) voiceStart.hidden = false; if (voiceStop) voiceStop.hidden = true; setVoiceState('Voice ready'); };
-  const resetIdle = () => { window.clearTimeout(idleTimer); idleTimer = window.setTimeout(stopVoice, idleVoiceSeconds * 1000); };
+  const resetIdle = () => {
+    window.clearTimeout(idleTimer);
+    if (!voiceActive || voiceRequest || voiceSpeaking) return;
+    idleTimer = window.setTimeout(stopVoice, idleVoiceSeconds * 1000);
+  };
   const speakAnswer = async (text: string) => {
     voiceSpeaking = true;
+    window.clearTimeout(idleTimer);
     recognition?.stop();
     setVoiceState('Speaking');
     try {
@@ -264,6 +269,7 @@ import launcherPortrait from '../assets/gabriel-pendleton-cyborg-v2.png';
     await speakAnswer(opening);
     if (!voiceActive) return;
     setVoiceState('Listening');
+    resetIdle();
     try { recognition.start(); } catch { stopVoice(); }
   };
   voiceHandsFreeButton?.addEventListener('click', () => { voiceHandsFree = !voiceHandsFree; voiceHandsFreeButton.textContent = `Hands-free: ${voiceHandsFree ? 'on' : 'off'}`; if (!voiceActive) startVoice(); });
@@ -284,7 +290,7 @@ import launcherPortrait from '../assets/gabriel-pendleton-cyborg-v2.png';
   if (!recognition) { voiceToggle?.setAttribute('disabled', 'true'); if (voiceFallback) voiceFallback.textContent = 'Voice input is not supported in this browser. Use the text box instead.'; }
   if (recognition) {
     recognition.continuous = false; recognition.interimResults = true; recognition.lang = 'en-US';
-    recognition.onresult = (event: any) => { resetIdle(); let finalText = ''; let interim = ''; for (let i = event.resultIndex; i < event.results.length; i++) (event.results[i].isFinal ? finalText += event.results[i][0].transcript : interim += event.results[i][0].transcript); if (voiceLive) voiceLive.textContent = interim || finalText; if (finalText.trim() && !voiceRequest) { voiceRequest = true; recognition.stop(); setVoiceState('Thinking'); if (question) question.value = finalText.trim(); form?.requestSubmit(); } };
+    recognition.onresult = (event: any) => { resetIdle(); let finalText = ''; let interim = ''; for (let i = event.resultIndex; i < event.results.length; i++) (event.results[i].isFinal ? finalText += event.results[i][0].transcript : interim += event.results[i][0].transcript); if (voiceLive) voiceLive.textContent = interim || finalText; if (finalText.trim() && !voiceRequest) { voiceRequest = true; window.clearTimeout(idleTimer); recognition.stop(); setVoiceState('Thinking'); if (question) question.value = finalText.trim(); form?.requestSubmit(); } };
     recognition.onerror = (event: any) => { if (event.error === 'aborted' || event.error === 'no-speech') return; if (voiceFallback) voiceFallback.textContent = event.error === 'not-allowed' ? 'Microphone access was denied. You can still use the text box.' : 'Voice input is unavailable right now. Use the text box instead.'; stopVoice(); };
     recognition.onend = () => { if (voiceActive && !voiceRequest && !voiceSpeaking) { setVoiceState('Listening'); if (voiceHandsFree) window.setTimeout(() => { if (voiceSpeaking) return; try { recognition.start(); } catch {} }, 250); } };
   }
@@ -342,8 +348,12 @@ import launcherPortrait from '../assets/gabriel-pendleton-cyborg-v2.png';
       } else if (!response.ok || typeof data.answer !== 'string') {
         throw new Error(typeof data.error === 'string' ? data.error : 'Request failed');
       } else {
-        await addTypedAnswer(data.answer, Array.isArray(data.sources) ? data.sources as Source[] : []);
-        if (voiceRequest && voiceActive) await speakAnswer(data.answer);
+        const sources = Array.isArray(data.sources) ? data.sources as Source[] : [];
+        if (voiceRequest && voiceActive) {
+          await Promise.all([addTypedAnswer(data.answer, sources), speakAnswer(data.answer)]);
+        } else {
+          await addTypedAnswer(data.answer, sources);
+        }
       }
       status.textContent = 'Response complete.';
     } catch {
@@ -357,7 +367,7 @@ import launcherPortrait from '../assets/gabriel-pendleton-cyborg-v2.png';
       root?.classList.remove('is-loading');
       question.focus();
       voiceRequest = false;
-      if (voiceActive && voiceHandsFree) { setVoiceState('Listening'); window.setTimeout(() => { try { recognition?.start(); } catch {} }, 500); }
+      if (voiceActive && voiceHandsFree) { setVoiceState('Listening'); resetIdle(); window.setTimeout(() => { try { recognition?.start(); } catch {} }, 500); }
       else if (voiceActive) stopVoice();
     }
   });
