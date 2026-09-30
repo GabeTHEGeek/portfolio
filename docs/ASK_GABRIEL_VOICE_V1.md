@@ -1,7 +1,7 @@
 # Ask Gabriel Voice V1
 
 Voice is a thin browser layer around the existing Ask Gabriel request path:
-browser microphone (Web Speech API) → the existing `ask-gabriel` retrieval and DeepSeek answer → browser speech synthesis. There is one answer model and the existing source links remain visible in the transcript.
+browser microphone (Web Speech API) → the existing `ask-gabriel` retrieval and DeepSeek answer → OpenAI text-to-speech → browser playback. There is one answer model and the existing source links remain visible in the transcript.
 
 ## Setup
 
@@ -13,7 +13,7 @@ For an approved custom voice, set `OPENAI_TTS_VOICE_ID` to the returned `voice_.
 
 Optional public settings (seconds): `PUBLIC_ASK_GABRIEL_VOICE_MAX_SESSION_SECONDS` (default 300) and `PUBLIC_ASK_GABRIEL_VOICE_IDLE_TIMEOUT_SECONDS` (default 45). These are not secrets. Keep DeepSeek and Supabase keys server-side. The existing server rate limit (10 requests/minute per client) applies to voice requests too.
 
-Voice answers strip URLs and markdown before playback, while links remain clickable on screen. Sessions are not recorded or stored. The disclosure is shown once per browser session.
+Voice answers strip URLs and markdown before playback, while links remain clickable on screen. On browsers with Web Audio, the server streams 24 kHz PCM audio and playback begins as chunks arrive. Other browsers receive MP3 and play it after download; they do not switch to the browser's system voice. Sessions are not recorded or stored. The disclosure is shown once per browser session.
 
 ## Manual test plan
 

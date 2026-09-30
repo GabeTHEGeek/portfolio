@@ -18,6 +18,8 @@ export default async (request: Request) => {
   try { body = await request.json(); } catch { return json({ error: 'Invalid request.' }, 400); }
   const text = typeof body === 'object' && body !== null && 'text' in body ? (body as { text?: unknown }).text : null;
   if (typeof text !== 'string' || !text.trim() || text.length > MAX_TEXT_LENGTH) return json({ error: 'Invalid speech text.' }, 400);
+  const format = typeof body === 'object' && body !== null && 'format' in body ? (body as { format?: unknown }).format : 'mp3';
+  if (format !== 'pcm' && format !== 'mp3') return json({ error: 'Invalid audio format.' }, 400);
 
   const client = request.headers.get('x-nf-client-connection-ip') ?? request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown';
   const now = Date.now();
@@ -35,9 +37,10 @@ export default async (request: Request) => {
       voice: customVoiceId ? { id: customVoiceId } : (process.env.OPENAI_TTS_VOICE?.trim() || 'cedar'),
       input: text.trim(),
       instructions: 'Speak warmly, naturally, and concisely. This is an AI-generated voice for Gabriel’s digital counterpart.',
-      response_format: 'mp3'
+      response_format: format,
+      stream_format: 'audio'
     })
   });
   if (!response.ok || !response.body) return json({ error: 'Voice generation failed.' }, response.status === 429 ? 429 : 502);
-  return new Response(response.body, { status: 200, headers: { 'content-type': 'audio/mpeg', 'cache-control': 'no-store', 'x-content-type-options': 'nosniff' } });
+  return new Response(response.body, { status: 200, headers: { 'content-type': format === 'pcm' ? 'application/octet-stream' : 'audio/mpeg', 'cache-control': 'no-store', 'x-content-type-options': 'nosniff' } });
 };

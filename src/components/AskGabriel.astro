@@ -259,6 +259,7 @@ import launcherPortrait from '../assets/gabriel-pendleton-cyborg-v2.png';
   };
   const startVoice = async () => {
     if (!recognition || requestInFlight || voiceActive) return;
+    voiceProvider.prepare();
     if (voiceFallback) voiceFallback.textContent = '';
     voiceActive = true; voiceStartedAt = Date.now(); voiceStart!.hidden = true; voiceStop!.hidden = false; resetIdle();
     voiceTimer = window.setInterval(() => { const elapsed = Math.floor((Date.now() - voiceStartedAt) / 1000); if (voiceTimerLabel) voiceTimerLabel.textContent = formatTimer(elapsed); if (elapsed >= maxVoiceSeconds) stopVoice(); }, 1000);
