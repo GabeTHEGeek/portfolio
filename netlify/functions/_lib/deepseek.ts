@@ -39,7 +39,7 @@ export async function askDeepSeek(question: string, chunks: DocumentChunkMatch[]
           { role: 'user', content: buildGroundedPrompt(question, chunks) }
         ],
         thinking: { type: 'disabled' },
-        temperature: 0.1,
+        temperature: 0.25,
         max_tokens: 280,
         stream: false
       })
