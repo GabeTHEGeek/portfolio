@@ -42,7 +42,7 @@ import launcherPortrait from '../assets/gabriel-pendleton-cyborg-v2.png';
 </div>
 
 <script>
-  import { ServerTTSVoiceProvider, VOICE_DISCLOSURE, VOICE_RETURN_GREETING, formatTimer, getSpeechRecognition } from '../utils/voice';
+  import { ServerTTSVoiceProvider, VOICE_DISCLOSURE, VOICE_RETURN_GREETING, collectRecognitionResults, formatTimer, getSpeechRecognition } from '../utils/voice';
   type Source = { title?: unknown; url?: unknown };
   type AskResponse = { answer?: unknown; sources?: unknown; error?: unknown };
 
@@ -64,6 +64,12 @@ import launcherPortrait from '../assets/gabriel-pendleton-cyborg-v2.png';
   let voiceStartedAt = 0;
   let voiceTimer: number | undefined;
   let idleTimer: number | undefined;
+  let voiceSendTimer: number | undefined;
+  let recognitionRestartTimer: number | undefined;
+  let voiceFinalText = '';
+  let voiceInterimText = '';
+  let processedFinalCount = 0;
+  const voicePauseMs = 2100;
   const voicePanel = root?.querySelector<HTMLElement>('[data-voice]');
   const voiceToggle = root?.querySelector<HTMLButtonElement>('[data-voice-toggle]');
   const voiceStart = root?.querySelector<HTMLButtonElement>('[data-voice-start]');
@@ -238,7 +244,22 @@ import launcherPortrait from '../assets/gabriel-pendleton-cyborg-v2.png';
   };
 
   const setVoiceState = (value: string) => { if (voiceState) voiceState.textContent = value; };
-  const stopVoice = () => { voiceActive = false; voiceRequest = false; recognition?.stop(); voiceProvider.cancel(); window.clearInterval(voiceTimer); window.clearTimeout(idleTimer); if (voiceStart) voiceStart.hidden = false; if (voiceStop) voiceStop.hidden = true; setVoiceState('Voice ready'); };
+  const stopVoice = () => {
+    voiceActive = false;
+    voiceRequest = false;
+    voiceFinalText = '';
+    voiceInterimText = '';
+    processedFinalCount = 0;
+    window.clearTimeout(voiceSendTimer);
+    window.clearTimeout(recognitionRestartTimer);
+    recognition?.stop();
+    voiceProvider.cancel();
+    window.clearInterval(voiceTimer);
+    window.clearTimeout(idleTimer);
+    if (voiceStart) voiceStart.hidden = false;
+    if (voiceStop) voiceStop.hidden = true;
+    setVoiceState('Voice ready');
+  };
   const resetIdle = () => {
     window.clearTimeout(idleTimer);
     if (!voiceActive || voiceRequest || voiceSpeaking) return;
@@ -262,6 +283,8 @@ import launcherPortrait from '../assets/gabriel-pendleton-cyborg-v2.png';
     voiceProvider.prepare();
     if (voiceFallback) voiceFallback.textContent = '';
     voiceActive = true; voiceStartedAt = Date.now(); voiceStart!.hidden = true; voiceStop!.hidden = false; resetIdle();
+    voiceFinalText = ''; voiceInterimText = ''; processedFinalCount = 0;
+    if (voiceLive) voiceLive.textContent = '';
     voiceTimer = window.setInterval(() => { const elapsed = Math.floor((Date.now() - voiceStartedAt) / 1000); if (voiceTimerLabel) voiceTimerLabel.textContent = formatTimer(elapsed); if (elapsed >= maxVoiceSeconds) stopVoice(); }, 1000);
     const isFirstVoiceSession = !sessionStorage.getItem('ask-gabriel-voice-disclosure');
     const opening = isFirstVoiceSession ? VOICE_DISCLOSURE : VOICE_RETURN_GREETING;
@@ -290,10 +313,54 @@ import launcherPortrait from '../assets/gabriel-pendleton-cyborg-v2.png';
   voiceStart?.addEventListener('click', startVoice); voiceStop?.addEventListener('click', stopVoice);
   if (!recognition) { voiceToggle?.setAttribute('disabled', 'true'); if (voiceFallback) voiceFallback.textContent = 'Voice input is not supported in this browser. Use the text box instead.'; }
   if (recognition) {
-    recognition.continuous = false; recognition.interimResults = true; recognition.lang = 'en-US';
-    recognition.onresult = (event: any) => { resetIdle(); let finalText = ''; let interim = ''; for (let i = event.resultIndex; i < event.results.length; i++) (event.results[i].isFinal ? finalText += event.results[i][0].transcript : interim += event.results[i][0].transcript); if (voiceLive) voiceLive.textContent = interim || finalText; if (finalText.trim() && !voiceRequest) { voiceRequest = true; window.clearTimeout(idleTimer); recognition.stop(); setVoiceState('Thinking'); if (question) question.value = finalText.trim(); form?.requestSubmit(); } };
+    const submitVoiceQuestion = () => {
+      if (!voiceActive || voiceRequest || voiceSpeaking || requestInFlight) return;
+      const text = voiceFinalText.trim();
+      if (text.length < 3) return;
+      const wait = 3000 - (Date.now() - lastRequestAt);
+      if (wait > 0) { voiceSendTimer = window.setTimeout(submitVoiceQuestion, wait + 50); return; }
+      voiceRequest = true;
+      window.clearTimeout(idleTimer);
+      window.clearTimeout(recognitionRestartTimer);
+      recognition.stop();
+      setVoiceState('Thinking');
+      if (question) question.value = text;
+      form?.requestSubmit();
+    };
+    const scheduleVoiceQuestion = () => {
+      window.clearTimeout(voiceSendTimer);
+      if (voiceFinalText.trim().length >= 3 && !voiceInterimText) {
+        voiceSendTimer = window.setTimeout(submitVoiceQuestion, voicePauseMs);
+      }
+    };
+    recognition.continuous = true; recognition.interimResults = true; recognition.lang = 'en-US';
+    recognition.onresult = (event: any) => {
+      if (!voiceActive || voiceRequest || voiceSpeaking) return;
+      resetIdle();
+      const result = collectRecognitionResults(event.results, processedFinalCount);
+      processedFinalCount = result.processedFinalCount;
+      if (result.final) voiceFinalText = [voiceFinalText, result.final].filter(Boolean).join(' ');
+      voiceInterimText = result.interim;
+      if (voiceLive) voiceLive.textContent = [voiceFinalText, voiceInterimText].filter(Boolean).join(' ');
+      scheduleVoiceQuestion();
+    };
     recognition.onerror = (event: any) => { if (event.error === 'aborted' || event.error === 'no-speech') return; if (voiceFallback) voiceFallback.textContent = event.error === 'not-allowed' ? 'Microphone access was denied. You can still use the text box.' : 'Voice input is unavailable right now. Use the text box instead.'; stopVoice(); };
-    recognition.onend = () => { if (voiceActive && !voiceRequest && !voiceSpeaking) { setVoiceState('Listening'); if (voiceHandsFree) window.setTimeout(() => { if (voiceSpeaking) return; try { recognition.start(); } catch {} }, 250); } };
+    recognition.onend = () => {
+      if (!voiceActive || voiceRequest || voiceSpeaking) return;
+      if (voiceInterimText) {
+        voiceFinalText = [voiceFinalText, voiceInterimText].filter(Boolean).join(' ');
+        voiceInterimText = '';
+        scheduleVoiceQuestion();
+      }
+      processedFinalCount = 0;
+      setVoiceState('Listening');
+      if (voiceHandsFree || voiceFinalText) {
+        recognitionRestartTimer = window.setTimeout(() => {
+          if (!voiceActive || voiceRequest || voiceSpeaking) return;
+          try { recognition.start(); } catch {}
+        }, 250);
+      }
+    };
   }
 
   launcher?.addEventListener('click', () => setOpen(true));
@@ -368,7 +435,10 @@ import launcherPortrait from '../assets/gabriel-pendleton-cyborg-v2.png';
       root?.classList.remove('is-loading');
       question.focus();
       voiceRequest = false;
-      if (voiceActive && voiceHandsFree) { setVoiceState('Listening'); resetIdle(); window.setTimeout(() => { try { recognition?.start(); } catch {} }, 500); }
+      voiceFinalText = ''; voiceInterimText = ''; processedFinalCount = 0;
+      window.clearTimeout(voiceSendTimer);
+      if (voiceLive) voiceLive.textContent = '';
+      if (voiceActive && voiceHandsFree) { setVoiceState('Listening'); resetIdle(); recognitionRestartTimer = window.setTimeout(() => { if (!voiceActive || voiceSpeaking || voiceRequest) return; try { recognition?.start(); } catch {} }, 500); }
       else if (voiceActive) stopVoice();
     }
   });
@@ -393,5 +463,10 @@ import launcherPortrait from '../assets/gabriel-pendleton-cyborg-v2.png';
   @media(prefers-reduced-motion:reduce){.is-loading .ask-status:before,.ask-message-answer.is-typing p:after,.ask-typing-indicator p i{animation:none}.ask-launcher,.ask-launcher-action{transition:none}}
   .ask-launcher-portrait{flex:0 0 40px;width:40px;height:40px;border:1px solid color-mix(in srgb,var(--cyan) 70%,transparent);border-radius:50%;background:#fff;object-fit:cover;object-position:center;box-shadow:0 0 14px color-mix(in srgb,var(--cyan) 20%,transparent)}
   .ask-message-answer p{white-space:pre-line}
+  .ask-transcript{overflow-x:hidden}
+  .ask-intro,.ask-message,.ask-answer-body{box-sizing:border-box;min-width:0;max-width:100%;overflow-wrap:anywhere}
+  .ask-message>ul{display:grid;grid-template-columns:minmax(0,1fr)}
+  .ask-message>ul li{min-width:0}
+  .ask-message>ul a{display:block;box-sizing:border-box;max-width:100%;overflow-wrap:anywhere;word-break:break-word;line-height:1.45}
   .ask-voice-toggle{margin:0 18px 10px;padding:8px 10px;border:1px solid var(--cyan);background:transparent;color:var(--cyan);font:9px ui-monospace,SFMono-Regular,Menlo,monospace;cursor:pointer}.ask-voice-toggle:disabled{opacity:.5;cursor:not-allowed}.ask-voice{margin:0 18px 10px;padding:10px;border:1px solid var(--line);background:color-mix(in srgb,var(--panel) 80%,transparent)}.ask-voice-controls{display:flex;align-items:center;gap:8px}.ask-voice-controls button{padding:6px 8px;border:1px solid var(--cyan);background:transparent;color:var(--text);font:9px ui-monospace,SFMono-Regular,Menlo,monospace}.ask-voice-controls span{color:var(--muted);font-size:9px}.ask-voice-controls span:last-child{margin-left:auto;color:var(--cyan)}.ask-voice p{min-height:18px;margin:8px 0 0;color:var(--text);font-size:12px}.ask-voice small{display:block;margin-top:6px;color:var(--orange);font-size:9px}
 </style>

@@ -15,6 +15,27 @@ export const formatTimer = (seconds: number) => {
   return `${String(Math.floor(safe / 60)).padStart(2, '0')}:${String(safe % 60).padStart(2, '0')}`;
 };
 
+type RecognitionResult = { isFinal: boolean; 0: { transcript: string } };
+
+/** Keep finalized speech across browser recognition segments without repeating earlier results. */
+export const collectRecognitionResults = (
+  results: ArrayLike<RecognitionResult>,
+  processedFinalCount: number
+) => {
+  const final: string[] = [];
+  const interim: string[] = [];
+  let nextProcessedFinalCount = processedFinalCount;
+  for (let i = 0; i < results.length; i++) {
+    const text = results[i]?.[0]?.transcript?.trim();
+    if (!text) continue;
+    if (results[i].isFinal) {
+      if (i >= processedFinalCount) final.push(text);
+      nextProcessedFinalCount = Math.max(nextProcessedFinalCount, i + 1);
+    } else interim.push(text);
+  }
+  return { final: final.join(' '), interim: interim.join(' '), processedFinalCount: nextProcessedFinalCount };
+};
+
 export interface VoiceProvider {
   synthesize(text: string): AsyncIterable<never>;
   cancel(): void;

@@ -1,11 +1,26 @@
 import assert from 'node:assert/strict';
-import { VOICE_DISCLOSURE, VOICE_RETURN_GREETING, formatTimer, isGreeting, pcm16ToFloat32, speechText } from '../src/utils/voice.ts';
+import { VOICE_DISCLOSURE, VOICE_RETURN_GREETING, collectRecognitionResults, formatTimer, isGreeting, pcm16ToFloat32, speechText } from '../src/utils/voice.ts';
 assert.equal(isGreeting('hello'), true);
 assert.equal(isGreeting('What is Fleet Command?'), false);
 assert.equal(formatTimer(65), '01:05');
 assert.equal(speechText('Answer [source](https://example.com) **here**'), 'Answer [source]( here');
 assert.match(VOICE_DISCLOSURE, /digital counterpart/i);
 assert.match(VOICE_RETURN_GREETING, /welcome back/i);
+const firstSegment = collectRecognitionResults([{ isFinal: true, 0: { transcript: 'Tell me about' } }], 0);
+assert.equal(firstSegment.final, 'Tell me about');
+assert.equal(firstSegment.processedFinalCount, 1);
+const continuedSegment = collectRecognitionResults([
+  { isFinal: true, 0: { transcript: 'Tell me about' } },
+  { isFinal: false, 0: { transcript: 'Fleet Command' } }
+], firstSegment.processedFinalCount);
+assert.equal(continuedSegment.final, '', 'previously finalized speech is not repeated');
+assert.equal(continuedSegment.interim, 'Fleet Command');
+const completedSegment = collectRecognitionResults([
+  { isFinal: true, 0: { transcript: 'Tell me about' } },
+  { isFinal: true, 0: { transcript: 'Fleet Command' } }
+], continuedSegment.processedFinalCount);
+assert.equal(completedSegment.final, 'Fleet Command');
+assert.equal(collectRecognitionResults([{ isFinal: true, 0: { transcript: 'and its agents' } }], 0).final, 'and its agents', 'a restarted recognition cycle can extend the same question');
 assert.deepEqual([...pcm16ToFloat32(new Uint8Array([0, 0, 255, 127, 0, 128]))], [0, 32767 / 32768, -1]);
 assert.throws(() => pcm16ToFloat32(new Uint8Array([1])), /Incomplete PCM sample/);
 const originalFetch = globalThis.fetch;
