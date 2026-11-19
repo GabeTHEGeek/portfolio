@@ -16,7 +16,7 @@ const projects = defineCollection({
     liveUrl: z.string().url().optional(),
     githubUrl: z.string().url().optional(),
     featured: z.boolean().default(false),
-    kind: z.enum(['ai', 'product']).default('product'),
+    kind: z.enum(['ai', 'product', 'personal']).default('product'),
     company: z.string().optional(),
     role: z.string().optional(),
     order: z.number().int().default(99),

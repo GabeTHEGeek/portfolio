@@ -12,7 +12,7 @@ tags:
 status: in-development
 githubUrl: https://github.com/GabeTHEGeek/the-virtual-cafe
 featured: false
-kind: product
+kind: personal
 order: 5
 publishDate: 2026-11-19
 ---

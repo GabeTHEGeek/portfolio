@@ -45,7 +45,7 @@ collections:
       - { label: Live URL, name: liveUrl, widget: string, required: false, pattern: ['^https?://[^\s]+$', 'Enter a full HTTP or HTTPS URL.'] }
       - { label: GitHub URL, name: githubUrl, widget: string, required: false, pattern: ['^https?://[^\s]+$', 'Enter a full HTTP or HTTPS URL.'] }
       - { label: Featured, name: featured, widget: boolean, default: false, required: false }
-      - { label: Kind, name: kind, widget: select, options: [ai, product], default: product }
+      - { label: Kind, name: kind, widget: select, options: [ai, product, personal], default: product }
       - { label: Company, name: company, widget: string, required: false }
       - { label: Role, name: role, widget: string, required: false }
       - { name: order, widget: hidden, default: 99 }
